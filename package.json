@@ -1,0 +1,21 @@
+{
+  "name": "dukebot",
+  "version": "0.0.1",
+  "description": "Discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -r esm src/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "esm": "^3.2.25",
+    "glob": "^7.1.6",
+    "lodash": "^4.17.15",
+    "lowdb": "^1.0.0",
+    "minimist": "^1.2.5",
+    "nodemon": "^2.0.3"
+  }
+}
