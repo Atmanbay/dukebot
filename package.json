@@ -1,0 +1,27 @@
+{
+  "name": "dukebot",
+  "version": "0.0.1",
+  "description": "Discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -r esm src/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.3.2",
+    "discord.js": "^12.2.0",
+    "esm": "^3.2.25",
+    "ffmpeg-static": "^4.2.1",
+    "glob": "^7.1.6",
+    "lodash": "^4.17.15",
+    "lowdb": "^1.0.0",
+    "markov-strings": "^2.1.1",
+    "minimist": "^1.2.5",
+    "moment": "^2.25.3",
+    "nodemon": "^2.0.3",
+    "uuid": "^8.0.0",
+    "winston": "^3.2.1"
+  }
+}

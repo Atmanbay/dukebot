@@ -1,0 +1,17 @@
+{
+  "prefix": "$",
+  "messageHistoryCount": 200,
+  "tokenPath": "G:/dukebot/token",
+  "directories": {
+    "logging": "G:/dukebot/logging",
+    "audio": "G:/dukebot/audio"
+  },
+  "dbDefaults": {
+    "jobs": [
+    ],
+    "blazes": [
+    ],
+    "messages": [
+    ]
+  }
+}
