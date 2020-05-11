@@ -1,0 +1,24 @@
+{
+  "dbDefaults": {
+    "config": [
+      {
+        "key": "token",
+        "value": ""
+      },
+      {
+        "key": "commandPrefix",
+        "value": ""
+      },
+      {
+        "key": "messageHistoryCount",
+        "value": 0
+      }
+    ],
+    "jobs": [
+
+    ],
+    "messageHistory": [
+      
+    ]
+  }
+}
