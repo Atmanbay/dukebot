@@ -1,5 +1,6 @@
 import EventHandler from '../structures/eventHandler';
 import CommandManager from '../managers/commandManager';
+import MessageStore from '../managers/messageStore';
 import Commands from '../commands';
 
 export default class MessageHandler extends EventHandler {
@@ -13,9 +14,12 @@ export default class MessageHandler extends EventHandler {
     });
 
     this.commandManager = commandManager;
+    this.messageStore = new MessageStore();
   }
 
   handle(message) {
+    this.messageStore.store(message.author.id, message.content);
+
     if (message.author.bot)
       return;
       

@@ -15,6 +15,7 @@
     "glob": "^7.1.6",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
+    "markov-strings": "^2.1.1",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.3"
   }
