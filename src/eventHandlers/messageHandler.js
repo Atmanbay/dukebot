@@ -9,7 +9,7 @@ export default class MessageHandler extends EventHandler {
     let commandManager = new CommandManager(config);
 
     Commands.forEach((command) => {
-      commandManager.addCommand(new command.default());
+      commandManager.addCommand(command.default);
     });
 
     this.commandManager = commandManager;

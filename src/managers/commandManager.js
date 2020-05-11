@@ -97,7 +97,7 @@ export default class CommandManager {
     let commands = this.commands;
     return new Promise(function(resolve, reject) {
       let command = find(commands, (command) => {
-        return command.isMatch(payload.commandWord);
+        return command.isMatch(payload.msg, payload.commandWord);
       });
       
       if (!command) {
