@@ -9,7 +9,10 @@ export default class CommandManager extends EventHandler {
   constructor(options) {
     super();
     this.event = 'message';
-    this.commands = LoaderService.load(`${__dirname}/../commands`);
+    this.commands = [];
+    LoaderService.load(`${__dirname}/../commands`).forEach((command) => {
+      this.commands.push(new command());
+    })
 
     this.prefix = options.prefix || null;
     this.databaseService = options.databaseService || new DatabaseService();

@@ -2,19 +2,23 @@ import Command from '../structures/command';
 import { isEmpty } from 'lodash';
 import Markov from 'markov-strings';
 
-export default new Command({
-  details: {
-    name: 'markov',
-    description: 'Creates a new message using a markov chain based on users previous messages',
-    args: [
-      {
-        name: 'u',
-        description: 'User to impersonate (defaults to user)',
-        optional: true
-      }
-    ]
-  },
-  execute: function(message, args, database) {
+export default class MarkovCommand extends Command {
+  constructor() {
+    super();
+    this.details = {
+      name: 'markov',
+      description: 'Creates a new message using a markov chain based on users previous messages',
+      args: [
+        {
+          name: 'u',
+          description: 'User to impersonate (defaults to user)',
+          optional: true
+        }
+      ]
+    };
+  }
+
+  execute(message, args, database) {
     let db = database.get('messages');
     let userId = '';
     if (args.u) {
@@ -39,4 +43,4 @@ export default new Command({
 
     message.channel.send(markov.generate(options).string);
   }
-});
+}
