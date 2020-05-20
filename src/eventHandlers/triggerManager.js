@@ -7,7 +7,10 @@ export default class CommandManager extends EventHandler {
   constructor(options) {
     super();
     this.event = 'message';
-    this.triggers = LoaderService.load(`${__dirname}/../triggers`);
+    this.triggers = [];
+    LoaderService.load(`${__dirname}/../triggers`).forEach((trigger) => {
+      this.triggers.push(new trigger());
+    });
 
     this.databaseService = options.databaseService || new DatabaseService();
     this.loggerService = options.loggerService || null;
