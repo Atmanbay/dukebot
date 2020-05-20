@@ -2,14 +2,19 @@ import Trigger from '../structures/trigger';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 
-export default new Trigger({
-  details: {
-    description: 'Trigger command to count blaze its at 4:20 AM and PM',
-  },
-  isMatch: function(message) {
+export default class BlazeItTrigger extends Trigger {
+  constructor() {
+    super();
+    this.details = {
+      description: 'Trigger command to count blaze its at 4:20 AM and PM',
+    };
+  }
+
+  isMatch(message) {
     return message.content.toLowerCase().includes('blaze it');
-  },
-  execute: function(message, database) {
+  }
+
+  execute(message, database) {
     let currentTime = moment();
     if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
       return;
@@ -31,4 +36,4 @@ export default new Trigger({
       .update(`count`, count => count + 1)
       .write();  
   }
-});
+}

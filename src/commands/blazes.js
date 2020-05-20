@@ -1,12 +1,16 @@
 import Command from '../structures/command';
 
-export default new Command({
-  details: {
-    name: 'blazes',
-    description: 'Get the sorted leaderboard of blazes',
-    args: []
-  },
-  execute: function(message, args, database) {
+export default class BlazeItCommand extends Command {
+  constructor() {
+    super();
+    this.details = {
+      name: 'blazes',
+      description: 'Get the sorted leaderboard of blazes',
+      args: []
+    };
+  }
+
+  execute(message, args, database) {
     let guildMembers = message.guild.members;
     let db = database.get('blazes');
     let promises = [];
@@ -34,6 +38,6 @@ export default new Command({
 
       response += lines.join('\n');
       message.channel.send(response);
-    })
+    });
   }
-});
+}
