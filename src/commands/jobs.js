@@ -68,6 +68,8 @@ export default class JobsCommand extends Command {
       let nickname = user.nickname || user.user.username;
       jobResults[nickname] = jobsDb.find({ id: user.user.id }).value().counts[type];
     });
+
+    return jobResults;
   }
 
   execute(message, args, database) {
