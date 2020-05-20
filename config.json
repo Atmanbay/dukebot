@@ -9,6 +9,8 @@
   "dbDefaults": {
     "jobs": [
     ],
+    "blazes": [
+    ],
     "messages": [
     ]
   }
