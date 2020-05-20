@@ -33,11 +33,8 @@ export default new Command({
     markov.buildCorpus();
 
     let options = {
-      maxTries: 100,
-      prng: Math.random,
-      filter: (result) => {
-        return true;
-      }
+      maxTries: 10,
+      prng: Math.random
     }
 
     message.channel.send(markov.generate(options).string);
