@@ -17,7 +17,8 @@ export default class BlazeItCommand extends Command {
     db.value().forEach((entry) => {
       let promise = guildMembers.fetch(entry.id).then((user) => {
         let name = user.nickname || user.name;
-        return [name, entry.count];
+        let count = entry.timestamps.length;
+        return [name, count];
       });
 
       promises.push(promise);
