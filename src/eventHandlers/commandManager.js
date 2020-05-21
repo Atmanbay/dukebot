@@ -95,12 +95,16 @@ export default class CommandManager extends EventHandler {
 
   executeCommand(parsedMessage) {
     let command = this.getCommand(parsedMessage.commandName);
+    if (!command) {
+      return;
+    }
+    
     let database = this.databaseService.get(parsedMessage.originalMessage.guild.id);
 
     try {
       command.execute(parsedMessage.originalMessage, parsedMessage.args, database);
     } catch (error) {
-      this.loggerService.error(parsedMessage.commandName, error)
+      this.loggerService.error(parsedMessage.commandName, error);
     }
   }
 }
