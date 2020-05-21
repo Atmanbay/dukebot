@@ -78,7 +78,7 @@ export default class JobsCommand extends Command {
       let user = args.u || message.author;
       let jobCount = jobs.find({ id: user.id }).value();
       message.guild.members.fetch(user.id).then((guildUser) => {
-        let nickname = guildUser.nickname;
+        let nickname = guildUser.nickname || guildUser.user.username;
         let goodJobs = 0;
         let badJobs = 0;
         if (jobCount) {
