@@ -3,8 +3,9 @@ import config from '../../config.json';
 import fs from 'fs';
 
 export default class AudioCommand extends Command {
-  constructor() {
+  constructor(services) {
     super();
+    this.audioService = services.audioService;
     this.details = {
       name: 'audio',
       description: 'Play specified audio clip',

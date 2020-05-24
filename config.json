@@ -1,8 +1,13 @@
 {
-  "prefix": "$",
-  "messageHistoryCount": 200,
-  "tokenPath": "G:/dukebot/token",
+  "setup": {
+    "tokenPath": "G:/dukebot/token"
+  },
+  "commands": {
+    "prefix": "$",
+    "messageHistoryCount": 200
+  },
   "directories": {
+    "database": "G:/dukebot/database",
     "logging": "G:/dukebot/logging",
     "audio": "G:/dukebot/audio"
   },

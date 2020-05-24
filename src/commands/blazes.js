@@ -1,8 +1,9 @@
 import Command from '../structures/command';
 
 export default class BlazeItCommand extends Command {
-  constructor() {
+  constructor(services) {
     super();
+    this.blazeService = services.blazeService;
     this.details = {
       name: 'blazes',
       description: 'Get the sorted leaderboard of blazes',

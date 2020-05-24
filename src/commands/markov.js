@@ -3,8 +3,9 @@ import { isEmpty } from 'lodash';
 import Markov from 'markov-strings';
 
 export default class MarkovCommand extends Command {
-  constructor() {
+  constructor(services) {
     super();
+    this.markovService = services.markovService;
     this.details = {
       name: 'markov',
       description: 'Creates a new message using a markov chain based on users previous messages',

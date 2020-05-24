@@ -1,22 +1,21 @@
 import { find } from 'lodash';
 import minimist from 'minimist';
-import EventHandler from '../structures/eventHandler';
-import DatabaseService from '../services/databaseService';
-import LoaderService from '../services/loaderService';
-import ConversionService from '../services/conversionService';
 
-export default class CommandManager extends EventHandler {
-  constructor(options) {
-    super();
-    this.event = 'message';
+export default class CommandService {
+  constructor(services) {
+    this.loaderService = services.loaderService;
+    this.loggerService = services.loggerService;
+    this.conversionService = services.conversionService;
+    this.databaseService = services.databaseService;
+    this.configService = services.configService;
+    this.load(services);
+  }
+
+  load(services) {
     this.commands = [];
-    LoaderService.load(`${__dirname}/../commands`).forEach((command) => {
-      this.commands.push(new command());
-    })
-
-    this.prefix = options.prefix || null;
-    this.databaseService = options.databaseService || new DatabaseService();
-    this.loggerService = options.loggerService || null;
+    services.loaderService.load(`${__dirname}/../commands`).forEach((command) => {
+      this.commands.push(new command(services));
+    });
   }
 
   handle(message) {
@@ -29,11 +28,11 @@ export default class CommandManager extends EventHandler {
   }
 
   shouldHandle(message) {
-    return message.content.startsWith(this.prefix);
+    return message.content.startsWith(this.configService.commands.prefix);
   }
 
   parseMessage(message) {
-    let content = message.content.substring(this.prefix.length);
+    let content = message.content.substring(this.configService.commands.prefix.length);
     let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
     let matches = [...content.matchAll(regex)];
 
@@ -53,7 +52,7 @@ export default class CommandManager extends EventHandler {
     let commandName = args._[0];
     delete args._;
 
-    return this.convertArguments(args, message.guild)
+    return this.convertArguments(args)
       .then((convertedArgs) => {
         return {
           originalMessage: message,
@@ -63,20 +62,20 @@ export default class CommandManager extends EventHandler {
       })
   }
 
-  convertArguments(args, guild) {
-    let conversionManager = new ConversionService(guild);
+  convertArguments(args) {
+    let conversionService = this.conversionService;
     let promises = Object.keys(args).map(key => {
       let argument = args[key];
       if (Array.isArray(argument)) {
         let arrayPromises = argument.map(argument => {
-          return conversionManager.convert(argument);
+          return conversionService.convert(argument);
         });
 
         return Promise.all(arrayPromises).then((newArrayValues) => {
           return [key, newArrayValues];
         })
       } else {
-        return conversionManager.convert(argument).then((newValue) => {
+        return conversionService.convert(argument).then((newValue) => {
           return [key, newValue];
         });
       }
@@ -98,9 +97,8 @@ export default class CommandManager extends EventHandler {
     if (!command) {
       return;
     }
-    
-    let database = this.databaseService.get(parsedMessage.originalMessage.guild.id);
 
+    let database = this.databaseService.get(parsedMessage.originalMessage.guild.id);
     try {
       command.execute(parsedMessage.originalMessage, parsedMessage.args, database);
     } catch (error) {

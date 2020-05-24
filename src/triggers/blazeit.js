@@ -3,8 +3,9 @@ import moment from 'moment';
 import { isEmpty } from 'lodash';
 
 export default class BlazeItTrigger extends Trigger {
-  constructor() {
+  constructor(services) {
     super();
+    this.blazeService = services.blazeService;
     this.details = {
       description: 'Trigger command to count blaze its at 4:20 AM and PM',
     };

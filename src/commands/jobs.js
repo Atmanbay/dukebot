@@ -2,11 +2,12 @@ import Command from '../structures/command';
 import { isEmpty } from 'lodash';
 
 export default class JobsCommand extends Command {
-  constructor() {
+  constructor(services) {
     super();
+    this.jobsService = services.jobsService;
     this.details = {
       name: 'jobs',
-      description: 'Play specified audio clip',
+      description: 'Hand out good jobs and bad jobs',
       args: [
         {
           name: 'g',
@@ -73,58 +74,62 @@ export default class JobsCommand extends Command {
   }
 
   execute(message, args, database) {
-    let jobs = database.get('jobs');
-    if (!args.g && !args.b) {
-      let user = args.u || message.author;
-      let jobCount = jobs.find({ id: user.id }).value();
-      message.guild.members.fetch(user.id).then((guildUser) => {
-        let nickname = guildUser.nickname || guildUser.user.username;
-        let goodJobs = 0;
-        let badJobs = 0;
-        if (jobCount) {
-          goodJobs = jobCount.counts.good;
-          badJobs = jobCount.counts.bad;
-        }
+    try {
+      let jobs = database.get('jobs');
+      if (!args.g && !args.b) {
+        let user = args.u || message.author;
+        let jobCount = jobs.find({ id: user.id }).value();
+        message.guild.members.fetch(user.id).then((guildUser) => {
+          let nickname = guildUser.nickname || guildUser.user.username;
+          let goodJobs = 0;
+          let badJobs = 0;
+          if (jobCount) {
+            goodJobs = jobCount.counts.good;
+            badJobs = jobCount.counts.bad;
+          }
+          
+          let response = `${nickname}\n${goodJobs} good jobs\n${badJobs} bad jobs`;
+          message.channel.send(response);
+        });
         
-        let response = `${nickname}\n${goodJobs} good jobs\n${badJobs} bad jobs`;
-        message.channel.send(response);
-      });
-      
-      return;
-    }
+        return;
+      }
 
-    let resolvedJobs = {
-      good: this.handleJobs(jobs, 'good', this.convertToArray(args.g)),
-      bad: this.handleJobs(jobs, 'bad', this.convertToArray(args.b))
-    };
+      let resolvedJobs = {
+        good: this.handleJobs(jobs, 'good', this.convertToArray(args.g)),
+        bad: this.handleJobs(jobs, 'bad', this.convertToArray(args.b))
+      };
 
-    let response = '';
-    if (args.r) {
-      response += `The following jobs have been given out for ${args.r}\n\n`;
-    }
+      let response = '';
+      if (args.r) {
+        response += `The following jobs have been given out for ${args.r}\n\n`;
+      }
 
-    if (!isEmpty(resolvedJobs.good)) {
-      response += '**Good Jobs**';
-      Object.keys(resolvedJobs.good).forEach((key) => {
-        let value = resolvedJobs.good[key];
+      if (!isEmpty(resolvedJobs.good)) {
+        response += '**Good Jobs**';
+        Object.keys(resolvedJobs.good).forEach((key) => {
+          let value = resolvedJobs.good[key];
 
-        response += `\n${key}: ${value}`
-      });
+          response += `\n${key}: ${value}`
+        });
+
+        if (!isEmpty(resolvedJobs.bad)) {
+          response += '\n\n';
+        }
+      }
 
       if (!isEmpty(resolvedJobs.bad)) {
-        response += '\n\n';
+        response += '**Bad Jobs**';
+        Object.keys(resolvedJobs.bad).forEach((key) => {
+          let value = resolvedJobs.bad[key];
+
+          response += `\n${key}: ${value}`
+        });
       }
+
+      message.channel.send(response);
+    } catch (error) {
+      console.log(error, args, message.content);
     }
-
-    if (!isEmpty(resolvedJobs.bad)) {
-      response += '**Bad Jobs**';
-      Object.keys(resolvedJobs.bad).forEach((key) => {
-        let value = resolvedJobs.bad[key];
-
-        response += `\n${key}: ${value}`
-      });
-    }
-
-    message.channel.send(response);
   }
 }

@@ -1,12 +1,12 @@
-import config from '../../config.json'
 import fs from 'fs';
 import FileSync from 'lowdb/adapters/FileSync';
 import low from 'lowdb';
 
 export default class DatabaseService {
-  constructor() {
+  constructor(services) {
     this.databases = {};
-    this.dbFolder = `${__dirname}/../database`;
+    this.dbFolder = services.configService.directories.database;
+    this.configService = services.configService;
   }
 
   generateDbFile(dbName) {
@@ -23,7 +23,7 @@ export default class DatabaseService {
     let adapter = new FileSync(fileName);
     let db = low(adapter);
 
-    db.defaults(config.dbDefaults).write();
+    db.defaults(this.configService.dbDefaults).write();
 
     this.databases[dbName] = db;
     return this.databases[dbName];

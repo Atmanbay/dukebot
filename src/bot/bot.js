@@ -1,10 +1,10 @@
 const Discord = require('discord.js');
 
 export default class Bot {
-  constructor(options) {
-    this.token = options.token;
-    this.databaseService = options.databaseService;
-    this.loggerService = options.loggerService;
+  constructor(services) {
+    this.token = services.resolve('configService').getToken();
+    this.databaseService = services.resolve('databaseService');
+    this.loggerService = services.resolve('loggerService');
     this.client = new Discord.Client();
   }
 

@@ -1,9 +1,10 @@
-import config from '../../config.json';
 import { isEmpty } from 'lodash';
 
 export default class MessageStoreService {
-  constructor() {
-    this.messageHistoryCount = config.messageHistoryCount;
+  constructor(services) {
+    this.messageHistoryCount = services.configService.messageHistoryCount;
+    this.databaseService = services.databaseService;
+    this.loggerService = services.loggerService;
   }
 
   store(authorId, message, database) {
@@ -32,5 +33,10 @@ export default class MessageStoreService {
       .find({ id: authorId })
       .assign({ messages: messages })
       .write();
+  }
+
+  setup(services) {
+    this.databaseService = services.databaseService;
+    this.loggerService = services.loggerService;
   }
 }
