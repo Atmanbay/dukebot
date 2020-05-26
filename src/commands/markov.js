@@ -19,8 +19,7 @@ export default class MarkovCommand extends Command {
     };
   }
 
-  execute(message, args, database) {
-    let db = database.get('messages');
+  execute(message, args) {
     let userId = '';
     if (args.u) {
       userId = args.u.user.id;
@@ -28,20 +27,8 @@ export default class MarkovCommand extends Command {
       userId = message.author.id;
     }
 
-    let messageHistoryUser = db.find({ id: userId });
-    if (isEmpty(messageHistoryUser.value())) {
-      return;
-    }
-
-    let messages = messageHistoryUser.value().messages;
-    let markov = new Markov(messages, {stateSize: 2});
-    markov.buildCorpus();
-
-    let options = {
-      maxTries: 10,
-      prng: Math.random
-    }
-
-    message.channel.send(markov.generate(options).string);
+    this.markovService.buildMarkov(userId).then((result) => {
+      message.channel.send(result);
+    })
   }
 }

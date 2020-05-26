@@ -98,9 +98,8 @@ export default class CommandService {
       return;
     }
 
-    let database = this.databaseService.get(parsedMessage.originalMessage.guild.id);
     try {
-      command.execute(parsedMessage.originalMessage, parsedMessage.args, database);
+      command.execute(parsedMessage.originalMessage, parsedMessage.args);
     } catch (error) {
       this.loggerService.error(parsedMessage.commandName, error);
     }

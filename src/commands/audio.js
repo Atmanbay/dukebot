@@ -38,13 +38,6 @@ export default class AudioCommand extends Command {
       channel = message.member.voice.channel;
     }
 
-    channel.join().then((connection) => {
-      let dispatcher = connection.play(path);
-      dispatcher.on('finish', () => {
-        connection.disconnect();
-      });
-      
-      dispatcher.on('error', console.error);
-    });
+    this.audioService.play(path, channel);
   }
 }

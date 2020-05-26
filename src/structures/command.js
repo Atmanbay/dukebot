@@ -21,5 +21,5 @@ export default class Command {
     return this.details.name === commandWord;
   }
 
-  execute(message, args, database) { }
+  execute(message, args) { }
 }

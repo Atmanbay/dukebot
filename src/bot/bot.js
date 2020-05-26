@@ -1,10 +1,10 @@
+import GuildManager from '../structures/guildManager';
+import ConfigService from '../services/configService';
+
 const Discord = require('discord.js');
 
 export default class Bot {
-  constructor(services) {
-    this.token = services.resolve('configService').getToken();
-    this.databaseService = services.resolve('databaseService');
-    this.loggerService = services.resolve('loggerService');
+  constructor() {
     this.client = new Discord.Client();
   }
 
@@ -13,15 +13,18 @@ export default class Bot {
   }
 
   start() {
-    let databaseService = this.databaseService;
-    let loggerService = this.loggerService;
     let client = this.client;
-    client.login(this.token).then((result) => {
-      Array.from(client.guilds.cache.keys()).forEach((guildId) => {
-        databaseService.generateDbFile(guildId);
+    let configService = new ConfigService();
+    let token = configService.getToken();
+
+    client.login(token).then((result) => {
+      client.guilds.cache.forEach((guild) => {
+        let guildManager = new GuildManager(guild);
+        guildManager.getHandlers().forEach((handler) => {
+          client.on(handler.event, handler.handle.bind(guildManager));
+        });
       });
       console.log('Ready!');
-      loggerService.info('Started');
     });
   }
 }

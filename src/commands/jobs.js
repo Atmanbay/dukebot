@@ -33,72 +33,22 @@ export default class JobsCommand extends Command {
     };
   }
 
-  convertToArray(users) {
-    if (!users) {
-      return [];
-    } else if (Array.isArray(users)) {
-      return users;
-    } else {
-      return [ users ];
-    }
-  }
-
-  handleJobs(jobsDb, type, users) {
-    let jobResults = {};
-    if (users.length === 0)
-      return jobResults;
-    
-    users.forEach((user) => {
-      let dbUser = jobsDb.find({ id: user.user.id });
-      if (isEmpty(dbUser.value())) {
-        jobsDb
-          .push({
-            id: user.user.id,
-            counts: {
-              good: 0,
-              bad: 0
-            }
-          })
-          .write();
-      }
-
-      dbUser
-        .update(`counts.${type}`, count => count + 1)
-        .write();        
-
-      let nickname = user.nickname || user.user.username;
-      jobResults[nickname] = jobsDb.find({ id: user.user.id }).value().counts[type];
-    });
-
-    return jobResults;
-  }
-
-  execute(message, args, database) {
+  execute(message, args) {
     try {
-      let jobs = database.get('jobs');
       if (!args.g && !args.b) {
         let user = args.u || message.author;
-        let jobCount = jobs.find({ id: user.id }).value();
-        message.guild.members.fetch(user.id).then((guildUser) => {
-          let nickname = guildUser.nickname || guildUser.user.username;
-          let goodJobs = 0;
-          let badJobs = 0;
-          if (jobCount) {
-            goodJobs = jobCount.counts.good;
-            badJobs = jobCount.counts.bad;
-          }
-          
-          let response = `${nickname}\n${goodJobs} good jobs\n${badJobs} bad jobs`;
+        this.jobsService.getJobs(user).then((result) => {
+          let response = `${result.nickname}\n${result.goodJobs} good jobs\n${result.badJobs} bad jobs`;
           message.channel.send(response);
         });
         
         return;
-      }
+      } 
 
       let resolvedJobs = {
-        good: this.handleJobs(jobs, 'good', this.convertToArray(args.g)),
-        bad: this.handleJobs(jobs, 'bad', this.convertToArray(args.b))
-      };
+        good: this.jobsService.resolveJobs(args.g, 'good'),
+        bad: this.jobsService.resolveJobs(args.b, 'bad')
+      }
 
       let response = '';
       if (args.r) {

@@ -3,6 +3,7 @@ import LoggerService from './loggerService';
 export default class ConversionService {
   constructor(services) {
     this.loggerService = services.loggerService;
+    this.guild = services.guild;
   }
 
   convert(value) {

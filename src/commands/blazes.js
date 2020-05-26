@@ -11,25 +11,8 @@ export default class BlazeItCommand extends Command {
     };
   }
 
-  execute(message, args, database) {
-    let guildMembers = message.guild.members;
-    let db = database.get('blazes');
-    let promises = [];
-    db.value().forEach((entry) => {
-      let promise = guildMembers.fetch(entry.id).then((user) => {
-        let name = user.nickname || user.name;
-        let count = entry.timestamps.length;
-        return [name, count];
-      });
-
-      promises.push(promise);
-    });
-
-    Promise.all(promises).then((result) => {
-      result.sort(function(first, second) {
-        return second[1] - first[1];
-      });
-
+  execute(message) {
+    this.blazeService.getBlazes().then((result) => {
       let response = '**Blazes** \n';
       let lines = [];
       result.forEach((entry) => {
