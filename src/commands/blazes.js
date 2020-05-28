@@ -23,6 +23,9 @@ export default class BlazeItCommand extends Command {
 
       response += lines.join('\n');
       message.channel.send(response);
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 }

@@ -1,3 +1,6 @@
+import moment from 'moment';
+import { isEmpty } from 'lodash';
+
 export default class BlazeService {
   constructor(services) {
     this.db = services.databaseService.get('blazes');
@@ -5,8 +8,37 @@ export default class BlazeService {
     this.loggerService = services.loggerService;
   }
 
-  saveBlaze() {
+  saveBlaze(user) {
+    let currentTime = moment();
+    // if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
+    //   return;
+    // }
 
+    let dateFormat = 'YYYY-MM-DD hh:mm a';
+    let dbUser = this.db.find({ id: user.id });
+    if (isEmpty(dbUser.value())) {
+      this.db
+        .push({
+          id: user.id,
+          timestamps: []
+        })
+        .write();
+      
+      dbUser = this.db.find({ id: user.id });
+    } else {
+      let timestamps = dbUser.value().timestamps;
+      let lastBlaze = timestamps[timestamps.length - 1];
+      if (lastBlaze === currentTime.format(dateFormat)) {
+        return;
+      }
+    }
+
+    dbUser
+      .update(`timestamps`, (timestamps) => {
+        timestamps.push(currentTime.format(dateFormat));
+        return timestamps;
+      })
+      .write();
   }
 
   getBlazes() {

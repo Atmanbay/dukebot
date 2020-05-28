@@ -3,17 +3,16 @@ import { isEmpty } from 'lodash';
 export default class MessageStoreService {
   constructor(services) {
     this.messageHistoryCount = services.configService.messageHistoryCount;
-    this.databaseService = services.databaseService;
+    this.db = services.databaseService.get('messages');
     this.loggerService = services.loggerService;
   }
 
-  store(authorId, message, database) {
-    let messagesDb = database.get('messages');
-    let dbUser = messagesDb.find({ id: authorId });
+  store(authorId, message) {
+    let dbUser = this.db.find({ id: authorId });
     let messages = [];
 
     if (isEmpty(dbUser.value())) {
-      messagesDb
+      this.db
         .push({
           id: authorId,
           messages: []
@@ -29,14 +28,9 @@ export default class MessageStoreService {
 
     messages.push(message);
 
-    messagesDb
+    this.db
       .find({ id: authorId })
       .assign({ messages: messages })
       .write();
-  }
-
-  setup(services) {
-    this.databaseService = services.databaseService;
-    this.loggerService = services.loggerService;
   }
 }

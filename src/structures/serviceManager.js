@@ -13,8 +13,10 @@ export default class ServiceManager {
 
     container.loadModules(__dirname + '/../services/**/*.js', {
       formatName: 'camelCase',
-      lifetime: awilix.Lifetime.SINGLETON,
-      register: awilix.asClass
+      resolverOptions: {
+        lifetime: awilix.Lifetime.SINGLETON,
+        register: awilix.asClass
+      }
     });
 
     return container;

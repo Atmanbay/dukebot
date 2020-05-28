@@ -11,7 +11,7 @@ export default class MessageStoreTrigger extends Trigger {
     };
   }
 
-  isMatch(message) {
+  isMatch() {
     return true;
   }
 
@@ -20,10 +20,8 @@ export default class MessageStoreTrigger extends Trigger {
       return;
     }
 
-    let database = this.databaseService.get(message.guild.id);
-
     try {
-      this.messageStoreService.store(message.author.id, message.content, database);  
+      this.messageStoreService.store(message.author.id, message.content);  
     } catch (error) {
       this.loggerService.error('Error when trying to store message', message.author.id, message.content, error);
     }

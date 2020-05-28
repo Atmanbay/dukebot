@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 export default class JobsService {
   constructor(services) {
     this.db = services.databaseService.get('jobs');
