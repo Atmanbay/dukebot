@@ -1,10 +1,10 @@
 import { isEmpty } from 'lodash';
 
 export default class MessageStoreService {
-  constructor(services) {
-    this.messageHistoryCount = services.configService.messageHistoryCount;
-    this.db = services.databaseService.get('messages');
-    this.loggerService = services.loggerService;
+  constructor(container) {
+    this.messageHistoryCount = container.configService.messageHistoryCount;
+    this.db = container.databaseService.get('messages');
+    this.loggerService = container.loggerService;
   }
 
   store(authorId, message) {

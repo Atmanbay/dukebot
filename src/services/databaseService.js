@@ -3,10 +3,10 @@ import FileSync from 'lowdb/adapters/FileSync';
 import low from 'lowdb';
 
 export default class DatabaseService {
-  constructor(services) {
-    this.dbFolder = services.configService.directories.database;
-    this.configService = services.configService;
-    this.guild = services.guild;
+  constructor(container) {
+    this.dbFolder = container.configService.directories.database;
+    this.configService = container.configService;
+    this.guild = container.guild;
 
     this.generateDb(this.guild.id);
 

@@ -1,4 +1,4 @@
-import Trigger from '../structures/trigger';
+import Trigger from '../objects/trigger';
 
 export default class MessageStoreTrigger extends Trigger {
   constructor(services) {

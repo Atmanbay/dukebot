@@ -2,20 +2,11 @@ import { find } from 'lodash';
 import minimist from 'minimist';
 
 export default class CommandService {
-  constructor(services) {
-    this.loaderService = services.loaderService;
-    this.loggerService = services.loggerService;
-    this.conversionService = services.conversionService;
-    this.databaseService = services.databaseService;
-    this.configService = services.configService;
-    this.load(services);
-  }
-
-  load(services) {
-    this.commands = [];
-    services.loaderService.load(`${__dirname}/../commands`).forEach((command) => {
-      this.commands.push(new command(services));
-    });
+  constructor(container) {
+    this.loggerService = container.loggerService;
+    this.conversionService = container.conversionService;
+    this.configService = container.configService;
+    this.commands = container.commands;
   }
 
   handle(message) {

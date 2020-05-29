@@ -2,17 +2,17 @@ import moment from 'moment';
 import { isEmpty } from 'lodash';
 
 export default class BlazeService {
-  constructor(services) {
-    this.db = services.databaseService.get('blazes');
-    this.guildMembers = services.guild.members;
-    this.loggerService = services.loggerService;
+  constructor(container) {
+    this.db = container.databaseService.get('blazes');
+    this.guildMembers = container.guild.members;
+    this.loggerService = container.loggerService;
   }
 
   saveBlaze(user) {
     let currentTime = moment();
-    // if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
-    //   return;
-    // }
+    if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
+      return;
+    }
 
     let dateFormat = 'YYYY-MM-DD hh:mm a';
     let dbUser = this.db.find({ id: user.id });

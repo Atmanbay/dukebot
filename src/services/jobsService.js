@@ -1,10 +1,10 @@
 import { isEmpty } from 'lodash';
 
 export default class JobsService {
-  constructor(services) {
-    this.db = services.databaseService.get('jobs');
-    this.guildMembers = services.guild.members;
-    this.loggerService = services.loggerService;
+  constructor(container) {
+    this.db = container.databaseService.get('jobs');
+    this.guildMembers = container.guild.members;
+    this.loggerService = container.loggerService;
   }
 
   getJobs(user) {

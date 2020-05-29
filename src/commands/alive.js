@@ -1,4 +1,4 @@
-import Command from '../structures/command';
+import Command from '../objects/command';
 
 export default class AliveCommand extends Command {
   constructor() {

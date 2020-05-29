@@ -1,7 +1,7 @@
 export default class MarkovService {
-  constructor(services) {
-    this.db = services.databaseService.get('messages');
-    this.loggerService = services.loggerService;
+  constructor(container) {
+    this.db = container.databaseService.get('messages');
+    this.loggerService = container.loggerService;
   }
 
   buildMarkov(userId) {

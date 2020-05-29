@@ -2,9 +2,9 @@ import winston from 'winston';
 import { merge } from 'lodash';
 
 export default class LoggerService {
-  constructor(services) {
-    let logPath = services.configService.directories.logging;
-    let guild = services.guild;
+  constructor(container) {
+    let logPath = container.configService.directories.logging;
+    let guild = container.guild;
     let logger = winston.createLogger({
       level: 'info',
       format: winston.format.combine(

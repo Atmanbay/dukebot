@@ -1,4 +1,4 @@
-import Command from '../structures/command';
+import Command from '../objects/command';
 import { isEmpty } from 'lodash';
 
 export default class JobsCommand extends Command {

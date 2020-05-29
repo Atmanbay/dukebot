@@ -1,4 +1,4 @@
-import Command from '../structures/command';
+import Command from '../objects/command';
 import { isEmpty } from 'lodash';
 import Markov from 'markov-strings';
 

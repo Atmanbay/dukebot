@@ -1,4 +1,4 @@
-import GuildManager from '../structures/guildManager';
+import GuildManager from '../objects/guildManager';
 import ConfigService from '../services/configService';
 
 const Discord = require('discord.js');

@@ -1,4 +1,4 @@
-import Trigger from '../structures/trigger';
+import Trigger from '../objects/trigger';
 
 export default class BlazeItTrigger extends Trigger {
   constructor(services) {

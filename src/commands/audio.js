@@ -1,4 +1,4 @@
-import Command from '../structures/command';
+import Command from '../objects/command';
 import config from '../../config.json';
 import fs from 'fs';
 
