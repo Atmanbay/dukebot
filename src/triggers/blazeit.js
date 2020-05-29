@@ -1,9 +1,9 @@
 import Trigger from '../objects/trigger';
 
 export default class BlazeItTrigger extends Trigger {
-  constructor(services) {
+  constructor(container) {
     super();
-    this.blazeService = services.blazeService;
+    this.blazeService = container.blazeService;
     this.details = {
       description: 'Trigger command to count blaze its at 4:20 AM and PM',
     };

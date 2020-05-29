@@ -1,11 +1,9 @@
 import Trigger from '../objects/trigger';
 
 export default class MessageStoreTrigger extends Trigger {
-  constructor(services) {
+  constructor(container) {
     super();
-
-    this.messageStoreService = services.messageStoreService;
-
+    this.messageStoreService = container.messageStoreService;
     this.details = {
       description: 'Store all messages (to be used in markov etc.)'
     };

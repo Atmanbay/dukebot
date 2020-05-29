@@ -1,8 +1,8 @@
 export default class MessageHandler {
-  constructor(services) {
+  constructor(container) {
     this.event = 'message';
-    this.commandService = services.commandService;
-    this.triggerService = services.triggerService;
+    this.commandService = container.commandService;
+    this.triggerService = container.triggerService;
   }
 
   handle(message) {
