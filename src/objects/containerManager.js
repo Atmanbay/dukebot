@@ -2,14 +2,16 @@ const awilix = require('awilix');
 import { sync } from 'glob';
 
 export default class ContainerManager {
-  constructor(guild) {
+  constructor(guild, botUser) {
     this.guild = guild;
+    this.botUser = botUser;
   }
 
   build() {
     let container = awilix.createContainer();
     container.register({
-      guild: awilix.asValue(this.guild)
+      guild: awilix.asValue(this.guild),
+      botUser: awilix.asValue(this.botUser)
     });
 
     container.loadModules(`${__dirname}/../services/**/*.js`, {

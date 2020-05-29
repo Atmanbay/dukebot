@@ -2,9 +2,9 @@ import Command from '../objects/command';
 import { isEmpty } from 'lodash';
 
 export default class JobsCommand extends Command {
-  constructor(services) {
+  constructor(container) {
     super();
-    this.jobsService = services.jobsService;
+    this.jobsService = container.jobsService;
     this.details = {
       name: 'jobs',
       description: 'Hand out good jobs and bad jobs',

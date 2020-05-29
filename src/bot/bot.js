@@ -17,9 +17,9 @@ export default class Bot {
     let configService = new ConfigService();
     let token = configService.getToken();
 
-    client.login(token).then((result) => {
+    client.login(token).then(() => {
       client.guilds.cache.forEach((guild) => {
-        let guildManager = new GuildManager(guild);
+        let guildManager = new GuildManager(guild, client.user);
         guildManager.getHandlers().forEach((handler) => {
           client.on(handler.event, handler.handle.bind(guildManager));
         });

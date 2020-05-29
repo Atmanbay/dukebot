@@ -1,11 +1,9 @@
 import Command from '../objects/command';
-import { isEmpty } from 'lodash';
-import Markov from 'markov-strings';
 
 export default class MarkovCommand extends Command {
-  constructor(services) {
+  constructor(container) {
     super();
-    this.markovService = services.markovService;
+    this.markovService = container.markovService;
     this.details = {
       name: 'markov',
       description: 'Creates a new message using a markov chain based on users previous messages',
