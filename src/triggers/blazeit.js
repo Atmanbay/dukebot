@@ -10,10 +10,19 @@ export default class BlazeItTrigger extends Trigger {
   }
 
   isMatch(message) {
-    return message.content.toLowerCase().includes('blaze it');
+    if (!message.content.toLowerCase().includes('blaze it')) {
+      return false;
+    }
+
+    if (!this.blazeService.isBlazingMinute()) {
+      return false;
+    }
+
+    return true;
   }
 
   execute(message) {
     this.blazeService.saveBlaze(message.author);
+    message.react('🔥');
   }
 }

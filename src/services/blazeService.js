@@ -8,12 +8,17 @@ export default class BlazeService {
     this.loggerService = container.loggerService;
   }
 
-  saveBlaze(user) {
+  isBlazingMinute() {
     let currentTime = moment();
     if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
-      return;
+      return false;
     }
 
+    return true;
+  }
+
+  saveBlaze(user) {
+    let currentTime = moment();
     let dateFormat = 'YYYY-MM-DD hh:mm a';
     let dbUser = this.db.find({ id: user.id });
     if (isEmpty(dbUser.value())) {
