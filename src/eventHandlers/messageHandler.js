@@ -6,6 +6,10 @@ export default class MessageHandler {
   }
 
   handle(message) {
+    if (message.author.bot) {
+      return;
+    }
+
     this.commandService.handle(message);
     this.triggerService.handle(message);
   }

@@ -7,6 +7,9 @@ export default class ConversionService {
   }
 
   convert(value) {
+    if (typeof value !== 'string') {
+      return Promise.resolve(value);
+    }
     let guild = this.guild;
     return new Promise(function(resolve, reject) {
       if (value.startsWith('<@!')) { //value is user

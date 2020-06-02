@@ -13,7 +13,7 @@ export default class GuildManager {
       let handlerObject = {
         event: handler.event,
         handle: function(event) {
-          if (event.guild.id !== this.guild.id) {
+          if (!event.guild || event.guild.id !== this.guild.id) {
             return;
           }
   
