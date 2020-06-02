@@ -10,7 +10,10 @@ export default class MessageHandler {
       return;
     }
 
-    this.commandService.handle(message);
-    this.triggerService.handle(message);
+    this.commandService.handle(message).then((result) => {
+      if (!result) {
+        this.triggerService.handle(message);
+      }
+    });
   }
 }

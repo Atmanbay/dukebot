@@ -11,10 +11,10 @@ export default class CommandService {
 
   handle(message) {
     if (!this.shouldHandle(message)) {
-      return;
+      return Promise.resolve(false);
     }
 
-    this.parseMessage(message)
+    return this.parseMessage(message)
       .then(this.executeCommand.bind(this))
   }
 
@@ -86,7 +86,7 @@ export default class CommandService {
   executeCommand(parsedMessage) {
     let command = this.getCommand(parsedMessage.commandName);
     if (!command) {
-      return;
+      return false;
     }
 
     try {
@@ -94,5 +94,7 @@ export default class CommandService {
     } catch (error) {
       this.loggerService.error(parsedMessage.commandName, error);
     }
+
+    return true;
   }
 }
