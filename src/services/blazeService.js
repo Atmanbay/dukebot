@@ -6,6 +6,7 @@ export default class BlazeService {
     this.db = container.databaseService.get('blazes');
     this.guildMembers = container.guild.members;
     this.loggerService = container.loggerService;
+    this.dateFormat = 'YYYY-MM-DD hh:mm a';
   }
 
   isBlazingMinute() {
@@ -19,7 +20,6 @@ export default class BlazeService {
 
   saveBlaze(user) {
     let currentTime = moment();
-    let dateFormat = 'YYYY-MM-DD hh:mm a';
     let dbUser = this.db.find({ id: user.id });
     if (isEmpty(dbUser.value())) {
       this.db
@@ -33,25 +33,33 @@ export default class BlazeService {
     } else {
       let timestamps = dbUser.value().timestamps;
       let lastBlaze = timestamps[timestamps.length - 1];
-      if (lastBlaze === currentTime.format(dateFormat)) {
+      if (lastBlaze === currentTime.format(this.dateFormat)) {
         return;
       }
     }
 
     dbUser
       .update(`timestamps`, (timestamps) => {
-        timestamps.push(currentTime.format(dateFormat));
+        timestamps.push(currentTime.format(this.dateFormat));
         return timestamps;
       })
       .write();
   }
 
-  getBlazes() {
+  getBlazes(cutoff) {
     let promises = [];
+    let dateFormat = this.dateFormat;
     this.db.value().forEach((entry) => {
       let promise = this.guildMembers.fetch(entry.id).then((user) => {
         let name = user.nickname || user.name;
-        let count = entry.timestamps.length;
+        let timestamps = entry.timestamps;
+        if (cutoff) {
+          timestamps = timestamps.filter(function(timestamp) {
+            let momentTimestamp = moment(timestamp, dateFormat);
+            return momentTimestamp >= cutoff;
+          });
+        }
+        let count = timestamps.length;
         return [name, count];
       });
 
