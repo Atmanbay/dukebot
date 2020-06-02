@@ -1,5 +1,3 @@
-// import { some } from 'lodash';
-
 export default class ResponseService {
   constructor(container) {
     this.db = container.databaseService.get('responses');
