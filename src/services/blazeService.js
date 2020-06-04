@@ -18,7 +18,7 @@ export default class BlazeService {
     return true;
   }
 
-  saveBlaze(user) {
+  trySaveBlaze(user) {
     let currentTime = moment();
     let dbUser = this.db.find({ id: user.id });
     if (isEmpty(dbUser.value())) {
@@ -34,7 +34,7 @@ export default class BlazeService {
       let timestamps = dbUser.value().timestamps;
       let lastBlaze = timestamps[timestamps.length - 1];
       if (lastBlaze === currentTime.format(this.dateFormat)) {
-        return;
+        return false;
       }
     }
 
@@ -44,6 +44,8 @@ export default class BlazeService {
         return timestamps;
       })
       .write();
+
+    return true;
   }
 
   getBlazes(cutoff) {

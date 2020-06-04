@@ -22,7 +22,8 @@ export default class BlazeItTrigger extends Trigger {
   }
 
   execute(message) {
-    this.blazeService.saveBlaze(message.author);
-    message.react('🔥');
+    if (this.blazeService.trySaveBlaze(message.author)) {
+      message.react('🔥');
+    }
   }
 }
