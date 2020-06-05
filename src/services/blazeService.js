@@ -53,7 +53,7 @@ export default class BlazeService {
     let dateFormat = this.dateFormat;
     this.db.value().forEach((entry) => {
       let promise = this.guildMembers.fetch(entry.id).then((user) => {
-        let name = user.nickname || user.name;
+        let name = user.nickname || user.user.username;
         let timestamps = entry.timestamps;
         if (cutoff) {
           timestamps = timestamps.filter(function(timestamp) {
