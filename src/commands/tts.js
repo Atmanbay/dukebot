@@ -15,6 +15,11 @@ export default class AliveCommand extends Command {
           optional: false
         },
         {
+          name: 's',
+          description: 'Voice speed',
+          optional: true
+        },
+        {
           name: 'c',
           description: 'Name of voice channel to play in (defaults to users current channel)',
           optional: true
@@ -35,8 +40,13 @@ export default class AliveCommand extends Command {
       channel = message.member.voice.channel;
     }
 
+    let speed = 1;
+    if (args.s) {
+      speed = args.s;
+    }
+
     let audioService = this.audioService;
-    googleTts(args.t, 'en', 1)
+    googleTts(args.t, 'en', speed)
       .then((url) => {
         audioService.play(url, channel);
       })
