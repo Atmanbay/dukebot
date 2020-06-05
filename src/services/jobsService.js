@@ -26,13 +26,17 @@ export default class JobsService {
     });
   }
 
-  resolveJobs(jobs, type) {
+  resolveJobs(jobs, type, authorUserId) {
     let users = this.convertToArray(jobs);
     let jobResults = {};
     if (users.length === 0)
       return jobResults;
     
     users.forEach((user) => {
+      if (authorUserId && user.user.id === authorUserId) {
+        return;
+      }
+
       let dbUser = this.db.find({ id: user.user.id });
       if (isEmpty(dbUser.value())) {
         this.db

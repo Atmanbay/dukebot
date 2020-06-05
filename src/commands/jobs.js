@@ -46,7 +46,7 @@ export default class JobsCommand extends Command {
       } 
 
       let resolvedJobs = {
-        good: this.jobsService.resolveJobs(args.g, 'good'),
+        good: this.jobsService.resolveJobs(args.g, 'good', message.author.id),
         bad: this.jobsService.resolveJobs(args.b, 'bad')
       }
 
