@@ -1,4 +1,4 @@
-export default class MessageHandler {
+export default class HelpHandler {
   constructor(container) {
     this.event = 'message';
     this.helpService = container.helpService;

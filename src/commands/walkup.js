@@ -4,20 +4,20 @@ import fs from 'fs';
 export default class AudioCommand extends Command {
   constructor(container) {
     super();
-    this.audioService = container.audioService;
+    this.walkupService = container.walkupService;
     this.configService = container.configService;
     this.details = {
-      name: 'audio',
-      description: 'Play specified audio clip',
+      name: 'walkup',
+      description: 'Set a clip to play every time you enter a voice channel',
       args: [
         {
           name: 'n',
           description: 'Name of audio clip',
-          optional: false
+          optional: true
         },
         {
-          name: 'c',
-          description: 'Name of voice channel to play in (defaults to users current channel)',
+          name: 'd',
+          description: 'Flag to delete your walkup',
           optional: true
         }
       ]
@@ -31,13 +31,11 @@ export default class AudioCommand extends Command {
       return;
     }
 
-    let channel;
-    if (args.c) {
-      channel = message.guild.channels.cache.find(channel => channel.name === args.c && channel.type === 'voice');
-    } else {
-      channel = message.member.voice.channel;
-    }
+    let userId = message.author.id;
 
-    this.audioService.play(path, channel);
+    this.walkupService.saveWalkup({
+      id: userId,
+      clip: clipName
+    });
   }
 }

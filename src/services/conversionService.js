@@ -9,18 +9,22 @@ export default class ConversionService {
   convert(value) {
     if (typeof value !== 'string') {
       return Promise.resolve(value);
+    } else if (value.startsWith('<@!')) { //value is user
+      return this.getUser(value);
+    } else if (value.startsWith('<#')) { //value is channel
+      return this.getChannel(value);
+    } else {
+      return Promise.resolve(value);
     }
-    let guild = this.guild;
-    return new Promise(function(resolve, reject) {
-      if (value.startsWith('<@!')) { //value is user
-        let newVal = value.substring(3, value.length - 1);
-        resolve(guild.members.fetch(newVal));
-      } else if (value.startsWith('<#')) { //value is channel
-        let newVal = value.substring(2, value.length - 1);
-        resolve(guild.channels.cache.find(channel => channel.id === newVal));
-      } else {
-        resolve(value);
-      }
-    });
+  }
+
+  getUser(userId) {
+    let newVal = userId.substring(3, userId.length - 1);
+    return Promise.resolve(this.guild.members.fetch(newVal));
+  }
+
+  getChannel(channelId) {
+    let newVal = channelId.substring(2, channelId.length - 1);
+    return Promise.resolve(this.guild.channels.cache.find(channel => channel.id === newVal));
   }
 }
