@@ -1,7 +1,11 @@
 export default class WalkupService {
   constructor(container) {
     this.db = container.databaseService.get('walkups');
-    
+    // this.guildMembers = container.guild.members; TODO
+  }
+
+  shouldHandle(user) {
+    return this.guildMembers.cache.some(guildMember => guildMember.id === user.id);
   }
 
   getWalkup(userId) {

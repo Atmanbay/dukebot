@@ -18,6 +18,10 @@ export default class BlazeItTrigger extends Trigger {
       return false;
     }
 
+    if (!this.blazeService.shouldHandle(message.author)) {
+      return false;
+    }
+
     return true;
   }
 

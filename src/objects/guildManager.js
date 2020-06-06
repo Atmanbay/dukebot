@@ -8,22 +8,6 @@ export default class GuildManager {
   }
 
   getHandlers() {
-    let guildEventHandlers = [];
-    this.container.cradle.eventHandlers.forEach((handler) => {
-      let handlerObject = {
-        event: handler.event,
-        handle: function(event) {
-          if (!event.guild || event.guild.id !== this.guild.id) {
-            return;
-          }
-  
-          handler.handle(event);
-        }
-      };
-
-      guildEventHandlers.push(handlerObject);
-    });
-
-    return guildEventHandlers;
+    return this.container.cradle.eventHandlers;
   }
 }

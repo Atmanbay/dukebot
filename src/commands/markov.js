@@ -25,8 +25,13 @@ export default class MarkovCommand extends Command {
       userId = message.author.id;
     }
 
-    this.markovService.buildMarkov(userId).then((result) => {
-      message.channel.send(result);
-    })
+    this.markovService
+      .buildMarkov(userId)
+      .then((result) => {
+        message.channel.send(result);
+      })
+      .catch((error) => {
+
+      });
   }
 }

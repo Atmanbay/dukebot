@@ -4,7 +4,12 @@ export default class MessageStoreService {
   constructor(container) {
     this.messageHistoryCount = container.configService.messageHistoryCount;
     this.db = container.databaseService.get('messages');
+    // this.guildMembers = container.guild.members; TODO
     this.loggerService = container.loggerService;
+  }
+
+  shouldHandle(authorId) {
+    return this.guildMembers.cache.some(guildMember => guildMember.id === authorId);
   }
 
   store(authorId, message) {

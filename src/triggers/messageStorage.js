@@ -18,6 +18,10 @@ export default class MessageStoreTrigger extends Trigger {
       return;
     }
 
+    if (!this.messageStoreService.shouldHandle(message.author.id)) {
+      return;
+    }
+
     try {
       this.messageStoreService.store(message.author.id, message.content);  
     } catch (error) {

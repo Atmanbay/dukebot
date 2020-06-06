@@ -3,7 +3,7 @@ import LoggerService from './loggerService';
 export default class ConversionService {
   constructor(container) {
     this.loggerService = container.loggerService;
-    this.guild = container.guild;
+    //this.guild = container.guild; TODO
   }
 
   convert(value) {

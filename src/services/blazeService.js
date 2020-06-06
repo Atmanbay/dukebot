@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 export default class BlazeService {
   constructor(container) {
     this.db = container.databaseService.get('blazes');
-    this.guildMembers = container.guild.members;
+    //this.guildMembers = container.guild.members; TODO
     this.loggerService = container.loggerService;
     this.dateFormat = 'YYYY-MM-DD hh:mm a';
   }
@@ -16,6 +16,10 @@ export default class BlazeService {
     }
 
     return true;
+  }
+
+  shouldHandle(user) {
+    return this.guildMembers.cache.some(guildMember => guildMember.id === user.id);
   }
 
   trySaveBlaze(user) {

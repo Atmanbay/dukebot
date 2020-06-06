@@ -24,6 +24,10 @@ export default class BlazeItCommand extends Command {
   }
 
   execute(message, args) {
+    if (!this.blazeService.shouldHandle(message.author)) {
+      return;
+    }
+
     let cutoff = null;
     if (args.w) {
       cutoff = moment().startOf('week');

@@ -6,6 +6,7 @@ export default class CommandService {
     this.loggerService = container.loggerService;
     this.conversionService = container.conversionService;
     this.configService = container.configService;
+    this.databaseService = container.databaseService;
     this.commands = container.commands;
   }
 
