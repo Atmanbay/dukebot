@@ -5,6 +5,9 @@ export default class Command {
     return this.details.name === commandWord;
   }
 
-  execute(message, args) {
+  execute(message, args) { }
+
+  setContext(context) {
+    this.context = context;
   }
 }

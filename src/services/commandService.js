@@ -6,6 +6,7 @@ export default class CommandService {
     this.loggerService = container.loggerService;
     this.conversionService = container.conversionService;
     this.configService = container.configService;
+    this.databaseService = container.databaseService;
     this.commands = container.commands;
   }
 
@@ -45,11 +46,11 @@ export default class CommandService {
 
     return this.convertArguments(args)
       .then((convertedArgs) => {
-        return {
-          originalMessage: message,
-          commandName: commandName,
-          args: convertedArgs
-        }
+        return [
+          commandName,
+          message,
+          convertedArgs
+        ];
       })
   }
 
@@ -83,16 +84,16 @@ export default class CommandService {
     });
   }
 
-  executeCommand(parsedMessage) {
-    let command = this.getCommand(parsedMessage.commandName);
+  executeCommand([commandName, message, args]) {
+    let command = this.getCommand(commandName);
     if (!command) {
       return false;
     }
 
     try {
-      command.execute(parsedMessage.originalMessage, parsedMessage.args);
+      command.execute(message, args);
     } catch (error) {
-      this.loggerService.error(parsedMessage.commandName, error);
+      this.loggerService.error(commandName, error);
     }
 
     return true;

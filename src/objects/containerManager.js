@@ -2,9 +2,9 @@ const awilix = require('awilix');
 import { sync } from 'glob';
 
 export default class ContainerManager {
-  constructor(guild, botUser) {
-    this.guild = guild;
-    this.botUser = botUser;
+  constructor(options) {
+    this.guild = options.guild || {};
+    this.botUser = options.botUser;
   }
 
   build() {

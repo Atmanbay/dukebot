@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 export default class BlazeService {
   constructor(container) {
     this.db = container.databaseService.get('blazes');
-    this.guildMembers = container.guild.members;
+    this.guildService = container.guildService;
     this.loggerService = container.loggerService;
     this.dateFormat = 'YYYY-MM-DD hh:mm a';
   }
@@ -52,7 +52,7 @@ export default class BlazeService {
     let promises = [];
     let dateFormat = this.dateFormat;
     this.db.value().forEach((entry) => {
-      let promise = this.guildMembers.fetch(entry.id).then((user) => {
+      let promise = this.guildService.getUser(entry.id).then((user) => {
         let name = user.nickname || user.user.username;
         let timestamps = entry.timestamps;
         if (cutoff) {

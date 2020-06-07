@@ -1,8 +1,11 @@
+import fs from 'fs';
+
 export default class VoiceStateHandler {
   constructor(container) {
     this.event = 'voiceStateUpdate';
+    this.configService = container.configService;
+    this.guildService = container.guildService;
     this.walkupService = container.walkupService;
-    this.conversionService = container.conversionService;
     this.audioService = container.audioService;
   }
 
@@ -11,17 +14,30 @@ export default class VoiceStateHandler {
       return;
     }
 
+    if (oldState.channelID === newState.channelID) {
+      return;
+    }
+
+    if (newState.member.guild.id !== this.guildService.guild.id) {
+      return;
+    }
+
     let walkup = this.walkupService.getWalkup(newState.id);
     if (!walkup) {
       return;
     }
 
-    this.conversionService.getChannel(newState.channelID).then((channel) => {
+    let path = `${this.configService.directories.audio}/${walkup}.mp3`;
+    if (!fs.existsSync(path)) {
+      return;
+    }
+
+    this.guildService.getChannel(newState.channelID).then((channel) => {
       if (!channel) {
-        console.log('y');
         return;
       }
-      this.audioService.play(walkup, channel);
+
+      this.audioService.play(path, channel);
     });
   }
 }

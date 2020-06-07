@@ -1,7 +1,7 @@
 import Command from '../objects/command';
 
 export default class AliveCommand extends Command {
-  constructor() {
+  constructor(container) {
     super();
     this.details = {
       name: 'alive',

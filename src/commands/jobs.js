@@ -35,6 +35,10 @@ export default class JobsCommand extends Command {
 
   execute(message, args) {
     try {
+      if (this.jobsService.shouldHandle(message.author)) {
+        return;
+      }
+
       if (!args.g && !args.b) {
         let user = args.u || message.author;
         this.jobsService.getJobs(user).then((result) => {
