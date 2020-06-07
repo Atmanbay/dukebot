@@ -11,16 +11,8 @@ export default class CommandService {
   }
 
   handle(message) {
-    if (!this.shouldHandle(message)) {
-      return Promise.resolve(false);
-    }
-
     return this.parseMessage(message)
       .then(this.executeCommand.bind(this))
-  }
-
-  shouldHandle(message) {
-    return message.content.startsWith(this.configService.commands.prefix);
   }
 
   parseMessage(message) {

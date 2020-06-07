@@ -1,6 +1,6 @@
 import Command from '../objects/command';
 
-export default class HelpCommandf extends Command {
+export default class HelpCommand extends Command {
   constructor(container) {
     super();
     this.helpService = container.helpService;
@@ -11,5 +11,13 @@ export default class HelpCommandf extends Command {
   }
 
   execute(message, args) {
+    let response = [];
+    if (args.n) {
+      response = this.helpService.getCommandHelpMessage(args.n);
+    } else {
+      response = this.helpService.getBotHelpMessage();
+    }
+
+    message.channel.send(response);
   }
 }
