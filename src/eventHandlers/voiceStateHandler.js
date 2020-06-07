@@ -7,6 +7,7 @@ export default class VoiceStateHandler {
   }
 
   handle(oldState, newState) {
+    return;
     if (!newState.channelID) {
       return;
     }

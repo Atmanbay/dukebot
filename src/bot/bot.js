@@ -1,5 +1,3 @@
-import GuildManager from '../objects/guildManager';
-import ConfigService from '../services/configService';
 import ContainerManager from '../objects/containerManager';
 
 const Discord = require('discord.js');
@@ -10,15 +8,17 @@ export default class Bot {
   }
 
   start() {
-    let containerManager = new ContainerManager(this.client.user);
+    let containerManager = new ContainerManager();
     let container = containerManager.build();
-    let configService = container.cradle.configService;
+
+    container.cradle.helpService.commands = container.cradle.commands;
+    container.cradle.botUserService.setBotUser(this.client.user);
 
     container.cradle.eventHandlers.forEach((handler) => {
       this.client.on(handler.event, handler.handle.bind(handler));
     });
 
-    this.client.login(configService.getToken());
+    this.client.login(container.cradle.configService.getToken());
 
     // let client = this.client;
     // let configService = new ConfigService();
