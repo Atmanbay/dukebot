@@ -9,21 +9,25 @@ export default class JobsService {
 
   getJobs(user) {
     let jobCount = this.db.find({ id: user.id }).value();
-    return this.guildService.getUser(user.id).then((guildUser) => {
-      let nickname = guildUser.nickname || guildUser.user.username;
-      let goodJobs = 0;
-      let badJobs = 0;
-      if (jobCount) {
-        goodJobs = jobCount.counts.good;
-        badJobs = jobCount.counts.bad;
-      }
-      
-      return Promise.resolve({
-        nickname: nickname,
-        goodJobs: goodJobs,
-        badJobs: badJobs
+    return this.guildService
+      .getUser(user.id)
+      .then((guildUser) => {
+        let nickname = guildUser.nickname || guildUser.user.username;
+        let goodJobs = 0;
+        let badJobs = 0;
+        if (jobCount) {
+          goodJobs = jobCount.counts.good;
+          badJobs = jobCount.counts.bad;
+        }
+        
+        return Promise.resolve({
+          nickname: nickname,
+          goodJobs: goodJobs,
+          badJobs: badJobs
+        });
+      })
+      .catch((error) => {
       });
-    });
   }
 
   resolveJobs(jobs, type, authorUserId) {

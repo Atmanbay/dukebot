@@ -18,7 +18,7 @@ export default class VoiceStateHandler {
       return;
     }
 
-    if (newState.member.guild.id !== this.guildService.guild.id) {
+    if (!this.guildService.isThisGuild(newState.member.guild)) {
       return;
     }
 

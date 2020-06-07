@@ -1,5 +1,6 @@
 import Command from '../objects/command';
 import moment from 'moment';
+import { isEmpty } from 'lodash';
 
 export default class BlazeItCommand extends Command {
   constructor(container) {
@@ -32,6 +33,9 @@ export default class BlazeItCommand extends Command {
     }
 
     this.blazeService.getBlazes(cutoff).then((result) => {
+      if (isEmpty(result)) {
+        return;
+      }
       let response = '**Blazes';
       if (cutoff) {
         let frame = 'week';

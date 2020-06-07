@@ -38,6 +38,9 @@ export default class JobsCommand extends Command {
       if (!args.g && !args.b) {
         let user = args.u || message.author;
         this.jobsService.getJobs(user).then((result) => {
+          if (!result) {
+            return;
+          }
           let response = `${result.nickname}\n${result.goodJobs} good jobs\n${result.badJobs} bad jobs`;
           message.channel.send(response);
         });

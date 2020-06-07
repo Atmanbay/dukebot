@@ -24,6 +24,21 @@ export default class Bot {
           this.client.on(handler.event, handler.handle.bind(handler));
         });
       });
+
+      let dmContainerManager = new ContainerManager({
+        guild: {
+          id: 'dm'
+        },
+        botUser: this.client.user
+      });
+
+      let dmContainer = dmContainerManager.build();
+
+      dmContainer.cradle.helpService.commands = dmContainer.cradle.commands;
+      dmContainer.cradle.eventHandlers.forEach((handler) => {
+        this.client.on(handler.event, handler.handle.bind(handler));
+      });
+
       console.log('Ready!');
     });
 

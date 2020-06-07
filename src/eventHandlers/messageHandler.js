@@ -12,7 +12,7 @@ export default class MessageHandler {
       return;
     }
 
-    if (!message.guild || message.guild.id !== this.guildService.guild.id) {
+    if (!this.guildService.isThisGuild(message.guild)) {
       return;
     }
 
