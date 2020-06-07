@@ -18,7 +18,7 @@ export default class ConversionService {
 
   getUser(userId) {
     let newVal = userId.substring(3, userId.length - 1);
-    return this.guildService.getuser(newVal);
+    return this.guildService.getUser(newVal);
   }
 
   getChannel(channelId) {
