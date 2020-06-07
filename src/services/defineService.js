@@ -1,7 +1,6 @@
 import request from 'request-promise-native';
 import { parse } from 'node-html-parser';
 import decode from 'decode-html';
-import fs from 'fs';
 
 export default class DefineService {
   constructor(container) {

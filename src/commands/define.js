@@ -1,6 +1,5 @@
 import Command from '../objects/command';
 
-
 export default class DefineCommand extends Command {
   constructor(container) {
     super();

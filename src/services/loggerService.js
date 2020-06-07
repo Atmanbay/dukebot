@@ -1,5 +1,4 @@
 import winston from 'winston';
-import { merge } from 'lodash';
 
 export default class LoggerService {
   constructor(container) {
