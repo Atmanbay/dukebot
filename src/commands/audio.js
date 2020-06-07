@@ -19,12 +19,25 @@ export default class AudioCommand extends Command {
           name: 'c',
           description: 'Name of voice channel to play in (defaults to users current channel)',
           optional: true
+        },
+        {
+          name: 'l',
+          description: 'Flag to list all audio clips',
+          optional: true
         }
       ]
     };
   }
 
   execute(message, args) {
+    if (args.l) {
+      let clips = this.audioService.getClips();
+      clips.unshift('```');
+      clips.push('```');
+      message.channel.send(clips);
+      return;
+    }
+
     let clipName = args.n;
     let path = `${this.configService.directories.audio}/${clipName}.mp3`;
     if (!fs.existsSync(path)) {

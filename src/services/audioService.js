@@ -1,6 +1,8 @@
+import fs from 'fs';
+
 export default class AudioService {
-  constructor() {
-    
+  constructor(container) {
+    this.configService = container.configService;
   }
 
   play(path, channel) {
@@ -16,5 +18,14 @@ export default class AudioService {
       
       dispatcher.on('error', console.error);
     });
+  }
+
+  getClips() {
+    let files = [];
+    fs.readdirSync(this.configService.directories.audio).forEach((file) => {
+      files.push(file.replace('.mp3', ''));
+    });
+
+    return files;
   }
 }
