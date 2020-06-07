@@ -14,6 +14,11 @@ export default class ResponseTrigger extends Trigger {
   }
 
   execute(message) {
-    message.channel.send(this.responseService.getResponder(message.content).response);
+    let response = this.responseService.getResponder(message.content);
+    if (response.response) {
+      message.channel.send(response.response);
+    } else if (response.emojiReaction) {
+      message.react(response.emojiReaction);
+    }
   }
 }

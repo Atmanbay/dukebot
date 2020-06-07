@@ -23,6 +23,11 @@ export default class ResponseCommand extends Command {
           name: 'd',
           description: 'Flag to tell bot to delete specified trigger',
           optional: true
+        },
+        {
+          name: 'e',
+          description: 'Emoji to react with',
+          optional: true
         }
       ]
     };
@@ -37,6 +42,13 @@ export default class ResponseCommand extends Command {
       let responder = {
         trigger: args.t,
         response: args.r
+      };
+  
+      this.responseService.save(responder);
+    } else if (args.e) {
+      let responder = {
+        trigger: args.t,
+        emojiReaction: args.e
       };
   
       this.responseService.save(responder);
