@@ -1,6 +1,6 @@
 export default class HelpService {
   constructor(container) {
-    this.commandService = container.commandService;
+    this.commands = [];
   }
 
   shouldHandle(message) {
