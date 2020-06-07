@@ -4,6 +4,7 @@ export default class MessageHandler {
     this.commandService = container.commandService;
     this.triggerService = container.triggerService;
     this.guildService = container.guildService;
+    this.banService = container.banService;
   }
 
   handle(message) {
@@ -12,6 +13,10 @@ export default class MessageHandler {
     }
 
     if (!message.guild || message.guild.id !== this.guildService.guild.id) {
+      return;
+    }
+
+    if (this.banService.isBanned(message.author.id)) {
       return;
     }
 
