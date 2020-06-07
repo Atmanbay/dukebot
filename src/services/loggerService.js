@@ -4,10 +4,7 @@ import { merge } from 'lodash';
 export default class LoggerService {
   constructor(container) {
     let logPath = container.configService.directories.logging;
-    // let guild = container.guild; TODO
-    let guild = {
-      id: 'TESTING'
-    }
+    let guildId = container.guildService.guild.id;
     let logger = winston.createLogger({
       level: 'info',
       format: winston.format.combine(
@@ -17,8 +14,8 @@ export default class LoggerService {
         winston.format.json()
       ),
       transports: [
-        new winston.transports.File({ filename: `${logPath}/error_${guild.id}.log`, level: 'error' }),
-        new winston.transports.File({ filename: `${logPath}/combined_${guild.id}.log` })
+        new winston.transports.File({ filename: `${logPath}/error_${guildId}.log`, level: 'error' }),
+        new winston.transports.File({ filename: `${logPath}/combined_${guildId}.log` })
       ]
     });
 

@@ -3,10 +3,15 @@ export default class MessageHandler {
     this.event = 'message';
     this.commandService = container.commandService;
     this.triggerService = container.triggerService;
+    this.guildService = container.guildService;
   }
 
   handle(message) {
     if (message.author.bot) {
+      return;
+    }
+
+    if (!message.guild || message.guild.id !== this.guildService.guild.id) {
       return;
     }
 

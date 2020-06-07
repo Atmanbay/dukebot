@@ -1,4 +1,5 @@
 import ContainerManager from '../objects/containerManager';
+import ConfigService from '../services/configService';
 
 const Discord = require('discord.js');
 
@@ -8,30 +9,25 @@ export default class Bot {
   }
 
   start() {
-    let containerManager = new ContainerManager();
-    let container = containerManager.build();
+    this.client.on('ready', () => {
+      let guilds = this.client.guilds.cache;
+      guilds.forEach((guild) => {
+        let guildContainerManager = new ContainerManager({
+          guild: guild,
+          botUser: this.client.user
+        });
 
-    container.cradle.helpService.commands = container.cradle.commands;
-    container.cradle.botUserService.setBotUser(this.client.user);
+        let guildContainer = guildContainerManager.build();
 
-    container.cradle.eventHandlers.forEach((handler) => {
-      this.client.on(handler.event, handler.handle.bind(handler));
+        guildContainer.cradle.helpService.commands = guildContainer.cradle.commands;
+        guildContainer.cradle.eventHandlers.forEach((handler) => {
+          this.client.on(handler.event, handler.handle.bind(handler));
+        });
+      });
+      console.log('Ready!');
     });
 
-    this.client.login(container.cradle.configService.getToken());
-
-    // let client = this.client;
-    // let configService = new ConfigService();
-    // let token = configService.getToken();
-
-    // client.login(token).then(() => {
-    //   client.guilds.cache.forEach((guild) => {
-    //     let guildManager = new GuildManager(guild, client.user);
-    //     guildManager.getHandlers().forEach((handler) => {
-    //       client.on(handler.event, handler.handle.bind(handler));
-    //     });
-    //   });
-    //   console.log('Ready!');
-    // });
+    let configService = new ConfigService();
+    this.client.login(configService.getToken());
   }
 }

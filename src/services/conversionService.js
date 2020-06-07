@@ -1,9 +1,7 @@
-import LoggerService from './loggerService';
-
 export default class ConversionService {
   constructor(container) {
     this.loggerService = container.loggerService;
-    //this.guild = container.guild; TODO
+    this.guildService = container.guildService;
   }
 
   convert(value) {
@@ -20,11 +18,11 @@ export default class ConversionService {
 
   getUser(userId) {
     let newVal = userId.substring(3, userId.length - 1);
-    return Promise.resolve(this.guild.members.fetch(newVal));
+    return this.guildService.getuser(newVal);
   }
 
   getChannel(channelId) {
     let newVal = channelId.substring(2, channelId.length - 1);
-    return Promise.resolve(this.guild.channels.cache.find(channel => channel.id === newVal));
+    return this.guildService.getChannel(newVal);
   }
 }

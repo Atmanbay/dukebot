@@ -3,17 +3,13 @@ import { isEmpty } from 'lodash';
 export default class JobsService {
   constructor(container) {
     this.db = container.databaseService.get('jobs');
-    // this.guildMembers = container.guild.members; TODO
+    this.guildService = container.guildService;
     this.loggerService = container.loggerService;
-  }
-
-  shouldHandle(user) {
-    return this.guildMembers.cache.some(guildMember => guildMember.id === user.id);
   }
 
   getJobs(user) {
     let jobCount = this.db.find({ id: user.id }).value();
-    return this.guildMembers.fetch(user.id).then((guildUser) => {
+    return this.guildService.getUser(user.id).then((guildUser) => {
       let nickname = guildUser.nickname || guildUser.user.username;
       let goodJobs = 0;
       let badJobs = 0;

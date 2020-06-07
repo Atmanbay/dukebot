@@ -1,9 +1,6 @@
 export default class BotUserService {
   constructor(container) {
-  }
-
-  setBotUser(botUser) {
-    this.botUser = botUser;
+    this.botUser = container.botUser;
   }
 
   getBotUser() {

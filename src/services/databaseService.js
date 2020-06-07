@@ -6,16 +6,12 @@ export default class DatabaseService {
   constructor(container) {
     this.dbFolder = container.configService.directories.database;
     this.configService = container.configService;
-    // this.guild = container.guild; TODO
+    let guildId = container.guildService.guild.id;
 
-    // this.generateDb(this.guild.id);
+    this.generateDb(guildId);
 
-    // let db = this.buildDb(this.guild.id);
-    // this.get = db.get.bind(db);
-  }
-
-  get(name) {
-    return null;
+    let db = this.buildDb(guildId);
+    this.get = db.get.bind(db);
   }
 
   generateDb(dbName) {

@@ -25,10 +25,6 @@ export default class AudioCommand extends Command {
   }
 
   execute(message, args) {
-    if (this.walkupService.shouldHandle(message.author)) {
-      
-    }
-
     let clipName = args.n;
     let path = `${this.configService.directories.audio}/${clipName}.mp3`;
     if (!fs.existsSync(path)) {
