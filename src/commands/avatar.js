@@ -9,7 +9,7 @@ export default class AvatarCommand extends Command {
       description: 'Change the bot\'s avatar',
       args: [
         {
-          name: 'u',
+          name: 'a',
           description: 'URL of the new avatar picture',
           optional: false
         }
