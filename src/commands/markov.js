@@ -18,26 +18,6 @@ export default class MarkovCommand extends Command {
   }
 
   execute(message, args) {
-    // message.channel.messages.fetch({ limit: 100 })
-    //   .then((messages) => {
-    //     console.log(messages.size);
-    //     // let filteredMessages = messages.filter(m => m.author.id === message.author.id);
-    //     // console.log(filteredMessages);
-    //   })
-    // // let userId = '';
-    // // if (args.u) {
-    // //   userId = args.u.user.id;
-    // // } else {
-    // //   userId = message.author.id;
-    // // }
 
-    // // this.markovService
-    // //   .buildMarkov(userId)
-    // //   .then((result) => {
-    // //     message.channel.send(result);
-    // //   })
-    // //   .catch((error) => {
-
-    // //   });
   }
 }

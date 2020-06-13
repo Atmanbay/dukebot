@@ -8,38 +8,35 @@ export default class Bot {
     this.client = new Discord.Client();
   }
 
+  buildGuildContainer(options) {
+    let guildContainerManager = new ContainerManager(options);
+
+    let guildContainer = guildContainerManager.build();
+
+    guildContainer.cradle.helpService.commands = guildContainer.cradle.commands;
+    guildContainer.cradle.eventHandlers.forEach((handler) => {
+      this.client.on(handler.event, handler.handle.bind(handler));
+    });
+
+    guildContainer.cradle.loggerService.info('Ready!');
+  }
+
   start() {
     this.client.on('ready', () => {
       let guilds = this.client.guilds.cache;
       guilds.forEach((guild) => {
-        let guildContainerManager = new ContainerManager({
+        this.buildGuildContainer({
           guild: guild,
           botUser: this.client.user
         });
-
-        let guildContainer = guildContainerManager.build();
-
-        guildContainer.cradle.helpService.commands = guildContainer.cradle.commands;
-        guildContainer.cradle.eventHandlers.forEach((handler) => {
-          this.client.on(handler.event, handler.handle.bind(handler));
-        });
       });
 
-      let dmContainerManager = new ContainerManager({
+      this.buildGuildContainer({
         guild: {
           id: 'dm'
         },
         botUser: this.client.user
       });
-
-      let dmContainer = dmContainerManager.build();
-
-      dmContainer.cradle.helpService.commands = dmContainer.cradle.commands;
-      dmContainer.cradle.eventHandlers.forEach((handler) => {
-        this.client.on(handler.event, handler.handle.bind(handler));
-      });
-
-      console.log('Ready!');
     });
 
     let configService = new ConfigService();

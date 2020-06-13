@@ -5,6 +5,7 @@ export default class JobsCommand extends Command {
   constructor(container) {
     super();
     this.jobsService = container.jobsService;
+    this.loggerService = container.loggerService;
     this.details = {
       name: 'jobs',
       description: 'Hand out good jobs and bad jobs',
@@ -82,7 +83,7 @@ export default class JobsCommand extends Command {
 
       message.channel.send(response);
     } catch (error) {
-      console.log(error, args, message.content);
+      this.loggerService(error, args);
     }
   }
 }

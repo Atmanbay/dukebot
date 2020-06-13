@@ -6,6 +6,7 @@ export default class BlazeItCommand extends Command {
   constructor(container) {
     super();
     this.blazeService = container.blazeService;
+    this.loggerService = container.loggerService;
     this.details = {
       name: 'blazes',
       description: 'Get the sorted leaderboard of blazes',
@@ -57,7 +58,7 @@ export default class BlazeItCommand extends Command {
       message.channel.send(response);
     })
     .catch((error) => {
-      console.log(error);
+      this.loggerService.error('Error when creating blazes response', error);
     });
   }
 }

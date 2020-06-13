@@ -4,7 +4,7 @@ import decode from 'decode-html';
 
 export default class DefineService {
   constructor(container) {
-
+    this.loggerService = container.loggerService;
   }
 
   define(word) {
@@ -21,20 +21,13 @@ export default class DefineService {
         let definition = topDefinition.querySelector('div.meaning');
         let example = topDefinition.querySelector('div.example');
 
-        let data = null;
-        try {
-          data = {
-            definition: decode(definition.structuredText),
-            example: decode(example.structuredText)
-          };
-        } catch (error) {
-          console.log(error);
-        }
-
-        return data;
+        return {
+          definition: decode(definition.structuredText),
+          example: decode(example.structuredText)
+        };
       })
       .catch((error) => {
-        console.log(error);
+        this.loggerService.error(`Error when requesting url ${url}`, error);
       });
   }
 }

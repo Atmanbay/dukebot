@@ -41,6 +41,11 @@ export default class JobsService {
         return;
       }
 
+      if (!user.user || !user.user.id) {
+        this.loggerService.error('No user or userId for the following user', user)
+        return;
+      }
+
       let dbUser = this.db.find({ id: user.user.id });
       if (isEmpty(dbUser.value())) {
         this.db

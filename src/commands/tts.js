@@ -5,6 +5,7 @@ export default class AliveCommand extends Command {
   constructor(container) {
     super();
     this.audioService = container.audioService;
+    this.loggerService = container.loggerService;
     this.details = {
       name: 'tts',
       description: 'Join specified channel and say specified text',
@@ -51,7 +52,7 @@ export default class AliveCommand extends Command {
         audioService.play(url, channel);
       })
       .catch((error) => {
-        console.log(error);
+        this.loggerService.error(`Error when attempting to do TTS in channel ${channel.name}`, error);
       });
   }
 }
