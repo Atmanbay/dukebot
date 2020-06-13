@@ -19,7 +19,10 @@ export default class BanCommand extends Command {
 
   execute(message, args) {
     if (args.u) {
-      this.banService.banUser(args.u.user.id);
+      message.channel.send('User has been banned');
+      this.banService.banUser(args.u.user.id).then(() => {
+        message.channel.send('User has been unbanned');
+      })
     }
   }
 }
