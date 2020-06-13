@@ -2,6 +2,8 @@ import { find } from 'lodash';
 
 export default class HelpService {
   constructor() {
+    // These commands are being populated in bot.buildGuildContainer
+    // Cannot be passed in due to circular reference
     this.commands = [];
   }
 

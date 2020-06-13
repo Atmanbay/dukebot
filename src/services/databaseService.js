@@ -2,6 +2,7 @@ import fs from 'fs';
 import FileSync from 'lowdb/adapters/FileSync';
 import low from 'lowdb';
 
+// Used to access the guild-specific JSON db
 export default class DatabaseService {
   constructor(container) {
     this.dbFolder = container.configService.directories.database;

@@ -36,6 +36,7 @@ export default class JobsCommand extends Command {
 
   execute(message, args) {
     try {
+      // If no good or bad jobs handed out then get job counts
       if (!args.g && !args.b) {
         let user = args.u || message.author;
         this.jobsService.getJobs(user).then((result) => {
@@ -49,15 +50,18 @@ export default class JobsCommand extends Command {
         return;
       } 
 
+      //Passing in message author to prevent giving yourself good jobs
       let resolvedJobs = {
         good: this.jobsService.resolveJobs(args.g, 'good', message.author.id),
         bad: this.jobsService.resolveJobs(args.b, 'bad')
       }
 
-      let response = '';
+      let response = 'The following jobs have been given out';
       if (args.r) {
-        response += `The following jobs have been given out for ${args.r}\n\n`;
+        response += ` for ${args.r}`;
       }
+
+      response += '\n\n';
 
       if (!isEmpty(resolvedJobs.good)) {
         response += '**Good Jobs**';

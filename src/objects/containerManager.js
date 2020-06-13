@@ -1,6 +1,7 @@
 const awilix = require('awilix');
 import { sync } from 'glob';
 
+// Contains DI code for all services, commands, triggers, and event handlers
 export default class ContainerManager {
   constructor(options) {
     this.guild = options.guild || {};
@@ -22,6 +23,8 @@ export default class ContainerManager {
       }
     });
 
+    // Loads all commands, triggers, and eventHandlers in separate properties
+    // All commands will be accessible at container.commands, etc.
     let registerObject = {};
     let registeringDirectories = ['commands', 'triggers', 'eventHandlers'];
     registeringDirectories.forEach((directory) => {

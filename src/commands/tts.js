@@ -34,6 +34,11 @@ export default class AliveCommand extends Command {
       return;
     }
 
+    if (args.t.length > 200) {
+      message.channel.send(`TTS text must be 200 characters or shorter. Your text is ${args.t.length} characters`);
+      return;
+    }
+
     let channel;
     if (args.c) {
       channel = message.guild.channels.cache.find(channel => channel.name === args.c && channel.type === 'voice');

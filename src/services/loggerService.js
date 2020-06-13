@@ -18,6 +18,7 @@ export default class LoggerService {
       ]
     });
 
+    // Binds info, log, and error methods to self
     this.info = logger.info.bind(logger);
     this.log = logger.log.bind(logger);
     this.error = logger.error.bind(logger);

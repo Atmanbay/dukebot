@@ -4,6 +4,7 @@ export default class ConversionService {
     this.guildService = container.guildService;
   }
 
+  // Converts user/chanel IDs into the actual objects
   convert(value) {
     if (typeof value !== 'string') {
       return Promise.resolve(value);

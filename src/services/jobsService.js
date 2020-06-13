@@ -70,6 +70,8 @@ export default class JobsService {
     return jobResults;
   }
 
+  // Needed because you can specify 1+ users
+  // Converting everything to an array makes logic easy later
   convertToArray(users) {
     if (!users) {
       return [];

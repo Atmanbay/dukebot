@@ -5,10 +5,11 @@ export default class MessageHandler {
   }
 
   handle(messageReaction, user) {
+    // Only respond to event if it occurred in the guild this handler is responsible for
     if (!this.guildService.isThisGuild(messageReaction.message.channel.guild)) {
       return;
     }
 
-    // code goes here
+    // Haven't thought of a use case yet
   }
 }

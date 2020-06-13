@@ -5,7 +5,8 @@ export default class MarkovService {
   }
 
   buildMarkov(userId) {
-    return Promise.reject();
+    // return Promise.reject();
+    // TODO: Rewrite using own logic instead of library
     // let messageHistoryUser = this.db.find({ id: userId });
     // if (isEmpty(messageHistoryUser.value())) {
     //   return Promise.reject(`No message history for userId ${userId}`);

@@ -38,6 +38,7 @@ export default class AudioCommand extends Command {
       clip: clipName
     });
 
+    // Give user feedback that action was done
     message.react('👌');
   }
 }

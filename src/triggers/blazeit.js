@@ -23,6 +23,7 @@ export default class BlazeItTrigger extends Trigger {
 
   execute(message) {
     if (this.blazeService.trySaveBlaze(message.author)) {
+      // Gives user feedback that the blaze it was counted
       message.react('🔥');
     }
   }

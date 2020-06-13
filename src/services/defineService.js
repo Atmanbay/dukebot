@@ -13,6 +13,8 @@ export default class DefineService {
     return request(url)
       .then((htmlString) => {
         let root = parse(htmlString);
+
+        // Not sure why I need to grab the parentNode here, quirk with the library or I'm dumb
         let topDefinition = root.querySelector('.def-panel ').parentNode;
         if (!topDefinition) {
           return null;

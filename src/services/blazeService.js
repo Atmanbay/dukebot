@@ -18,6 +18,7 @@ export default class BlazeService {
     return true;
   }
 
+  // Tries to save blaze. Returns false if user already blazed during the current Blazing Minute
   trySaveBlaze(user) {
     let currentTime = moment();
     let dbUser = this.db.find({ id: user.id });
@@ -48,6 +49,7 @@ export default class BlazeService {
     return true;
   }
 
+  // Get all blazes that happened after specified cutoff date
   getBlazes(cutoff) {
     let promises = [];
     let dateFormat = this.dateFormat;

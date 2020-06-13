@@ -81,6 +81,10 @@ export default class AudioCommand extends Command {
       channel = message.member.voice.channel;
     }
 
+    if (!channel) {
+      return;
+    }
+
     this.audioService.play(path, channel);
   }
 }

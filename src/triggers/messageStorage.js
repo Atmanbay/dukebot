@@ -13,6 +13,7 @@ export default class MessageStoreTrigger extends Trigger {
     return true;
   }
 
+  // Stores every message for use by markov
   execute(message) {
     if (message.content.split(' ').length < 3) {
       return;

@@ -16,6 +16,7 @@ export default class CommandService {
   }
 
   parseMessage(message) {
+    // Trim command prefix from beginning and then split on spaces (but keep quoted text together)
     let content = message.content.substring(this.configService.commands.prefix.length);
     let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
     let matches = [...content.matchAll(regex)];
@@ -26,12 +27,16 @@ export default class CommandService {
       if (!match)
         continue;
       
+      // If this match was quoted then retrieve the first group which will not include the quotes
       if (match[1])
         argArray.push(match[1]);
-      else
+      else // otherwise retrieve the entire match
         argArray.push(match[0]);
     }
 
+    // pass args into minimist which will convert it to an object
+    // e.g. -a test -b "hello there" -> { a: test, b: hello there }
+    // this arg object is what is passed into the commands
     let args = minimist(argArray);
     let commandName = args._[0];
     delete args._;
@@ -46,6 +51,7 @@ export default class CommandService {
       })
   }
 
+  // converts any mentioned user or channel from the ID to the actual object itself
   convertArguments(args) {
     let conversionService = this.conversionService;
     let promises = Object.keys(args).map(key => {
@@ -85,7 +91,7 @@ export default class CommandService {
     try {
       command.execute(message, args);
     } catch (error) {
-      this.loggerService.error(commandName, error);
+      this.loggerService.error(`Error when executing command ${commandName}`, args, error);
     }
 
     return true;

@@ -8,6 +8,8 @@ export default class MessageStoreService {
   }
 
   store(authorId, message) {
+    // Stores users messages for use in the markov command
+    // TODO: Replace with a service that retrieves cached messages
     let dbUser = this.db.find({ id: authorId });
     let messages = [];
 

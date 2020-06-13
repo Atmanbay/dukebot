@@ -18,6 +18,6 @@ export default class MarkovCommand extends Command {
   }
 
   execute(message, args) {
-
+    //TODO: rewrite this using own markov logic
   }
 }

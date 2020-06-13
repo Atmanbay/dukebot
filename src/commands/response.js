@@ -20,7 +20,7 @@ export default class ResponseCommand extends Command {
           optional: true
         },
         {
-          name: 'd',
+          name: 'delete',
           description: 'Flag to tell bot to delete specified trigger',
           optional: true
         },
@@ -56,6 +56,7 @@ export default class ResponseCommand extends Command {
       this.responseService.delete(args.t);
     }
 
+    // Give user feedback that action was done
     message.react('👌');
   }
 }

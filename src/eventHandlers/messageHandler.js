@@ -12,14 +12,17 @@ export default class MessageHandler {
       return;
     }
 
+    // Only respond to event if it occurred in the guild this handler is responsible for
     if (!this.guildService.isThisGuild(message.guild)) {
       return;
     }
 
+    // Other side of the $ban command
     if (this.banService.isBanned(message.author.id)) {
       return;
     }
 
+    // Handles commands before triggers
     this.commandService.handle(message).then((wasHandled) => {
       if (!wasHandled) {
         this.triggerService.handle(message);

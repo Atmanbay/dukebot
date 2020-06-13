@@ -1,3 +1,4 @@
+// Wrapper for guild-related logic
 export default class GuildService {
   constructor(container) {
     this.guild = container.guild;
