@@ -54,6 +54,8 @@ export default class ResponseCommand extends Command {
       this.responseService.save(responder);
     } else if (args.d) {
       this.responseService.delete(args.t);
-    }    
+    }
+
+    message.react('👌');
   }
 }
