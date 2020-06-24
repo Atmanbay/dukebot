@@ -16,7 +16,7 @@ export default class AudioCommand extends Command {
           optional: true
         },
         {
-          name: 'd',
+          name: 'delete',
           description: 'Flag to delete your walkup',
           optional: true
         }
@@ -25,13 +25,18 @@ export default class AudioCommand extends Command {
   }
 
   execute(message, args) {
+    let userId = message.author.id;
+    if (args.delete) {
+      this.walkupService.removeWalkup(userId);
+      message.react('👌');
+      return;
+    }
+
     let clipName = args.n;
     let path = `${this.configService.directories.audio}/${clipName}.mp3`;
     if (!fs.existsSync(path)) {
       return;
     }
-
-    let userId = message.author.id;
 
     this.walkupService.saveWalkup({
       id: userId,
