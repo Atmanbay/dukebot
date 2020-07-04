@@ -3,7 +3,7 @@
     "tokenPath": "G:/dukebot/token"
   },
   "commands": {
-    "prefix": "$",
+    "prefix": "!",
     "messageHistoryCount": 200
   },
   "directories": {
