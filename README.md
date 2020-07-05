@@ -22,10 +22,7 @@ Use your preferred method of cloning and then run:
 
 ## Configure app
 
-Open `config.json` then edit it with your settings. You will need:
-
-- A path to the token file
-- Paths to the database, audio, and logging directories
+Set environment variables seen in `config.js`
 
 ## Running the project
 

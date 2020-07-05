@@ -2,7 +2,7 @@ import winston from 'winston';
 
 export default class LoggerService {
   constructor(container) {
-    let logPath = container.configService.directories.logging;
+    let logPath = container.configService.paths.logging;
     let guildId = container.guildService.guild.id;
     let logger = winston.createLogger({
       level: 'info',

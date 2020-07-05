@@ -33,7 +33,7 @@ export default class VoiceStateHandler {
       return;
     }
 
-    let path = `${this.configService.directories.audio}/${walkup}.mp3`;
+    let path = `${this.configService.paths.audio}/${walkup}.mp3`;
     if (!fs.existsSync(path)) {
       return;
     }

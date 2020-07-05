@@ -43,6 +43,6 @@ export default class Bot {
     });
 
     let configService = new ConfigService();
-    this.client.login(configService.getToken());
+    this.client.login(configService.token);
   }
 }

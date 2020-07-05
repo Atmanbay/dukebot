@@ -5,7 +5,7 @@ import low from 'lowdb';
 // Used to access the guild-specific JSON db
 export default class DatabaseService {
   constructor(container) {
-    this.dbFolder = container.configService.directories.database;
+    this.dbFolder = container.configService.paths.database;
     this.configService = container.configService;
     let guildId = container.guildService.guild.id;
 
