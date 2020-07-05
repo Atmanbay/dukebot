@@ -6,15 +6,18 @@ export default class ConversionService {
 
   // Converts user/chanel IDs into the actual objects
   convert(value) {
+    let promise;
     if (typeof value !== 'string') {
-      return Promise.resolve(value);
+      promise = Promise.resolve(value);
     } else if (value.startsWith('<@!')) { //value is user
-      return this.getUser(value);
+      promise = this.getUser(value);
     } else if (value.startsWith('<#')) { //value is channel
-      return this.getChannel(value);
+      promise = this.getChannel(value);
     } else {
-      return Promise.resolve(value);
+      promise = Promise.resolve(value);
     }
+
+    return promise;
   }
 
   getUser(userId) {

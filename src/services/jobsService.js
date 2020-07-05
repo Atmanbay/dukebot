@@ -37,34 +37,40 @@ export default class JobsService {
       return jobResults;
     
     users.forEach((user) => {
-      if (authorUserId && user.user.id === authorUserId) {
-        return;
+      try {
+        if (authorUserId && user.user.id === authorUserId) {
+          return;
+        }
+  
+        if (!user.user || !user.user.id) {
+          this.loggerService.error('No user or userId for the following user', user)
+          return;
+        }
+  
+        let dbUser = this.db.find({ id: user.user.id });
+        if (isEmpty(dbUser.value())) {
+          this.db
+            .push({
+              id: user.user.id,
+              counts: {
+                good: 0,
+                bad: 0
+              }
+            })
+            .write();
+        }
+  
+        dbUser
+          .update(`counts.${type}`, count => count + 1)
+          .write();        
+  
+        let nickname = user.nickname || user.user.username;
+        jobResults[nickname] = this.db.find({ id: user.user.id }).value().counts[type];
+      } catch (error) {
+        this.loggerService.error(error, [
+          user
+        ]);
       }
-
-      if (!user.user || !user.user.id) {
-        this.loggerService.error('No user or userId for the following user', user)
-        return;
-      }
-
-      let dbUser = this.db.find({ id: user.user.id });
-      if (isEmpty(dbUser.value())) {
-        this.db
-          .push({
-            id: user.user.id,
-            counts: {
-              good: 0,
-              bad: 0
-            }
-          })
-          .write();
-      }
-
-      dbUser
-        .update(`counts.${type}`, count => count + 1)
-        .write();        
-
-      let nickname = user.nickname || user.user.username;
-      jobResults[nickname] = this.db.find({ id: user.user.id }).value().counts[type];
     });
 
     return jobResults;

@@ -52,28 +52,27 @@ export default class CommandService {
   }
 
   // converts any mentioned user or channel from the ID to the actual object itself
-  convertArguments(args) {
+  async convertArguments(args) {
     let conversionService = this.conversionService;
-    let promises = Object.keys(args).map(key => {
-      let argument = args[key];
-      if (Array.isArray(argument)) {
-        let arrayPromises = argument.map(argument => {
-          return conversionService.convert(argument);
+    let promises = Object.keys(args).map(async function(key) {
+      let oldValue = args[key];
+      if (Array.isArray(oldValue)) {
+        let arrayPromises = oldValue.map(async function(value) {
+          return await conversionService.convert(value);
         });
 
-        return Promise.all(arrayPromises).then((newArrayValues) => {
-          return [key, newArrayValues];
+        return await Promise.all(arrayPromises).then((newValues) => {
+          return [key, newValues];
         })
       } else {
-        return conversionService.convert(argument).then((newValue) => {
-          return [key, newValue];
-        });
+        let newValue = await conversionService.convert(oldValue);
+        return [key, newValue];
       }
     });
 
-    return Promise.all(promises).then((newArgs) => {     
+    return await Promise.all(promises).then((newArgs) => {
       return Object.fromEntries(newArgs);
-    });
+    });;
   }
 
   getCommand(commandName) {
