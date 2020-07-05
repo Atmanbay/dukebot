@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 
 export default class MessageStoreService {
   constructor(container) {
-    this.messageHistoryCount = container.configService.messageHistoryCount;
+    this.messageHistoryCount = 0;
     this.db = container.databaseService.get('messages');
     this.loggerService = container.loggerService;
   }

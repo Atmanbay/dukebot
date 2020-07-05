@@ -25,7 +25,7 @@ export default class AudioService {
 
   getClips() {
     let files = [];
-    fs.readdirSync(this.configService.directories.audio).forEach((file) => {
+    fs.readdirSync(this.configService.paths.audio).forEach((file) => {
       files.push(file.replace('.mp3', ''));
     });
 

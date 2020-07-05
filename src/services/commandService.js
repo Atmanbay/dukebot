@@ -11,13 +11,21 @@ export default class CommandService {
   }
 
   handle(message) {
+    if (!this.shouldHandle(message)) {
+      return Promise.resolve(false);
+    }
+
     return this.parseMessage(message)
       .then(this.executeCommand.bind(this))
   }
 
+  shouldHandle(message) {
+    return message.content.startsWith(this.configService.prefix);
+  }
+
   parseMessage(message) {
     // Trim command prefix from beginning and then split on spaces (but keep quoted text together)
-    let content = message.content.substring(this.configService.commands.prefix.length);
+    let content = message.content.substring(this.configService.prefix.length);
     let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
     let matches = [...content.matchAll(regex)];
 

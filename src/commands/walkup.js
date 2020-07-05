@@ -33,7 +33,7 @@ export default class AudioCommand extends Command {
     }
 
     let clipName = args.n;
-    let path = `${this.configService.directories.audio}/${clipName}.mp3`;
+    let path = `${this.configService.paths.audio}/${clipName}.mp3`;
     if (!fs.existsSync(path)) {
       return;
     }
