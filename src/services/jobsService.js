@@ -67,9 +67,8 @@ export default class JobsService {
         let nickname = user.nickname || user.user.username;
         jobResults[nickname] = this.db.find({ id: user.user.id }).value().counts[type];
       } catch (error) {
-        this.loggerService.error(error, [
-          user
-        ]);
+        this.loggerService.error(error, user);
+        throw(error);
       }
     });
 

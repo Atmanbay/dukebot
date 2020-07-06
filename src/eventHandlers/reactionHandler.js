@@ -1,6 +1,7 @@
 export default class MessageHandler {
   constructor(container) {
     this.event = 'messageReactionAdd';
+    this.loggerService = container.loggerService;
     this.guildService = container.guildService;
   }
 

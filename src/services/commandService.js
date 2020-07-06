@@ -17,6 +17,7 @@ export default class CommandService {
 
     return this.parseMessage(message)
       .then(this.executeCommand.bind(this))
+      .catch(error => this.loggerService.error(error, message));
   }
 
   shouldHandle(message) {
