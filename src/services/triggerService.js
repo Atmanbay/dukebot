@@ -2,6 +2,7 @@ import { filter, isEmpty } from 'lodash';
 
 export default class CommandService {
   constructor(container) {
+    this.configService = container.configService;
     this.loggerService = container.loggerService;
     this.triggers = container.triggers;
   }

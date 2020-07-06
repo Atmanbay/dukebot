@@ -1,10 +1,19 @@
-import Bot from './bot/bot';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+// import Bot from './bot/bot';
+// import 'core-js/stable';
+// import 'regenerator-runtime/runtime';
 
-function main() {
-  let dukeBot = new Bot();
-  dukeBot.start();
-}
+// function main() {
+//   let dukeBot = new Bot();
+//   dukeBot.start();
+// }
 
-main();
+// main();
+
+import TinderService from './services/tinderService';
+
+let phoneNumber = '17173290741';
+let tinder = new TinderService();
+// tinder.requestCode(phoneNumber).then(response => console.log(response));
+
+let code = '615216';
+tinder.submitCode(phoneNumber, code).then(response => console.log(response));
