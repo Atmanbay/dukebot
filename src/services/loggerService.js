@@ -13,8 +13,8 @@ export default class LoggerService {
         winston.format.json()
       ),
       transports: [
-        new winston.transports.File({ filename: `${logPath}/error_${guildId}.log`, level: 'error' }),
-        new winston.transports.File({ filename: `${logPath}/combined_${guildId}.log` })
+        new winston.transports.File({ filename: `${logPath}/${guildId}.error`, level: 'error' }),
+        new winston.transports.File({ filename: `${logPath}/${guildId}.log`, level: 'info' })
       ]
     });
 
