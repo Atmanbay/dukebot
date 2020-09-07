@@ -36,7 +36,7 @@ export default class AudioCommand extends Command {
     };
   }
 
-  execute(message, args) {
+  async execute(message, args) {
     if (args.list) {
       let clips = this.audioService.getClips();
       clips.unshift('```');
@@ -46,25 +46,25 @@ export default class AudioCommand extends Command {
     }
 
     if (args.upload) {
-      message.channel.send('Please upload your file!').then(() => {
-        let filter = m => message.author.id === m.author.id;
-        message.channel.awaitMessages(filter, { time: 60000, max: 1, errors: ['time'] })
-          .then(messages => {
-            let message = messages.first();
-            let attachments = message.attachments;
-            if (attachments && attachments.size === 1) {
-              let url = attachments.first().url;
-              let options = {};
-              if (message.content) {
-                options.filename = `${sanitize(message.content)}.mp3`;
-              }
-              download(url, this.configService.paths.audio, options);
+      await message.channel.send('Please upload your file!');
+      let filter = m => message.author.id === m.author.id;
+      await message.channel.awaitMessages(filter, { time: 60000, max: 1, errors: ['time'] })
+        .then(messages => {
+          let message = messages.first();
+          let attachments = message.attachments;
+          if (attachments && attachments.size === 1) {
+            let url = attachments.first().url;
+            let options = {};
+            if (message.content) {
+              options.filename = `${sanitize(message.content)}.mp3`;
             }
-          })
-          .catch(() => {
-            message.channel.send('You took too long!');
-          });
-      });
+            download(url, this.configService.paths.audio, options);
+          }
+        })
+        .catch(() => {
+          message.channel.send('You took too long!');
+        });
+
       return;
     }
 

@@ -17,16 +17,14 @@ export default class RenameCommand extends Command {
     };
   }
   
-  execute(message, args) {
+  async execute(message, args) {
     if (!args.n) {
       return;
     }
 
     let botUserId = this.botUserService.getBotUser().id;
-    message.guild.members
-      .fetch(botUserId)
-      .then((guildUser) => {
-        guildUser.setNickname(args.n)
-      });
+    let guildUser = await message.guild.members.fetch(botUserId);
+
+    guildUser.setNickname(args.n)
   }
 }

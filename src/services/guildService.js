@@ -12,14 +12,14 @@ export default class GuildService {
     }
   }
 
-  getUser(userId) {
+  async getUser(userId) {
     if (!this.guild.members) {
       return Promise.reject();
     }
     return Promise.resolve(this.guild.members.cache.find(user => user.id === userId));
   }
 
-  getChannel(channelId) {
+  async getChannel(channelId) {
     if (!this.guild.channels) {
       return Promise.reject();
     }

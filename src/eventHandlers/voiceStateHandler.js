@@ -10,7 +10,7 @@ export default class VoiceStateHandler {
     this.audioService = container.audioService;
   }
 
-  handle(oldState, newState) {
+  async handle(oldState, newState) {
     try {
       // Keep in mind that this event is triggered on any voice status change
       // That includes entering or leaving a voice channel, muting self, etc.
@@ -40,15 +40,14 @@ export default class VoiceStateHandler {
         return;
       }
 
-      this.guildService.getChannel(newState.channelID).then((channel) => {
-        if (!channel) {
-          return;
-        }
+      let channel = await this.guildService.getChannel(newState.channelID);
+      if (!channel) {
+        return;
+      }
 
-        this.audioService.play(path, channel);
-      });
+      this.audioService.play(path, channel);
     } catch (error) {
-      this.loggerService(error, oldState, newState);
+      this.loggerService.error(error, oldState, newState);
     }
   }
 }

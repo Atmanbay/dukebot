@@ -5,7 +5,7 @@ export default class ConversionService {
   }
 
   // Converts user/chanel IDs into the actual objects
-  convert(value) {
+  async convert(value) {
     let promise;
     if (typeof value !== 'string') {
       promise = Promise.resolve(value);

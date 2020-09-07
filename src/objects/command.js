@@ -7,5 +7,5 @@ export default class Command {
   }
 
   // This method will contain the actual command logic
-  execute(message, args) { }
+  async execute(message, args) { }
 }

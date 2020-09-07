@@ -34,18 +34,17 @@ export default class JobsCommand extends Command {
     };
   }
 
-  execute(message, args) {
+  async execute(message, args) {
     try {
       // If no good or bad jobs handed out then get job counts
       if (!args.g && !args.b) {
         let user = args.u || message.author;
-        this.jobsService.getJobs(user).then((result) => {
-          if (!result) {
-            return;
-          }
-          let response = `${result.nickname}\n${result.goodJobs} good jobs\n${result.badJobs} bad jobs`;
-          message.channel.send(response);
-        });
+        let result = await this.jobsService.getJobs(user);
+        if (!result) {
+          message.channel.send('No jobs found');
+        }
+        let response = `${result.nickname}\n${result.goodJobs} good jobs\n${result.badJobs} bad jobs`;
+        message.channel.send(response);
         
         return;
       } 
@@ -87,7 +86,7 @@ export default class JobsCommand extends Command {
 
       message.channel.send(response);
     } catch (error) {
-      this.loggerService(error, message, args);
+      this.loggerService.error(error);
     }
   }
 }

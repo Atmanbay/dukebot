@@ -9,31 +9,32 @@ export default class BlazeItCommand extends Command {
     this.loggerService = container.loggerService;
     this.details = {
       name: 'blazes',
-      description: 'Get the sorted leaderboard of blazes',
+      description: 'Get the sorted leaderboard of blazes for the month',
       args: [
         {
-          name: 'w',
+          name: 'week',
           description: 'Flag to ask for this week\'s blaze leaderboard',
           optional: true
         },
         {
-          name: 'm',
-          description: 'Flag to ask for this month\'s blaze leaderboard',
+          name: 'year',
+          description: 'Flag to ask for this year\'s blaze leaderboard',
           optional: true
         }
       ]
     };
   }
 
-  execute(message, args) {
-    let cutoff = null;
-    if (args.w) {
+  async execute(message, args) {
+    let cutoff = moment().startOf('month');
+    if (args.week) {
       cutoff = moment().startOf('week');
-    } else if (args.m) {
-      cutoff = moment().startOf('month');
+    } else if (args.year) {
+      cutoff = null;
     }
 
-    this.blazeService.getBlazes(cutoff).then((result) => {
+    try {
+      let result = await this.blazeService.getBlazes(cutoff);
       if (isEmpty(result)) {
         return;
       }
@@ -56,9 +57,8 @@ export default class BlazeItCommand extends Command {
 
       response += lines.join('\n');
       message.channel.send(response);
-    })
-    .catch((error) => {
+    } catch (error) {
       this.loggerService.error('Error when creating blazes response', error);
-    });
+    }
   }
 }

@@ -50,11 +50,13 @@ export default class BlazeService {
   }
 
   // Get all blazes that happened after specified cutoff date
-  getBlazes(cutoff) {
+  async getBlazes(cutoff) {
     let promises = [];
     let dateFormat = this.dateFormat;
-    this.db.value().forEach((entry) => {
-      let promise = this.guildService.getUser(entry.id).then((user) => {
+    let guildService = this.guildService;
+    let db = this.db.value();
+    db.forEach(entry => {
+      let promise = guildService.getUser(entry.id).then((user) => {
         let name = user.nickname || user.user.username;
         let timestamps = entry.timestamps;
         if (cutoff) {
@@ -70,12 +72,11 @@ export default class BlazeService {
       promises.push(promise);
     });
 
-    return Promise.all(promises).then((result) => {
-      result.sort(function(first, second) {
-        return second[1] - first[1];
-      });
-
-      return Promise.resolve(result);
+    let result = await Promise.all(promises);
+    result.sort(function(first, second) {
+      return second[1] - first[1];
     });
+
+    return result;
   }
 }
