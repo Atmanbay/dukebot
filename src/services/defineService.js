@@ -7,29 +7,31 @@ export default class DefineService {
     this.loggerService = container.loggerService;
   }
 
-  define(word) {
+  async define(word) {
     let escapedWord = encodeURI(word);
     let url = `https://www.urbandictionary.com/define.php?term=${escapedWord}`;
-    return request(url)
-      .then((htmlString) => {
-        let root = parse(htmlString);
 
-        // Not sure why I need to grab the parentNode here, quirk with the library or I'm dumb
-        let topDefinition = root.querySelector('.def-panel ').parentNode;
-        if (!topDefinition) {
-          return null;
-        }
+    try {
+      let htmlString = await request(url);
+      let root = parse(htmlString);
 
-        let definition = topDefinition.querySelector('div.meaning');
-        let example = topDefinition.querySelector('div.example');
+      // Not sure why I need to grab the parentNode here, quirk with the library or I'm dumb
+      let topDefinition = root.querySelector('.def-panel ').parentNode;
+      if (!topDefinition) {
+        return null;
+      }
 
-        return {
-          definition: decode(definition.structuredText),
-          example: decode(example.structuredText)
-        };
-      })
-      .catch((error) => {
-        this.loggerService.error(`Error when requesting url ${url}`, error);
-      });
+      let definition = topDefinition.querySelector('div.meaning');
+      let example = topDefinition.querySelector('div.example');
+
+      return {
+        definition: decode(definition.structuredText),
+        example: decode(example.structuredText)
+      };
+    } catch (error) {
+      this.loggerService.error(`Error when requesting url ${url}`, error);
+
+      return null;
+    }
   }
 }

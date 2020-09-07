@@ -10,7 +10,7 @@ export default class CommandService {
     this.commands = container.commands;
   }
 
-  handle(message) {
+  async handle(message) {
     if (!this.shouldHandle(message)) {
       return Promise.resolve(false);
     }
@@ -24,7 +24,7 @@ export default class CommandService {
     return message.content.startsWith(this.configService.prefix);
   }
 
-  parseMessage(message) {
+  async parseMessage(message) {
     // Trim command prefix from beginning and then split on spaces (but keep quoted text together)
     let content = message.content.substring(this.configService.prefix.length);
     let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
@@ -50,21 +50,22 @@ export default class CommandService {
     let commandName = args._[0];
     delete args._;
 
-    return this.convertArguments(args)
-      .then((convertedArgs) => {
-        return [
-          commandName,
-          message,
-          convertedArgs
-        ];
-      })
+    let convertedArgs = await this.convertArguments(args);
+    return [
+      commandName,
+      message,
+      convertedArgs
+    ];
   }
 
   // converts any mentioned user or channel from the ID to the actual object itself
   async convertArguments(args) {
     let conversionService = this.conversionService;
+
     let promises = Object.keys(args).map(async function(key) {
       let oldValue = args[key];
+
+      // if arg is an array then parse each value inside the array
       if (Array.isArray(oldValue)) {
         let arrayPromises = oldValue.map(async function(value) {
           return await conversionService.convert(value);
@@ -79,7 +80,7 @@ export default class CommandService {
       }
     });
 
-    return await Promise.all(promises).then((newArgs) => {
+    return Promise.all(promises).then((newArgs) => {
       return Object.fromEntries(newArgs);
     });;
   }

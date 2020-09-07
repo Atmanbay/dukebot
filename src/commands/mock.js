@@ -23,7 +23,7 @@ export default class MockCommand extends Command {
     };
   }
 
-  execute(message, args) {
+  async execute(message, args) {
     let text = "I'm a big ole dummy";
     if (args.t) {
       text = args.t;
@@ -35,13 +35,12 @@ export default class MockCommand extends Command {
     // Currently only mocks using nickname, changing avi picture has a 5 minute cooldown
     // TODO: Add optional flag to change avatar picture?
     let botUser = this.botUserService.getBotUser();
-    this.guildService.getUser(botUser.id).then((botGuildUser) => {
-      let oldNickname = botGuildUser.nickname || botUser.username;
+    let botGuildUser = await this.guildService.getUser(botUser.id);
+    let oldNickname = botGuildUser.nickname || botUser.username;
 
-      botGuildUser.setNickname(nickname);
-      message.channel.send(text);
+    botGuildUser.setNickname(nickname);
+    message.channel.send(text);
 
-      botGuildUser.setNickname(oldNickname);
-    });
+    botGuildUser.setNickname(oldNickname);
   }
 }

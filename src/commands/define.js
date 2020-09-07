@@ -17,27 +17,24 @@ export default class DefineCommand extends Command {
     };
   }
 
-  execute(message, args) {
+  async execute(message, args) {
     if (!args.w) {
       return;
     }
 
-    this.defineService
-      .define(args.w)
-      .then((definition) => {
-        if (!definition) {
-          message.channel.send('No definitions found');
-          return;
-        }
+    let definition = await this.defineService.define(args.w);
+    if (!definition) {
+      message.channel.send('No definitions found');
+      return;
+    }
 
-        let response = [];
-        response.push(`**${args.w}**`);
-        response.push('');
-        response.push(definition.definition);
-        response.push('');
-        response.push(`_${definition.example}_`);
+    let response = [];
+    response.push(`**${args.w}**`);
+    response.push('');
+    response.push(definition.definition);
+    response.push('');
+    response.push(`_${definition.example}_`);
 
-        message.channel.send(response);
-      });
+    message.channel.send(response);
   }
 }

@@ -8,7 +8,7 @@ export default class MessageHandler {
     this.banService = container.banService;
   }
 
-  handle(message) {
+  async handle(message) {
     try {
       if (message.author.bot) {
         return;
@@ -25,11 +25,11 @@ export default class MessageHandler {
       }
   
       // Handles commands before triggers
-      this.commandService.handle(message).then((wasHandled) => {
-        if (!wasHandled) {
-          this.triggerService.handle(message);
-        }
-      });
+      let wasHandled = await this.commandService.handle(message);
+      if (!wasHandled) {
+        this.triggerService.handle(message);
+      }
+      
     } catch (error) {
       this.loggerService.error(error, message);
     }

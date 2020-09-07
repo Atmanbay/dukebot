@@ -7,20 +7,19 @@ export default class AudioService {
   }
 
   // Path can be a file path or a URL
-  play(path, channel) {
+  async play(path, channel) {
     if (!channel) {
       return;
     }
     
     let logger = this.loggerService;
-    channel.join().then((connection) => {
-      let dispatcher = connection.play(path);
-      dispatcher.on('finish', () => {
-        connection.disconnect();
-      });
-      
-      dispatcher.on('error', logger.error);
+    let connection = await channel.join();
+    let dispatcher = connection.play(path);
+    dispatcher.on('finish', () => {
+      connection.disconnect();
     });
+    
+    dispatcher.on('error', logger.error);
   }
 
   getClips() {
