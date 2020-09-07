@@ -23,12 +23,28 @@ export default class ConfigService {
       ],
       "blazes": [
       ],
-      "messages": [
-      ],
       "responses": [
       ],
       "walkups": [
       ]
+    }
+
+    this.emojis = {};
+    this.roles = {
+      admin: this.getEnvironmentVariable('DUKE_ROLES_ADMIN')
+    }
+
+    this.useTwitter = 'true' == this.getEnvironmentVariable('DUKE_USE_TWITTER').toLowerCase()
+    if (this.useTwitter) {
+      this.twitter = {
+        consumerKey: this.getEnvironmentVariable('DUKE_TWITTER_CONSUMER_KEY'),
+        consumerSecret: this.getEnvironmentVariable('DUKE_TWITTER_CONSUMER_SECRET'),
+        accessTokenKey: this.getEnvironmentVariable('DUKE_TWITTER_ACCESS_TOKEN_KEY'),
+        accessTokenSecret: this.getEnvironmentVariable('DUKE_TWITTER_ACCESS_TOKEN_SECRET')
+      }
+
+      this.emojis.twitter = this.getEnvironmentVariable('DUKE_EMOJIS_TWITTER');
+      this.roles.twitter = this.getEnvironmentVariable('DUKE_ROLES_TWITTER');
     }
   }
 

@@ -25,4 +25,8 @@ export default class GuildService {
     }
     return Promise.resolve(this.guild.channels.cache.find(channel => channel.id === channelId));
   }
+
+  getRole(roleName) {
+    return this.guild.roles.cache.find(role => role.name === roleName);
+  }
 }
