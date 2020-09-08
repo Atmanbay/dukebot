@@ -9,7 +9,6 @@ export default class MessageHandler {
   }
 
   async handle(messageReaction, user) {
-    console.log('entered');
     // Only respond to event if it occurred in the guild this handler is responsible for
     if (!this.guildService.isThisGuild(messageReaction.message.channel.guild)) {
       return;
