@@ -37,7 +37,7 @@ export default class MessageHandler {
       let reactedUserCount = messageReaction.users.cache.filter(filterUser.bind(this)).size;
       let twitterRoleUserCount = this.guildService.getRole(this.configService.roles.twitter).members.size;
       let divided = twitterRoleUserCount / reactedUserCount;
-      if (!divided || divided >= 2) {
+      if (!divided || divided > 2) {
         return;
       }
 
