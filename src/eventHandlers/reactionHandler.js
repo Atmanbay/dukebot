@@ -19,7 +19,7 @@ export default class MessageHandler {
         return;
       }
   
-      let guildMember = await this.guildService.getUser(user.id);
+      let guildMember = this.guildService.getUser(user.id);
       if (!this.permissionsService.hasTwitterRole(guildMember)) {
         return;
       }
@@ -30,7 +30,7 @@ export default class MessageHandler {
       }
   
       let filterUser = async function(user) {
-        let guildMember = await this.guildService.getUser(user.id);
+        let guildMember = this.guildService.getUser(user.id);
         return this.permissionsService.hasTwitterRole(guildMember);
       };
 
