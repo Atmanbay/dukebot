@@ -1,4 +1,5 @@
 import Command from '../objects/command';
+import joi from 'joi';
 
 export default class DefineCommand extends Command {
   constructor(container) {
@@ -7,29 +8,29 @@ export default class DefineCommand extends Command {
     this.details = {
       name: 'define',
       description: 'Use UrbanDictionary to find the definition of a word',
-      args: [
-        {
-          name: 'w',
-          description: 'Word to define',
-          optional: false
-        }
-      ]
+      args: joi.object({
+        word: joi
+          .string()
+          .required()
+          .note('The word (or phrase if using quotes) to define')
+      })
+        .rename('w', 'word')
     };
   }
 
   async execute(message, args) {
-    if (!args.w) {
+    if (!args.word) {
       return;
     }
 
-    let definition = await this.defineService.define(args.w);
+    let definition = await this.defineService.define(args.word);
     if (!definition) {
       message.channel.send('No definitions found');
       return;
     }
 
     let response = [];
-    response.push(`**${args.w}**`);
+    response.push(`**${args.word}**`);
     response.push('');
     response.push(definition.definition);
     response.push('');

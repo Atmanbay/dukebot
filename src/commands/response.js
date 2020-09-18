@@ -1,6 +1,6 @@
 import Command from '../objects/command';
 import emojiRegex from 'emoji-regex';
-import { isEmpty } from 'lodash';
+import joi from 'joi';
 
 export default class ResponseCommand extends Command {
   constructor(container) {
@@ -9,45 +9,43 @@ export default class ResponseCommand extends Command {
     this.details = {
       name: 'response',
       description: 'Add a custom responder to the bot',
-      args: [
-        {
-          name: 't',
-          description: 'Word/phrase that will trigger the response',
-          optional: false
-        },
-        {
-          name: 'r',
-          description: 'Word/phrase/emoji that the bot will respond with',
-          optional: true
-        },
-        {
-          name: 'delete',
-          description: 'Flag to tell bot to delete specified trigger',
-          optional: true
-        }
-      ]
+      args: joi.object({
+        trigger: joi
+          .string()
+          .required()
+          .note('Word (or phrase if using quotes) that will trigger the response'),
+
+        response: joi
+          .string()
+          .note('Phrase or emoji that the bot will respond with'),
+
+        delete: joi
+          .boolean()
+          .note('Flag to tell the bot to delete specified trigger')
+      })
+        .xor('response', 'delete')
+        .rename('t', 'trigger')
+        .rename('r', 'response')
+        .rename('d', 'delete')
     };
   }
 
   execute(message, args) {
-    if (!args.t) {
-      return;
-    }
-
     if (args.delete) {
-      this.responseService.delete(args.t);
+      this.responseService.delete(args.trigger);
+      message.react('🗑️');  
       return;
     }
 
     let responses = [];
-    if (Array.isArray(args.r)) {
-      responses = args.r.map(this.parseResponse);
+    if (Array.isArray(args.response)) {
+      responses = args.response.map(this.parseResponse);
     } else {
-      responses.push(this.parseResponse(args.r));
+      responses.push(this.parseResponse(args.response));
     }
 
     this.responseService.save({
-      trigger: args.t,
+      trigger: args.trigger,
       responses: responses
     });
     

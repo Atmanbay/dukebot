@@ -1,5 +1,6 @@
 import Command from '../objects/command';
 import fs from 'fs';
+import joi from 'joi';
 
 export default class AudioCommand extends Command {
   constructor(container) {
@@ -9,18 +10,18 @@ export default class AudioCommand extends Command {
     this.details = {
       name: 'walkup',
       description: 'Set a clip to play every time you enter a voice channel',
-      args: [
-        {
-          name: 'n',
-          description: 'Name of audio clip',
-          optional: true
-        },
-        {
-          name: 'delete',
-          description: 'Flag to delete your walkup',
-          optional: true
-        }
-      ]
+      args: joi.object({
+        name: joi
+          .string()
+          .note('Name of audio clip'),
+
+        delete: joi
+          .boolean()
+          .note('Flag to delete your walkup')
+      })
+        .xor('name', 'delete')
+        .rename('n', 'name')
+        .rename('d', 'delete')
     };
   }
 
@@ -28,11 +29,11 @@ export default class AudioCommand extends Command {
     let userId = message.author.id;
     if (args.delete) {
       this.walkupService.removeWalkup(userId);
-      message.react('👌');
+      message.react('🗑️');
       return;
     }
 
-    let clipName = args.n;
+    let clipName = args.name;
     let path = `${this.configService.paths.audio}/${clipName}.mp3`;
     if (!fs.existsSync(path)) {
       return;

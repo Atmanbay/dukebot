@@ -1,4 +1,5 @@
 import Command from "../objects/command";
+import joi from 'joi';
 
 export default class RenameCommand extends Command {
   constructor(container) {
@@ -7,13 +8,13 @@ export default class RenameCommand extends Command {
     this.details = {
       name: 'rename',
       description: 'Rename the bot',
-      args: [
-        {
-          name: 'n',
-          description: 'New name of the bot',
-          optional: false
-        }
-      ]
+      args: joi.object({
+        name: joi
+          .string()
+          .required()
+          .note('New name for the bot')
+      })
+        .rename('n', 'name')
     };
   }
   

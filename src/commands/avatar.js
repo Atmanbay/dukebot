@@ -1,4 +1,5 @@
 import Command from "../objects/command";
+import joi from 'joi';
 
 export default class AvatarCommand extends Command {
   constructor(container) {
@@ -7,22 +8,18 @@ export default class AvatarCommand extends Command {
     this.details = {
       name: 'avatar',
       description: 'Change the bot\'s avatar',
-      args: [
-        {
-          name: 'a',
-          description: 'URL of the new avatar picture',
-          optional: false
-        }
-      ]
+      args: joi.object({
+        url: joi
+          .string()
+          .required()
+          .note('URL of image')
+      })
+      .rename('u', 'url')
     };
   }
   
   execute(message, args) {
-    if (!args.u) {
-      return;
-    }
-
     let botUser = this.botUserService.getBotUser();
-    botUser.setAvatar(args.u);
+    botUser.setAvatar(args.url);
   }
 }

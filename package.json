@@ -22,6 +22,7 @@
     "ffmpeg-static": "^4.2.1",
     "glob": "^7.1.6",
     "google-tts-api": "0.0.4",
+    "joi": "^17.2.1",
     "lodash": "^4.17.19",
     "lowdb": "^1.0.0",
     "markov-strings": "^2.1.1",

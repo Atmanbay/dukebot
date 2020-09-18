@@ -2,81 +2,81 @@ import Command from '../objects/command';
 import fs from 'fs';
 import download from 'download';
 import sanitize from 'sanitize-filename';
+import joi from 'joi';
 
 export default class AudioCommand extends Command {
   constructor(container) {
     super();
     this.audioService = container.audioService;
     this.configService = container.configService;
+    let validator = container.validatorService;
     this.details = {
       name: 'audio',
       description: 'Play specified audio clip',
-      args: [
-        {
-          name: 'n',
-          description: 'Name of audio clip',
-          optional: false
-        },
-        {
-          name: 'c',
-          description: 'Name of voice channel to play in (defaults to users current channel)',
-          optional: true
-        },
-        {
-          name: 'list',
-          description: 'Flag to list all audio clips',
-          optional: true
-        },
-        {
-          name: 'upload',
-          description: 'Flag to start the audio clip upload process',
-          optional: true
-        }
-      ]
+      args: joi.object({
+        name: joi
+          .string()
+          .note('Name of the audio clip'),
+
+        channel: joi
+          .custom(validator.channel.bind(validator))
+          .note('Name of the audio channel to play the clip in'),
+
+        list: joi
+          .boolean()
+          .note('Flag to return a list of audio clips'),
+
+        upload: joi
+          .boolean()
+          .note('Flag to start the upload process for a new clip')
+      })
+        .with('channel', 'name')
+        .xor('name', 'list', 'upload')
+        .rename('n', 'name')
+        .rename('c', 'channel')
+        .rename('l', 'list')
+        .rename('u', 'upload')
     };
   }
 
-  async execute(message, args) {
-    if (args.list) {
-      let clips = this.audioService.getClips();
-      clips.unshift('```');
-      clips.push('```');
-      message.channel.send(clips);
-      return;
-    }
+  async list(message) {
+    let clips = this.audioService.getClips();
+    clips.unshift('```');
+    clips.push('```');
+    message.channel.send(clips);
+  }
 
-    if (args.upload) {
-      await message.channel.send('Please upload your file!');
-      let filter = m => message.author.id === m.author.id;
-      await message.channel.awaitMessages(filter, { time: 60000, max: 1, errors: ['time'] })
-        .then(messages => {
-          let message = messages.first();
-          let attachments = message.attachments;
-          if (attachments && attachments.size === 1) {
-            let url = attachments.first().url;
-            let options = {};
-            if (message.content) {
-              options.filename = `${sanitize(message.content)}.mp3`;
-            }
-            download(url, this.configService.paths.audio, options);
+  async upload(message) {
+    await message.channel.send('Please upload your file!');
+    let filter = m => message.author.id === m.author.id;
+    await message.channel.awaitMessages(filter, { time: 60000, max: 1, errors: ['time'] })
+      .then(messages => {
+        let message = messages.first();
+        let attachments = message.attachments;
+        if (attachments && attachments.size === 1) {
+          let url = attachments.first().url;
+          let options = {};
+          if (message.content) {
+            options.filename = `${sanitize(message.content)}.mp3`;
           }
-        })
-        .catch(() => {
-          message.channel.send('You took too long!');
-        });
+          download(url, this.configService.paths.audio, options);
+        }
+      })
+      .catch(() => {
+        message.channel.send('You took too long!');
+      });
+  }
 
-      return;
-    }
-
-    let clipName = args.n;
+  async play(message, args) {
+    let clipName = args.name;
     let path = `${this.configService.paths.audio}/${clipName}.mp3`;
     if (!fs.existsSync(path)) {
       return;
     }
 
     let channel;
-    if (args.c) {
-      channel = message.guild.channels.cache.find(channel => channel.name === args.c && channel.type === 'voice');
+    if (args.channel) {
+      channel = args.channel;
     } else {
       channel = message.member.voice.channel;
     }
@@ -86,5 +86,19 @@ export default class AudioCommand extends Command {
     }
 
     this.audioService.play(path, channel);
+  }
+
+  async execute(message, args) {
+    if (args.list) {
+      await this.list(message);
+      return;
+    }
+
+    if (args.upload) {
+      await this.upload(message);
+      return;
+    }
+
+    await this.play(message, args);
   }
 }

@@ -1,6 +1,7 @@
 import Command from '../objects/command';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import joi from 'joi';
 
 export default class BlazeItCommand extends Command {
   constructor(container) {
@@ -10,27 +11,35 @@ export default class BlazeItCommand extends Command {
     this.details = {
       name: 'blazes',
       description: 'Get the sorted leaderboard of blazes for the month',
-      args: [
-        {
-          name: 'week',
-          description: 'Flag to ask for this week\'s blaze leaderboard',
-          optional: true
-        },
-        {
-          name: 'year',
-          description: 'Flag to ask for this year\'s blaze leaderboard',
-          optional: true
-        }
-      ]
+      args: joi.object({
+        week: joi
+          .boolean()
+          .note('Flag to show scores for this week'),
+
+        month: joi
+          .boolean()
+          .note('Flag to show scores for this month'),
+
+        year: joi
+          .boolean()
+          .note('Flag to show scores for this year')
+      })
+        .oxor('week', 'month', 'year')
+        .rename('w', 'week')
+        .rename('m', 'month')
+        .rename('y', 'year')
     };
   }
 
   async execute(message, args) {
     let cutoff = moment().startOf('month');
+    let frame = 'month';
     if (args.week) {
       cutoff = moment().startOf('week');
+      frame = 'week';
     } else if (args.year) {
       cutoff = null;
+      frame = null;
     }
 
     try {
@@ -39,11 +48,7 @@ export default class BlazeItCommand extends Command {
         return;
       }
       let response = '**Blazes';
-      if (cutoff) {
-        let frame = 'week';
-        if (args.m) {
-          frame = 'month';
-        }
+      if (frame) {
         response += ` this ${frame}`;
       }
 

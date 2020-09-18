@@ -50,11 +50,11 @@ export default class CommandService {
     let commandName = args._[0];
     delete args._;
 
-    let convertedArgs = await this.convertArguments(args);
+    //let convertedArgs = await this.convertArguments(args);
     return [
       commandName,
       message,
-      convertedArgs
+      args
     ];
   }
 
@@ -95,6 +95,16 @@ export default class CommandService {
     let command = this.getCommand(commandName);
     if (!command) {
       return false;
+    }
+
+    if (command.details.args) {
+      let validation = command.details.args.validate(args);
+      if (validation.error) {
+        message.channel.send(validation.error.toString());
+        return true;
+      } else {
+        args = validation.value;
+      }
     }
 
     try {

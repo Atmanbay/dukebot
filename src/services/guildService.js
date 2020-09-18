@@ -12,18 +12,28 @@ export default class GuildService {
     }
   }
 
-  async getUser(userId) {
+  getUser(userId) {
     if (!this.guild.members) {
-      return Promise.reject();
+      return null;
     }
-    return Promise.resolve(this.guild.members.cache.find(user => user.id === userId));
+    
+    return this.guild.members.cache.find(user => user.id === userId);
   }
 
-  async getChannel(channelId) {
+  getChannelById(channelId) {
     if (!this.guild.channels) {
-      return Promise.reject();
+      return null;
     }
-    return Promise.resolve(this.guild.channels.cache.find(channel => channel.id === channelId));
+
+    return this.guild.channels.cache.find(channel => channel.id === channelId);
+  }
+
+  getChannelByName(name) {
+    if (!this.guild.channels) {
+      return null;
+    }
+
+    return this.guild.channels.cache.find(channel => channel.name === name);
   }
 
   getRole(roleName) {

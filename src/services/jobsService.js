@@ -25,8 +25,7 @@ export default class JobsService {
     });
   }
 
-  resolveJobs(userArg, type, authorUserId) {
-    let users = this.convertToArray(userArg);
+  resolveJobs(users, type, authorUserId) {
     let jobResults = {};
     if (users.length === 0)
       return jobResults;
@@ -68,17 +67,5 @@ export default class JobsService {
     });
 
     return jobResults;
-  }
-
-  // Needed because you can specify 1+ users
-  // Converting everything to an array makes logic easy later
-  convertToArray(users) {
-    if (!users) {
-      return [];
-    } else if (Array.isArray(users)) {
-      return users;
-    } else {
-      return [ users ];
-    }
   }
 }
