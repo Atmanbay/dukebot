@@ -20,6 +20,14 @@ export default class GuildService {
     return this.guild.members.cache.find(user => user.id === userId);
   }
 
+  getChannels(type) {
+    if (type) {
+      return this.guild.channels.cache.filter(c => c.type === type);
+    } 
+    
+    return this.guild.channels.cache;
+  }
+
   getChannelById(channelId) {
     if (!this.guild.channels) {
       return null;

@@ -34,11 +34,9 @@ export default class AliveCommand extends Command {
   }
 
   async execute(message, args) {
-    let channel;
-    if (args.channel) {
-      channel = args.channel;
-    } else {
-      channel = message.member.voice.channel;
+    let channel = args.channel ? args.channel : message.member.voice.channel;
+    if (!channel) {
+      return;
     }
 
     try {

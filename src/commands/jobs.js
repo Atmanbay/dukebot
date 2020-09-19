@@ -44,7 +44,7 @@ export default class JobsCommand extends Command {
     try {
       // If no good or bad jobs handed out then get job counts
       if (!args.good && !args.bad) {
-        let user = args.user || message.author;
+        let user = args.user ? args.user : message.author;
         let result = await this.jobsService.getJobs(user);
         if (!result) {
           message.channel.send('No jobs found');

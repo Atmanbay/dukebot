@@ -73,13 +73,7 @@ export default class AudioCommand extends Command {
       return;
     }
 
-    let channel;
-    if (args.channel) {
-      channel = args.channel;
-    } else {
-      channel = message.member.voice.channel;
-    }
-
+    let channel = args.channel ? args.channel : message.member.voice.channel;
     if (!channel) {
       return;
     }
