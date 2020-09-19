@@ -12,18 +12,17 @@ export default class BanCommand extends Command {
       args: joi.object({
         user: joi
           .custom(validator.user.bind(validator))
+          .required()
           .note('The user to ban')
       })
-      .rename('u', 'user')
+        .rename('u', 'user')
     };
   }
 
   async execute(message, args) {
-    if (args.user) {
-      message.channel.send('User has been banned');
-      await this.banService.banUser(args.user.user.id).then(() => {
-        message.channel.send('User has been unbanned');
-      })
-    }
+    message.channel.send('User has been banned');
+    await this.banService.banUser(args.user.user.id).then(() => {
+      message.channel.send('User has been unbanned');
+    });
   }
 }

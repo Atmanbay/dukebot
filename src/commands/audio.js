@@ -68,8 +68,7 @@ export default class AudioCommand extends Command {
   }
 
   async play(message, args) {
-    let clipName = args.name;
-    let path = `${this.configService.paths.audio}/${clipName}.mp3`;
+    let path = `${this.configService.paths.audio}/${args.name}.mp3`;
     if (!fs.existsSync(path)) {
       return;
     }

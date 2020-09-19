@@ -19,10 +19,6 @@ export default class RenameCommand extends Command {
   }
   
   async execute(message, args) {
-    if (!args.n) {
-      return;
-    }
-
     let botUserId = this.botUserService.getBotUser().id;
     let guildUser = await message.guild.members.fetch(botUserId);
 

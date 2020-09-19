@@ -19,10 +19,6 @@ export default class DefineCommand extends Command {
   }
 
   async execute(message, args) {
-    if (!args.word) {
-      return;
-    }
-
     let definition = await this.defineService.define(args.word);
     if (!definition) {
       message.channel.send('No definitions found');
