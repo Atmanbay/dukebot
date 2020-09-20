@@ -1,4 +1,4 @@
-import { GuildMember, GuildChannel } from 'discord.js'
+import { GuildChannel } from 'discord.js'
 
 export default class ValidatorService {
   constructor(container) {
