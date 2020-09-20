@@ -27,9 +27,9 @@ export default class JobsService {
 
   resolveJobs(users, type, authorUserId) {
     let jobResults = {};
-    if (users.length === 0)
-      return jobResults;
-    
+    if (!Array.isArray(users)) {
+      users = [users];
+    }
     users.forEach((user) => {
       try {
         if (authorUserId && user.user.id === authorUserId) {
