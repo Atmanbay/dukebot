@@ -26,7 +26,21 @@ export default class MarkovCommand extends Command {
           .min(1)
           .max(10)
           .default(1)
-          .note('Forces markov generation to use more than this number of messages')
+          .note('Forces markov generation to use more than this number of messages'),
+
+        chunkSize: joi
+          .number()
+          .min(1)
+          .max(10)
+          .default(2)
+          .note('Set the size (in words) of each chunk. Default is 2'),
+
+        maxTries: joi
+          .number()
+          .min(10)
+          .max(500)
+          .default(200)
+          .note('Set the number of max tries before it gives up. Default is 200')
       })
         .rename('u', 'user')
         .rename('c', 'channel')
@@ -35,6 +49,7 @@ export default class MarkovCommand extends Command {
   }
 
   async execute(message, args) {
+    message.react('⌛');
     let user = args.user ? args.user : message.author;
     let channel = args.channel;
 
@@ -47,11 +62,18 @@ export default class MarkovCommand extends Command {
 
     let messages = [];
     await Promise.all(channels.map(async (channel) => {
-      return channel.messages
-        .fetch()
-        .then(messages => messages.filter(m => m.author.id === user.id && !m.content.startsWith(this.commandPrefix) && !m.content.startsWith('$')))
-        .then(messages => messages.map(m => m.content))
-        .catch(() => {return []});
+      try {
+        let channelMessages = await this.fetchMessages(channel);
+        if (!channelMessages) {
+          return [];
+        }
+
+        return channelMessages
+          .filter(m => m.author.id === user.id && !m.content.startsWith(this.commandPrefix))
+          .map(m => m.content);
+      } catch (error) {
+        return [];
+      }
     })).then(arrays => {
       arrays.forEach(array => {
         if (array) {
@@ -61,6 +83,51 @@ export default class MarkovCommand extends Command {
     })
     .catch(error => this.loggerService.error(error));
 
-    message.channel.send(this.markovService.buildMarkov(messages, args.variance));
+    message.channel.send(this.markovService.buildMarkov({
+      messages: messages,
+      stateSize: args.chunkSize,
+      maxTries: args.maxTries,
+      variance: args.variance
+    }));
+  }
+
+  async fetchMessages(channel, limit = 500) {
+    let messages = [];
+    let last_id = null;
+    while (true) {
+      try {
+        let options = {
+          limit: 100
+        }
+  
+        if (last_id) {
+          options.before = last_id;
+        }
+  
+        let messageBatch = await channel.messages.fetch(options).catch((error) => {
+          return null;
+        });
+  
+        if (!messageBatch) {
+          return null;
+        }
+  
+        messages.push(...messageBatch);
+        if (messageBatch.last()) {
+          last_id = messageBatch.last().id;
+        } else {
+          last_id = null;
+        }
+  
+        if (messageBatch.size != 100 || messages.length >= limit) {
+          break;
+        }
+      } catch (error) {
+        this.loggerService.error(error);
+        return null;
+      }
+    }
+
+    return messages.map(m => m[1]);
   }
 }

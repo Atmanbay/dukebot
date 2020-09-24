@@ -5,15 +5,15 @@ export default class MarkovService {
     this.loggerService = container.loggerService;
   }
 
-  buildMarkov(messages, variance) {
-    let markov = new Markov(messages, { stateSize: 2 });
+  buildMarkov({messages, stateSize, maxTries, variance}) {
+    let markov = new Markov(messages, { stateSize: stateSize });
     markov.buildCorpus();
 
     let options = {
-      maxTries: 100,
+      maxTries: maxTries,
       prng: Math.random,
       filter: (result) => {
-        return result.refs.length > variance
+        return result.refs.length > variance && result.string.length <= 2000
       }
     };
 
