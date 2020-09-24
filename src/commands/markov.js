@@ -45,6 +45,8 @@ export default class MarkovCommand extends Command {
         .rename('u', 'user')
         .rename('c', 'channel')
         .rename('v', 'variance')
+        .rename('cs', 'chunkSize')
+        .rename('mt', 'maxTries')
     };
   }
 
