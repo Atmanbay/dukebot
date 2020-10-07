@@ -18,11 +18,11 @@ export default class JobsService {
       badJobs = jobCount.counts.bad;
     }
     
-    return Promise.resolve({
+    return {
       nickname: nickname,
       goodJobs: goodJobs,
       badJobs: badJobs
-    });
+    };
   }
 
   resolveJobs(users, type, authorUserId) {
