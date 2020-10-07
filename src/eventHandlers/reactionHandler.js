@@ -34,13 +34,13 @@ export default class MessageHandler {
       return;
     }
 
-    let guildMember = this.guildService.getUser(user.id);
-    if (!this.permissionsService.hasTwitterRole(guildMember)) {
+    let twitterReactionEmoji = this.configService.emojis.twitter;
+    if (twitterReactionEmoji !== messageReaction.emoji.name) {
       return;
     }
 
-    let twitterReactionEmoji = this.configService.emojis.twitter;
-    if (twitterReactionEmoji !== messageReaction.emoji.name) {
+    let guildMember = this.guildService.getUser(user.id);
+    if (!this.permissionsService.hasTwitterRole(guildMember)) {
       return;
     }
 
