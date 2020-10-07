@@ -7,7 +7,7 @@ export default class JobsService {
     this.loggerService = container.loggerService;
   }
 
-  async getJobs(user) {
+  getJobs(user) {
     let jobCount = this.db.find({ id: user.id }).value();
     let guildUser = this.guildService.getUser(user.id);
     let nickname = guildUser.nickname || guildUser.user.username;

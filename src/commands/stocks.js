@@ -11,6 +11,7 @@ export default class StocksCommand extends Command {
   }
 
   async execute(message) {
+    message.react('📈');
     let rows = await this.stocksService.fetchLeaderboard();
 
     // Use set column widths so that all columns line up
