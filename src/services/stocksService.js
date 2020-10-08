@@ -1,7 +1,6 @@
 import request from 'request-promise-native';
 import { parse } from 'node-html-parser';
-import decode from 'decode-html';
-import { toInteger } from 'lodash';
+import moment from 'moment';
 
 export default class StocksService {
   constructor(container) {
@@ -35,11 +34,29 @@ export default class StocksService {
 
     try {
       // Logon request
-      await r(options);
+      await r(options).catch(error => {
+        this.loggerService.error(error);
+      });
 
       // Request to get the JSON that has the HTML table as an attribute :)
-      let url = `https://www.howthemarketworks.com/accounting/getrankings?pageIndex=0&pageSize=50&tournamentID=${this.configService.stocks.contestId}&rankingType=Overall&date=10%2F07%2F2020`;
-      let jsonString = await r(url);
+      let url = 'https://www.howthemarketworks.com/accounting/getrankings';
+      let jsonString = await r({
+        method: 'GET',
+        uri: url,
+        qs: {
+          pageIndex: 0,
+          pageSize: 50,
+          tournamentID: this.configService.stocks.contestId,
+          rankingType: 'Overall',
+          date: encodeURI(moment().format("L"))
+        }
+      }).catch(error => {
+        this.loggerService.error(error);
+      });
+
+      if (!jsonString) {
+        return;
+      }
 
       let json = JSON.parse(jsonString);
       let root = parse(json.Html);
