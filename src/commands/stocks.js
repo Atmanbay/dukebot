@@ -7,6 +7,7 @@ export default class StocksCommand extends Command {
     this.stocksService = container.stocksService;
     this.details = {
       name: 'stocks',
+      aliases: ['stonks'],
       description: 'Check the stocks leaderboard',
     };
   }

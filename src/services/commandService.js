@@ -3,28 +3,36 @@ import minimist from 'minimist';
 
 export default class CommandService {
   constructor(container) {
-    this.loggerService = container.loggerService;
-    this.conversionService = container.conversionService;
     this.configService = container.configService;
-    this.databaseService = container.databaseService;
+    this.loggerService = container.loggerService;
+    this.usageService = container.usageService;
     this.commands = container.commands;
   }
 
   async handle(message) {
     if (!this.shouldHandle(message)) {
-      return Promise.resolve(false);
+      return false;
     }
 
-    return this.parseMessage(message)
-      .then(this.executeCommand.bind(this))
-      .catch(error => this.loggerService.error(error, message));
+    try {
+      let parsedMessage = this.parseMessage(message);
+      let command = this.getCommand(parsedMessage.commandName);
+      if (!command) {
+        return false;
+      }
+
+      return this.executeCommand(command, message, parsedMessage.args);
+    } catch (error) {
+      this.loggerService.error(error);
+      return true;
+    }
   }
 
   shouldHandle(message) {
     return message.content.startsWith(this.configService.prefix);
   }
 
-  async parseMessage(message) {
+  parseMessage(message) {
     // Trim command prefix from beginning and then split on spaces (but keep quoted text together)
     let content = message.content.substring(this.configService.prefix.length);
     let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
@@ -50,39 +58,10 @@ export default class CommandService {
     let commandName = args._[0];
     delete args._;
 
-    //let convertedArgs = await this.convertArguments(args);
-    return [
+    return {
       commandName,
-      message,
       args
-    ];
-  }
-
-  // converts any mentioned user or channel from the ID to the actual object itself
-  async convertArguments(args) {
-    let conversionService = this.conversionService;
-
-    let promises = Object.keys(args).map(async function(key) {
-      let oldValue = args[key];
-
-      // if arg is an array then parse each value inside the array
-      if (Array.isArray(oldValue)) {
-        let arrayPromises = oldValue.map(async function(value) {
-          return await conversionService.convert(value);
-        });
-
-        return await Promise.all(arrayPromises).then((newValues) => {
-          return [key, newValues];
-        })
-      } else {
-        let newValue = await conversionService.convert(oldValue);
-        return [key, newValue];
-      }
-    });
-
-    return Promise.all(promises).then((newArgs) => {
-      return Object.fromEntries(newArgs);
-    });;
+    };
   }
 
   getCommand(commandName) {
@@ -91,16 +70,11 @@ export default class CommandService {
     });
   }
 
-  executeCommand([commandName, message, args]) {
-    let command = this.getCommand(commandName);
-    if (!command) {
-      return false;
-    }
-
+  async executeCommand(command, message, args) {
     if (command.details.args) {
       let validation = command.details.args.validate(args);
       if (validation.error) {
-        message.channel.send(validation.error.toString());
+        await message.channel.send(validation.error.toString());
         return true;
       } else {
         args = validation.value;
@@ -108,8 +82,10 @@ export default class CommandService {
     }
 
     try {
-      command.execute(message, args);
+      await command.execute(message, args);
+      this.usageService.logCommandUse(command.details.name);
     } catch (error) {
+      console.log(error);
       this.loggerService.error(`Error when executing command ${commandName}`, args, error);
     }
 

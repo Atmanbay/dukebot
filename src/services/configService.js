@@ -28,6 +28,8 @@ export default class ConfigService {
       "walkups": [
       ],
       "stocks": [
+      ],
+      "commandUsage": [
       ]
     }
 
