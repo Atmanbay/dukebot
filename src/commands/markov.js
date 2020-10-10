@@ -28,8 +28,8 @@ export default class MarkovCommand extends Command {
           .number()
           .min(1)
           .max(10)
-          .default(2)
-          .note('Set the size (in words) of each chunk. Default is 2'),
+          .default(3)
+          .note('Set the size (in words) of each chunk. Default is 3'),
 
         maxTries: joi
           .number()
@@ -46,11 +46,14 @@ export default class MarkovCommand extends Command {
   }
 
   async execute(message, args) {
-    message.react('⌛');
+    message.react('⌛'); // Reacting to message immediately so user knows we're working on it
     let user = args.user ? args.user : message.author;
 
     let channels = this.guildService.getChannels('text');
     let messages = [];
+    
+    // Loop through all channels and fetch the last 500 messages
+    // Then filter those messages down to messages from the specified user
     await Promise.all(channels.map(async (channel) => {
       try {
         let channelMessages = await this.fetchMessages(channel);
