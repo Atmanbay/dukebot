@@ -17,10 +17,6 @@ export default class MarkovCommand extends Command {
           .custom(validator.user.bind(validator))
           .note('Target user to markov (defaults to message author)'),
 
-        channel: joi
-          .custom(validator.channel.bind(validator))
-          .note('Channel to get messages from (defaults to all channels)'),
-
         variance: joi
           .number()
           .min(1)
@@ -43,25 +39,17 @@ export default class MarkovCommand extends Command {
           .note('Set the number of max tries before it gives up. Default is 200')
       })
         .rename('u', 'user')
-        .rename('c', 'channel')
         .rename('v', 'variance')
-        .rename('cs', 'chunkSize')
-        .rename('mt', 'maxTries')
+        .rename('c', 'chunkSize')
+        .rename('m', 'maxTries')
     };
   }
 
   async execute(message, args) {
     message.react('⌛');
     let user = args.user ? args.user : message.author;
-    let channel = args.channel;
 
-    let channels = [];
-    if (channel) {
-      channels.push(channel);
-    } else {
-      channels = this.guildService.getChannels('text');
-    }
-
+    let channels = this.guildService.getChannels('text');
     let messages = [];
     await Promise.all(channels.map(async (channel) => {
       try {
