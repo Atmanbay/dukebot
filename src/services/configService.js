@@ -26,6 +26,8 @@ export default class ConfigService {
       "responses": [
       ],
       "walkups": [
+      ],
+      "stocks": [
       ]
     }
 

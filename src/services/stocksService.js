@@ -5,7 +5,17 @@ import moment from 'moment';
 export default class StocksService {
   constructor(container) {
     this.configService = container.configService;
+    this.db = container.databaseService.get('stocks');
     this.loggerService = container.loggerService;
+  }
+
+  getPreviousEntry(name) {
+    return this.db.find({ name: name }).value();
+  }
+
+  saveLeaderboard(rows) {
+    this.db.remove().write();
+    rows.forEach(row => this.db.push(row).write());
   }
 
   async fetchLeaderboard() {
@@ -65,7 +75,7 @@ export default class StocksService {
       let rows = table.querySelectorAll('tr').slice(2);
 
       let beginningValue = 50000.00;
-      return rows.map(row => {
+      let mappedRows = rows.map(row => {
         let cells = row.querySelectorAll('td');
         let rank = cells[0].structuredText;
         let name = cells[2].structuredText;
@@ -82,6 +92,10 @@ export default class StocksService {
           percentChange: percentChange
         };
       });
+
+
+
+      return mappedRows;
     } catch (error) {
       this.loggerService.error(error);
     }
