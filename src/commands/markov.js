@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import Command from '../objects/command';
 import joi from 'joi';
 
@@ -7,7 +8,7 @@ export default class MarkovCommand extends Command {
     this.markovService = container.markovService;
     this.guildService = container.guildService;
     this.loggerService = container.loggerService;
-    this.commandPrefix = container.configService.prefix;
+    this.messageHistoryService = container.messageHistoryService;
     let validator = container.validatorService;
     this.details = {
       name: 'markov',
@@ -28,8 +29,8 @@ export default class MarkovCommand extends Command {
           .number()
           .min(1)
           .max(10)
-          .default(3)
-          .note('Set the size (in words) of each chunk. Default is 3'),
+          .default(2)
+          .note('Set the size (in words) of each chunk. Default is 2'),
 
         maxTries: joi
           .number()
@@ -47,34 +48,12 @@ export default class MarkovCommand extends Command {
 
   async execute(message, args) {
     message.react('⌛'); // Reacting to message immediately so user knows we're working on it
+
     let user = args.user ? args.user : message.author;
-
-    let channels = this.guildService.getChannels('text');
-    let messages = [];
-    
-    // Loop through all channels and fetch the last 500 messages
-    // Then filter those messages down to messages from the specified user
-    await Promise.all(channels.map(async (channel) => {
-      try {
-        let channelMessages = await this.fetchMessages(channel);
-        if (!channelMessages) {
-          return [];
-        }
-
-        return channelMessages
-          .filter(m => m.author.id === user.id && !m.content.startsWith(this.commandPrefix))
-          .map(m => m.content);
-      } catch (error) {
-        return [];
-      }
-    })).then(arrays => {
-      arrays.forEach(array => {
-        if (array) {
-          messages.push(...array);
-        }
-      })
-    })
-    .catch(error => this.loggerService.error(error));
+    let messages = this.messageHistoryService.fetchMessages(user.id);
+    if (isEmpty(messages)) {
+      return;
+    }
 
     message.channel.send(this.markovService.buildMarkov({
       messages: messages,
@@ -82,45 +61,5 @@ export default class MarkovCommand extends Command {
       maxTries: args.maxTries,
       variance: args.variance
     }));
-  }
-
-  async fetchMessages(channel, limit = 500) {
-    let messages = [];
-    let last_id = null;
-    while (true) {
-      try {
-        let options = {
-          limit: 100
-        }
-  
-        if (last_id) {
-          options.before = last_id;
-        }
-  
-        let messageBatch = await channel.messages.fetch(options).catch((error) => {
-          return null;
-        });
-  
-        if (!messageBatch) {
-          return null;
-        }
-  
-        messages.push(...messageBatch);
-        if (messageBatch.last()) {
-          last_id = messageBatch.last().id;
-        } else {
-          last_id = null;
-        }
-  
-        if (messageBatch.size != 100 || messages.length >= limit) {
-          break;
-        }
-      } catch (error) {
-        this.loggerService.error(error);
-        return null;
-      }
-    }
-
-    return messages.map(m => m[1]);
   }
 }

@@ -18,6 +18,7 @@ export default class ConfigService {
     }
   
     this.token = this.getEnvironmentVariable('DUKE_DISCORD_TOKEN');
+    this.messageCount = this.getEnvironmentVariable('DUKE_MESSAGE_HISTORY_COUNT');
     this.dbDefaults = {
       "jobs": [
       ],
@@ -30,7 +31,9 @@ export default class ConfigService {
       "stocks": [
       ],
       "commandUsage": [
-      ]
+      ],
+      "messages": [
+      ],
     }
 
     this.emojis = {

@@ -5,12 +5,14 @@ export default class CommandService {
   constructor(container) {
     this.configService = container.configService;
     this.loggerService = container.loggerService;
+    this.messageHistoryService = container.messageHistoryService;
     this.usageService = container.usageService;
     this.commands = container.commands;
   }
 
   async handle(message) {
     if (!this.shouldHandle(message)) {
+      this.messageHistoryService.save(message.author.id, message.content);
       return false;
     }
 
