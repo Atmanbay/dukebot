@@ -37,16 +37,27 @@ export default class MessageHistoryService {
   }
 
   async fetchMessages(userId) {
-    let dbUser = this.db.find({ userId: userId }).value();
-    if (dbUser) {
-      return dbUser.messages;
-    } else { // If user has no messages then add them!
-      let channels = this.guildService.getChannels('text');
-      let messages = [];
-      
-      // Loop through all channels and fetch the last 500 messages
-      // Then filter those messages down to messages from the specified user
-      await Promise.all(channels.map(async (channel) => {
+    let dbUser = this.db.find({ userId: userId });
+    if (dbUser.value()) {
+      if (dbUser.value().messages.length == this.messageCount) {
+        return dbUser.value().messages;
+      }
+    } else {
+      this.db.push({
+        userId: userId,
+        messages: []
+      }).write();
+
+      dbUser = this.db.find({ userId: userId });
+    }
+
+    let channels = this.guildService.getChannels('text');
+    let messages = [];
+    
+    // Loop through all channels and fetch the last 500 messages
+    // Then filter those messages down to messages from the specified user
+    await Promise
+      .all(channels.map(async (channel) => {
         try {
           let channelMessages = await this.fetchMessagesFromChannel(channel);
           if (!channelMessages) {
@@ -60,26 +71,26 @@ export default class MessageHistoryService {
           return [];
         }
       }))
-        .then(arrays => {
-          arrays.forEach(array => {
-            if (array) {
-              messages.push(...array);
-            }
-          })
+      .then(arrays => {
+        arrays.forEach(array => {
+          if (array) {
+            messages.push(...array);
+          }
         })
-        .catch(error => this.loggerService.error(error));
+      })
+      .catch(error => this.loggerService.error(error));
 
-      if (messages.length > this.messageCount) {
-        messages.splice(0, (messages.length - this.messageCount));
-      }
-
-      this.db.push({
-        userId: userId,
-        messages: messages
-      }).write();
-
-      return messages;
+    if (messages.length > this.messageCount) {
+      messages.splice(0, (messages.length - this.messageCount));
     }
+
+    dbUser
+      .update(`messages`, () => {
+        return messages;
+      })
+      .write();
+
+    return messages;
   }
 
   async fetchMessagesFromChannel(channel, limit = 500) {
