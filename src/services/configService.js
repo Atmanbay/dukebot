@@ -16,7 +16,9 @@ export default class ConfigService {
             'logging': this.getEnvironmentVariable('DUKE_DEV_LOGGING_PATH')
         }
     }
-  
+    
+    this.paths.emojiMappingFile = this.getEnvironmentVariable('DUKE_EMOJI_MAPPING_FILE');
+
     this.token = this.getEnvironmentVariable('DUKE_DISCORD_TOKEN');
     this.messageCount = this.getEnvironmentVariable('DUKE_MESSAGE_HISTORY_COUNT');
     this.dbDefaults = {
