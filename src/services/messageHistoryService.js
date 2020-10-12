@@ -9,7 +9,7 @@ export default class MessageHistoryService {
 
   save(userId, message) {
     try {
-      let dbUser = this.db.find({ id: userId });
+      let dbUser = this.db.find({ userId: userId });
       if (isEmpty(dbUser.value())) {
         this.db
           .push({
@@ -18,7 +18,7 @@ export default class MessageHistoryService {
           })
           .write();
         
-        dbUser = this.db.find({ id: userId });
+        dbUser = this.db.find({ userId: userId });
       }
 
       dbUser
@@ -37,7 +37,7 @@ export default class MessageHistoryService {
   }
 
   async fetchMessages(userId) {
-    let dbUser = this.db.find({ id: userId }).value();
+    let dbUser = this.db.find({ userId: userId }).value();
     if (dbUser) {
       return dbUser.messages;
     } else { // If user has no messages then add them!
