@@ -12,6 +12,7 @@ export default class EmojifyCommand extends Command {
         text: joi
           .string()
           .required()
+          .max(1500)
           .note('Text to convert into an emojipasta'),
       })
         .rename('t', 'text')

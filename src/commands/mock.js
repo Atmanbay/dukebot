@@ -13,7 +13,8 @@ export default class MockCommand extends Command {
       args: joi.object({
         user: joi
           .custom(validator.user.bind(validator))
-          .required().note('User to mock'),
+          .required()
+          .note('User to mock'),
 
         text: joi
           .string()
