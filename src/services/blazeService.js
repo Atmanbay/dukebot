@@ -9,8 +9,8 @@ export default class BlazeService {
     this.dateFormat = 'YYYY-MM-DD hh:mm a';
   }
 
-  isBlazingMinute() {
-    let currentTime = moment();
+  isBlazingMinute(time) {
+    let currentTime = moment(time);
     if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
       return false;
     }

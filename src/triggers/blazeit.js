@@ -14,7 +14,7 @@ export default class BlazeItTrigger extends Trigger {
       return false;
     }
 
-    if (!this.blazeService.isBlazingMinute()) {
+    if (!this.blazeService.isBlazingMinute(message.createdAt)) {
       return false;
     }
 
