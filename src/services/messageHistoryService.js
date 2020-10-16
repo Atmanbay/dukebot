@@ -4,21 +4,17 @@ export default class MessageHistoryService {
   constructor(container) {
     this.db = container.databaseService.get('messages');
     this.guildService = container.guildService;
+    this.loggerService = container.loggerService;
     this.messageCount = container.configService.messageCount;
+
+    this.commandPrefix = container.configService.prefix;
   }
 
   save(userId, message) {
     try {
       let dbUser = this.db.find({ userId: userId });
       if (isEmpty(dbUser.value())) {
-        this.db
-          .push({
-            id: userId,
-            messages: []
-          })
-          .write();
-        
-        dbUser = this.db.find({ userId: userId });
+        return; // Only save messages from people that have previously been fetched before
       }
 
       dbUser
@@ -32,23 +28,14 @@ export default class MessageHistoryService {
         })
         .write();
     } catch (error) {
-      console.log(error);
+      this.loggerService.error(error);
     }
   }
 
   async fetchMessages(userId) {
-    let dbUser = this.db.find({ userId: userId });
-    if (dbUser.value()) {
-      if (dbUser.value().messages.length == this.messageCount) {
-        return dbUser.value().messages;
-      }
-    } else {
-      this.db.push({
-        userId: userId,
-        messages: []
-      }).write();
-
-      dbUser = this.db.find({ userId: userId });
+    let dbUser = this.db.find({ userId: userId }).value();
+    if (dbUser) {
+      return dbUser.messages;
     }
 
     let channels = this.guildService.getChannels('text');
@@ -84,11 +71,10 @@ export default class MessageHistoryService {
       messages.splice(0, (messages.length - this.messageCount));
     }
 
-    dbUser
-      .update(`messages`, () => {
-        return messages;
-      })
-      .write();
+    this.db.push({
+      userId: userId,
+      messages: messages
+    }).write();
 
     return messages;
   }

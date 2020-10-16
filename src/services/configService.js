@@ -1,3 +1,5 @@
+import dbDefaults from '../../config/dbDefaults';
+
 export default class ConfigService {
   constructor() {
     this.isProduction = this.getEnvironmentVariable('NODE_ENV') === 'production';
@@ -17,26 +19,11 @@ export default class ConfigService {
         }
     }
     
-    this.paths.emojiMappingFile = this.getEnvironmentVariable('DUKE_EMOJI_MAPPING_FILE');
+    // this.paths.emojiMappingFile = this.getEnvironmentVariable('DUKE_EMOJI_MAPPING_FILE');
 
     this.token = this.getEnvironmentVariable('DUKE_DISCORD_TOKEN');
     this.messageCount = this.getEnvironmentVariable('DUKE_MESSAGE_HISTORY_COUNT');
-    this.dbDefaults = {
-      "jobs": [
-      ],
-      "blazes": [
-      ],
-      "responses": [
-      ],
-      "walkups": [
-      ],
-      "stocks": [
-      ],
-      "commandUsage": [
-      ],
-      "messages": [
-      ],
-    }
+    this.dbDefaults = dbDefaults;
 
     this.emojis = {
       goodJob: this.getEnvironmentVariable('DUKE_EMOJIS_GOOD_JOB'),
