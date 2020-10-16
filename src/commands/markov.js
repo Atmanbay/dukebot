@@ -47,8 +47,6 @@ export default class MarkovCommand extends Command {
   }
 
   async execute(message, args) {
-    message.react('⌛'); // Reacting to message immediately so user knows we're working on it
-
     let user = args.user ? args.user : message.author;
     let messages = await this.messageHistoryService.fetchMessages(user.id);
     if (isEmpty(messages)) {
