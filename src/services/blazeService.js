@@ -10,7 +10,7 @@ export default class BlazeService {
   }
 
   isBlazingMinute(time) {
-    let currentTime = moment.utc(time).local();
+    let currentTime = moment.utc(time).tz("America/New_York");
     console.log(time, currentTime);
     if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
       return false;
