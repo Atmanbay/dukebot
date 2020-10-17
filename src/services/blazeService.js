@@ -11,7 +11,7 @@ export default class BlazeService {
 
   isBlazingMinute(time) {
     let currentTime = moment(time);
-    console.log(currentTime);
+    console.log(time, currentTime);
     if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
       return false;
     }
