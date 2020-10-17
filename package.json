@@ -28,6 +28,7 @@
     "markov-strings": "^2.1.1",
     "minimist": "^1.2.5",
     "moment": "^2.25.3",
+    "moment-timezone": "^0.5.31",
     "node-html-parser": "^1.2.18",
     "nodemon": "^2.0.3",
     "opusscript": "0.0.7",
