@@ -87,7 +87,6 @@ export default class CommandService {
       await command.execute(message, args);
       this.usageService.logCommandUse(command.details.name);
     } catch (error) {
-      console.log(error);
       this.loggerService.error(`Error when executing command ${commandName}`, args, error);
     }
 

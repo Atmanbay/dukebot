@@ -6,6 +6,7 @@ export default class HelpService {
     // Cannot be passed in due to circular reference
     this.commands = [];
     this.configService = container.configService;
+    this.loggerService = container.loggerService;
   }
 
   getBotHelpMessage() {
@@ -57,7 +58,7 @@ export default class HelpService {
         }
         response.push(argumentString);
         } catch (error) {
-          console.log(error);
+          this.loggerService.error(error);
         }
       });
     }

@@ -21,7 +21,6 @@ export default class AcronymService {
       let root = parse(htmlString);
       let wordNodes = root.querySelectorAll('table tr');
       if (!wordNodes || wordNodes.length === 0) {
-        console.log(queryParams);
         return 'Could not create acronym. Are there special characters?';
       }
 
@@ -34,7 +33,7 @@ export default class AcronymService {
         return `**${letter}**: ${word}`;
       });
     } catch (error) {
-      console.log(error);
+      this.loggerService.error(error);
     }
   }
 }

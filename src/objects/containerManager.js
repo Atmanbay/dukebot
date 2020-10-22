@@ -26,7 +26,7 @@ export default class ContainerManager {
     // Loads all commands, triggers, and eventHandlers in separate properties
     // All commands will be accessible at container.commands, etc.
     let registerObject = {};
-    let registeringDirectories = ['commands', 'triggers', 'eventHandlers'];
+    let registeringDirectories = ['commands', 'triggers', 'eventHandlers', 'reactions'];
     registeringDirectories.forEach((directory) => {
       registerObject[directory] = this.registerDirectory(directory);
     });
