@@ -18,7 +18,7 @@ export default class StocksService {
     rows.forEach(row => this.db.push(row).write());
   }
 
-  async fetchLeaderboard() {
+  async fetchLeaderboard(weekly) {
     // Set jar to true so it keeps track of cookies
     let r = request.defaults({jar: true});
     var options = {
@@ -48,6 +48,11 @@ export default class StocksService {
         this.loggerService.error(error);
       });
 
+      let rankingType = 'Overall';
+      if (weekly) {
+        rankingType = 'Weekly';
+      }
+
       // Request to get the JSON that has the HTML table as an attribute :)
       let url = 'https://www.howthemarketworks.com/accounting/getrankings';
       let jsonString = await r({
@@ -57,7 +62,7 @@ export default class StocksService {
           pageIndex: 0,
           pageSize: 50,
           tournamentID: this.configService.stocks.contestId,
-          rankingType: 'Overall',
+          rankingType: rankingType,
           date: encodeURI(moment().format("L"))
         }
       }).catch(error => {
@@ -74,15 +79,17 @@ export default class StocksService {
       let table = root.querySelector('table');
       let rows = table.querySelectorAll('tr').slice(2);
 
-      let beginningValue = 50000.00;
+      let percentChangeIndex = 5;
+      if (weekly) {
+        percentChangeIndex = 6;
+      }
       let mappedRows = rows.map(row => {
         let cells = row.querySelectorAll('td');
         let rank = cells[0].structuredText;
         let name = cells[2].structuredText;
         let value = parseFloat(cells[3].structuredText.replace(',', ''));
-
-        // The percent change is in the table but would require more parsing so took the easy way out
-        let percentChange = parseFloat((value - beginningValue) / beginningValue) * 100;
+        let percentChange = parseFloat(cells[percentChangeIndex].structuredText.replace('%', ''));
+        
         percentChange = percentChange.toFixed(2);
 
         return {
@@ -92,8 +99,6 @@ export default class StocksService {
           percentChange: percentChange
         };
       });
-
-
 
       return mappedRows;
     } catch (error) {

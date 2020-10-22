@@ -1,5 +1,6 @@
 import { some } from 'lodash';
 import Command from '../objects/command';
+import joi from 'joi';
 
 export default class StocksCommand extends Command {
   constructor(container) {
@@ -9,12 +10,18 @@ export default class StocksCommand extends Command {
       name: 'stocks',
       aliases: ['stonks'],
       description: 'Check the stocks leaderboard',
+      args: joi.object({
+        weekly: joi
+          .boolean()
+          .note('Flag to show leaderboard for this week'),
+      })
+        .rename('w', 'weekly')
     };
   }
 
-  async execute(message) {
+  async execute(message, args) {
     message.react('📈'); //Reacting to message immediately so user knows we're working on it
-    let rows = await this.stocksService.fetchLeaderboard();
+    let rows = await this.stocksService.fetchLeaderboard(args.weekly);
 
     // Use set column widths so that all columns line up
     // Creates spaces to fill each column dynamically
@@ -24,43 +31,56 @@ export default class StocksCommand extends Command {
 
     let columnWidths = [4, 17, 13]
     let response = rows.map(row => {
-      let rowString = '';
-      let previousEntry = this.stocksService.getPreviousEntry(row.name);
+      try {
+        let rowString = '';
 
-      rowString += row.rank;
-      let cellLength = row.rank.length;
-      if (previousEntry) {
-        if (previousEntry.rank > row.rank) { // moved up
-          rowString += '↑';
-          cellLength += 1;
-        } else if (previousEntry.rank < row.rank) { // moved down
-          rowString += '↓';
-          cellLength += 1;
+        let previousEntry = null;
+        if (!args.weekly) {
+          previousEntry = this.stocksService.getPreviousEntry(row.name);
         }
-      }
-      rowString += this.createBuffer(columnWidths[0], cellLength);
 
-      rowString += row.name;
-      rowString += this.createBuffer(columnWidths[1], row.name.length);
-
-      rowString += row.value;
-      rowString += this.createBuffer(columnWidths[2], row.value.length);
-
-      if (hasNegative && !row.percentChange.startsWith('-')) {
-        rowString += ' ';
-      }
-      rowString += row.percentChange + '%';
-
-      if (previousEntry) {
-        let percentDiff = row.percentChange - previousEntry.percentChange;
-        rowString += ' (';
-        if (percentDiff >= 0) {
-          rowString += '+';
+        rowString += row.rank;
+        let cellLength = row.rank.length;
+        if (previousEntry) {
+          if (previousEntry.rank > row.rank) { // moved up
+            rowString += '↑';
+            cellLength += 1;
+          } else if (previousEntry.rank < row.rank) { // moved down
+            rowString += '↓';
+            cellLength += 1;
+          }
         }
-        rowString += `${percentDiff.toFixed(2)})`;
+        rowString += this.createBuffer(columnWidths[0], cellLength);
+
+        rowString += row.name;
+        rowString += this.createBuffer(columnWidths[1], row.name.length);
+
+        rowString += row.value;
+        rowString += this.createBuffer(columnWidths[2], row.value.length);
+
+        if (hasNegative && !row.percentChange.startsWith('-')) {
+          rowString += ' ';
+        } else if (!hasNegative) {
+          rowString += ' ';
+        }
+
+        rowString += row.percentChange + '%';
+
+        if (previousEntry) {
+          let percentDiff = row.percentChange - previousEntry.percentChange;
+          if (percentDiff !== 0) {
+            rowString += ' (';
+            if (percentDiff >= 0) {
+              rowString += '+';
+            }
+            rowString += `${percentDiff.toFixed(2)})`;
+          }
+        }
+        
+        return rowString;
+      } catch (error) {
+        this.loggerService.error(error);
       }
-      
-      return rowString;
     });
 
     response.unshift('    NAME             VALUE         GAIN/LOSS');
@@ -69,7 +89,9 @@ export default class StocksCommand extends Command {
 
     await message.channel.send(response);
 
-    this.stocksService.saveLeaderboard(rows);
+    if (!args.weekly) {
+      this.stocksService.saveLeaderboard(rows);
+    }
   }
 
   createBuffer(columnWidth, cellLength) {
