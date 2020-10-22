@@ -15,7 +15,7 @@ export default class EmojifyService {
       let mapping = this.getMapping(w);
       if (mapping) {
         let emoji = sample(mapping);
-        let regex = new RegExp(`\\b${w}\\b`);
+        let regex = new RegExp(`\\b${w}\\b(?!(\\s?[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+)`); // Don't add emojis to a word that already has any
         newText = newText.replace(regex, `${w} ${emoji}`);
       }
     });
@@ -30,6 +30,30 @@ export default class EmojifyService {
     } else {
       return null;
     }
+  }
+
+  parseEmojipasta(emojipasta) {
+    let regex = /([a-zA-z']+)\s?(([\uD800-\uDBFF][\uDC00-\uDFFF])+)/g;
+    let matches = emojipasta.matchAll(regex);
+    let pairings = {};
+
+    matches.forEach(m => {
+      let word = m[1];
+      let emoji = m[2];
+
+      if (!(word in pairings)) {
+        pairings[word] = [];
+      }
+
+      pairings[word].push(emoji);
+    });
+
+    return Object.keys(pairings).map(word => {
+      return {
+        word: word,
+        emojis: pairings[word]
+      }
+    });
   }
 
   saveMapping(word, emoji) {

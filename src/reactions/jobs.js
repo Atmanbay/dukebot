@@ -39,6 +39,14 @@ export default class TwitterEmojiReactionHandler {
         return;
       }
 
+      // Actually give the job now
+      let guildMember = this.guildService.getUser(messageReaction.message.author.id);
+      let jobs = this.jobsService.resolveJobs(guildMember, jobType, authorId);
+      let nickname = Object.keys(jobs)[0];
+      if (!nickname) {
+        return;
+      }
+
       users.push(user.id);
 
       cachedMessage
@@ -57,14 +65,6 @@ export default class TwitterEmojiReactionHandler {
       let badReactions = cachedMessage.value().bad;
       if (badReactions) {
         badJobCount = badReactions.length;
-      }
-
-      // Actually give the job now
-      let guildMember = this.guildService.getUser(messageReaction.message.author.id);
-      let jobs = this.jobsService.resolveJobs(guildMember, jobType, authorId);
-      let nickname = Object.keys(jobs)[0];
-      if (!nickname) {
-        return;
       }
 
       let response = `${nickname} has been given`;

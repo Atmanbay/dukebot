@@ -24,21 +24,38 @@ export default class EmojifyCommand extends Command {
 
         delete: joi
           .boolean()
-          .note('Flag to delete the associated word/emoji pair')
+          .note('Flag to delete the associated word/emoji pair'),
+
+        parse: joi
+          .boolean()
+          .note('Flag to tell the command to parse and save the given emojipasta as word:emoji pairings')
       })
         .and('word', 'emoji')
         .with('delete', 'emoji')
+        .with('parse', 'text')
         .xor('word', 'text')
         .rename('t', 'text')
         .rename('w', 'word')
         .rename('e', 'emoji')
         .rename('d', 'delete')
+        .rename('p', 'parse')
     }
   }
 
   execute(message, args) {
     if (args.text) {
-      message.channel.send(this.emojifyService.emojifyText(args.text));
+      if (args.parse) {
+        let mappings = this.emojifyService.parseEmojipasta(args.text);
+        mappings.forEach(m => {
+          m.emojis.forEach(e => {
+            this.emojifyService.saveMapping(m.word, e);
+          })
+        });
+
+        message.react('👌');
+      } else {
+        message.channel.send(this.emojifyService.emojifyText(args.text));
+      }
     } else if (args.delete) {
       this.emojifyService.deleteMapping(args.word, args.emoji);
       message.react('🗑️');
