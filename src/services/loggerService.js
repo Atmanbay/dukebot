@@ -6,7 +6,7 @@ export default class LoggerService {
     if (container.configService.isProduction) {
       let logPath = container.configService.paths.logging;
       let guildId = container.guildService.guild.id;
-      let logger = winston.createLogger({
+      logger = winston.createLogger({
         level: 'info',
         format: winston.format.combine(
           winston.format.timestamp({
