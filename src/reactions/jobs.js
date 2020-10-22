@@ -24,7 +24,7 @@ export default class TwitterEmojiReactionHandler {
       let authorId = null; // Prevent upvoting own message
       if (messageReaction.emoji.name === this.configService.emojis.goodJob) {
         jobType = 'good';
-        // authorId = user.id;
+        authorId = user.id;
       }
 
       let messageId = messageReaction.message.id;
