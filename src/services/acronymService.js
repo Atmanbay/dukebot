@@ -20,13 +20,17 @@ export default class AcronymService {
       });
 
       let response = word.split('').map(letter => {
-        let matchingWords = filter(wordObjects, { letter: letter.toLowerCase() }); // get all matching words
-        let result = sample(matchingWords.map(mw => mw)); // get a random element
-        if (!result) {
-          return null;
+        try {
+          let matchingWords = filter(wordObjects, { letter: letter.toLowerCase() }); // get all matching words
+          let result = sample(matchingWords.map(mw => mw)); // get a random element
+          if (!result) {
+            return null;
+          }
+          let trimmedWord = result.word.match(/\w+/)[0];
+          return `**${letter.toUpperCase()}:** ${trimmedWord}`;
+        } catch (error) {
+          this.loggerService.error(error);
         }
-        let trimmedWord = result.word.match(/\w+/)[0];
-        return `**${letter}:** ${trimmedWord}`;
       });
 
       if (some(response, r => !r)) {
