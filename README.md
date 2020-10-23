@@ -26,6 +26,6 @@ Set environment variables seen in `config.js`
 
 ## Running the project
 
-    $ npm start
+    $ npm run dev
 
 It uses [nodemon](https://github.com/remy/nodemon) so it'll restart the app automatically once any changes are detected.
