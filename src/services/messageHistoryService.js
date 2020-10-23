@@ -32,7 +32,11 @@ export default class MessageHistoryService {
     }
   }
 
-  async fetchMessages(userId) {
+  async fetchMessages(userId = null) {
+    if (!userId) {
+      return this.db.value().flatMap(e => e.messages);
+    }
+
     let dbUser = this.db.find({ userId: userId }).value();
     if (dbUser) {
       return dbUser.messages;

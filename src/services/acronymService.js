@@ -1,37 +1,39 @@
-import request from 'request-promise-native';
-import { parse } from 'node-html-parser';
+import { filter, sample, some } from 'lodash';
 
 export default class AcronymService {
   constructor(container) {
     this.loggerService = container.loggerService;
+    this.messageHistoryService = container.messageHistoryService;
   }
 
   async acronymize(word) {
     try {
-      let url = 'https://acronym-maker.com/generate/';
-      let queryParams = {
-        w: word.replace(/[^\w]|\d/g, '')
-      }
-
-      let htmlString = await request({
-        url: url,
-        qs: queryParams
+      let messages = await this.messageHistoryService.fetchMessages();
+      let wordObjects = [];
+      messages.forEach(m => {
+        m.split(' ').forEach(w => {
+          wordObjects.push({
+            letter: w[0].toLowerCase(),
+            word: w[0].toUpperCase() + w.substring(1)
+          });
+        });
       });
 
-      let root = parse(htmlString);
-      let wordNodes = root.querySelectorAll('table tr');
-      if (!wordNodes || wordNodes.length === 0) {
-        return 'Could not create acronym. Are there special characters?';
+      let response = word.split('').map(letter => {
+        let matchingWords = filter(wordObjects, { letter: letter.toLowerCase() }); // get all matching words
+        let result = sample(matchingWords.map(mw => mw)); // get a random element
+        if (!result) {
+          return null;
+        }
+        let trimmedWord = result.word.match(/\w+/)[0];
+        return `**${letter}:** ${trimmedWord}`;
+      });
+
+      if (some(response, r => !r)) {
+        return 'Acronym could not be built';
       }
 
-      return wordNodes.map(wn => {
-        let word = wn.attributes["data-word"];
-        word = word[0].toUpperCase() + word.substring(1);
-        
-        let letter = word[0];
-
-        return `**${letter}**: ${word}`;
-      });
+      return response;
     } catch (error) {
       this.loggerService.error(error);
     }
