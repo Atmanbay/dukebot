@@ -15,7 +15,9 @@ export default class MarkovCommand extends Command {
       description: 'Creates a new message using a markov chain based on users previous messages',
       args: joi.object({
         user: joi
-          .custom(validator.user.bind(validator))
+          .array()
+          .items(joi.custom(validator.user.bind(validator)))
+          .single()
           .note('Target user to markov (defaults to message author)'),
 
         variance: joi
@@ -47,17 +49,25 @@ export default class MarkovCommand extends Command {
   }
 
   async execute(message, args) {
-    let user = args.user ? args.user : message.author;
-    let messages = await this.messageHistoryService.fetchMessages(user.id);
-    if (isEmpty(messages)) {
-      return;
-    }
+    try {
+      let users = args.user ? args.user.map(u => u.user) : [ message.author ];
+      let promises = users.map(async u => {
+        return this.messageHistoryService.fetchMessages(u.id);
+      });
 
-    message.channel.send(this.markovService.buildMarkov({
-      messages: messages,
-      stateSize: args.chunkSize,
-      maxTries: args.maxTries,
-      variance: args.variance
-    }));
+      let messages = await Promise.all(promises).then(arrays => arrays.flat());
+      if (isEmpty(messages)) {
+        return;
+      }
+
+      message.channel.send(this.markovService.buildMarkov({
+        messages: messages,
+        stateSize: args.chunkSize,
+        maxTries: args.maxTries,
+        variance: args.variance
+      }));
+    } catch (error) {
+      this.loggerService.error(error);
+    }
   }
 }
