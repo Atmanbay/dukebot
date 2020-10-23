@@ -22,7 +22,7 @@ Use your preferred method of cloning and then run:
 
 ## Configure app
 
-Set environment variables seen in `config.js`
+Set environment variables seen in `configService.js`
 
 ## Running the project
 
