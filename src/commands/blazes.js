@@ -22,34 +22,55 @@ export default class BlazeItCommand extends Command {
 
         year: joi
           .boolean()
-          .note('Flag to show scores for this year')
+          .note('Flag to show scores for this year'),
+
+        all: joi
+          .boolean()
+          .note('Flag to show scores for all time'),
+
+        lastMonth: joi
+          .boolean()
+          .note('Flag to show scores for last month'),
       })
-        .oxor('week', 'month', 'year')
+        .oxor('week', 'month', 'year', 'all', 'lastMonth')
         .rename('w', 'week')
         .rename('m', 'month')
         .rename('y', 'year')
+        .rename('a', 'all')
+        .rename('l', 'lastMonth')
     };
   }
 
   async execute(message, args) {
-    let cutoff = moment().startOf('month');
-    let frame = 'month';
+    let start = moment().startOf('month');
+    let end = moment().endOf('month');
+    let frame = 'this month';
     if (args.week) {
-      cutoff = moment().startOf('week');
-      frame = 'week';
+      start = moment().startOf('week');
+      end = moment().endOf('week');
+      frame = 'this week';
     } else if (args.year) {
-      cutoff = null;
+      start = moment().startOf('year');
+      end = moment().endOf('year');
+      frame = 'this year';
+    } else if (args.lastMonth) {
+      start = moment().subtract(1, 'month').startOf('month')
+      end = moment().subtract(1, 'month').endOf('month')
+      frame = 'last month'
+    } else if (args.all) {
+      start = null;
+      end = null;
       frame = null;
     }
 
     try {
-      let result = await this.blazeService.getBlazes(cutoff);
+      let result = await this.blazeService.getBlazes(start, end);
       if (isEmpty(result)) {
         return;
       }
       let response = '**Blazes';
       if (frame) {
-        response += ` this ${frame}`;
+        response += ` ${frame}`;
       }
 
       response += '** \n';

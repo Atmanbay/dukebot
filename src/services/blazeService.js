@@ -49,8 +49,8 @@ export default class BlazeService {
     return true;
   }
 
-  // Get all blazes that happened after specified cutoff date
-  async getBlazes(cutoff) {
+  // Get all blazes that happened between start and end dates
+  async getBlazes(start, end) {
     let dateFormat = this.dateFormat;
     let guildService = this.guildService;
     let db = this.db.value();
@@ -58,10 +58,10 @@ export default class BlazeService {
       let guildUser = guildService.getUser(entry.id);
       let name = guildUser.nickname || guildUser.user.username;
       let timestamps = entry.timestamps;
-      if (cutoff) {
+      if (start && end) {
         timestamps = timestamps.filter(function(timestamp) {
           let momentTimestamp = moment(timestamp, dateFormat);
-          return momentTimestamp >= cutoff;
+          return momentTimestamp >= start && momentTimestamp <= end;
         });
       }
       let count = timestamps.length;
