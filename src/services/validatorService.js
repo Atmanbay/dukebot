@@ -2,11 +2,13 @@ import { GuildChannel } from 'discord.js'
 
 export default class ValidatorService {
   constructor(container) {
+    this.loggerService = container.loggerService;
     this.conversionService = container.conversionService;
   }
 
   user(value, helpers) {
     if (!(typeof(value) === 'string')) {
+      this.loggerService.info(`Was expecting string, instead got ${typeof(value)}`)
       throw new Error('Must be a user');
     }
 

@@ -21,7 +21,11 @@ export default class ConversionService {
   }
 
   getUser(userId) {
-    let newVal = userId.substring(3, userId.length - 1);
+    let newVal = userId;
+    if (userId.startsWith('<')) {
+      newVal = userId.substring(3, userId.length - 1);
+    }
+    
     return this.guildService.getUser(newVal);
   }
 

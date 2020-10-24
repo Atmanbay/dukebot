@@ -9,12 +9,12 @@ export default class RenameCommand extends Command {
       name: 'rename',
       description: 'Rename the bot',
       args: joi.object({
-        name: joi
+        text: joi
           .string()
           .required()
           .note('New name for the bot')
       })
-        .rename('n', 'name')
+        .rename('t', 'text')
     };
   }
   

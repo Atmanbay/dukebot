@@ -60,12 +60,19 @@ export default class MarkovCommand extends Command {
         return;
       }
 
-      message.channel.send(this.markovService.buildMarkov({
+      let markov = this.markovService.buildMarkov({
         messages: messages,
         stateSize: args.chunkSize,
         maxTries: args.maxTries,
         variance: args.variance
-      }));
+      });
+
+      return {
+        message: markov,
+        args: {
+          text: markov
+        }
+      };
     } catch (error) {
       this.loggerService.error(error);
     }

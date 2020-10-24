@@ -9,12 +9,12 @@ export default class DefineCommand extends Command {
       name: 'define',
       description: 'Use UrbanDictionary to find the definition of a word',
       args: joi.object({
-        word: joi
+        text: joi
           .string()
           .required()
-          .note('The word (or phrase if using quotes) to define')
+          .note('The text (or phrase if using quotes) to define')
       })
-        .rename('w', 'word')
+        .rename('t', 'text')
     };
   }
 
@@ -32,6 +32,11 @@ export default class DefineCommand extends Command {
     response.push('');
     response.push(`_${definition.example}_`);
 
-    message.channel.send(response);
+    return {
+      message: response,
+      args: {
+        text: response.join('\n')
+      }
+    }
   }
 }

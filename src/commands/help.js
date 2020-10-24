@@ -25,6 +25,11 @@ export default class HelpCommand extends Command {
       response = this.helpService.getBotHelpMessage();
     }
 
-    message.channel.send(response);
+    return {
+      message: response,
+      args: {
+        text: response
+      }
+    }
   }
 }

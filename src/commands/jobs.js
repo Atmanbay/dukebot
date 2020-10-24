@@ -90,7 +90,12 @@ export default class JobsCommand extends Command {
         });
       }
 
-      message.channel.send(response);
+      return {
+        message: response,
+        args: {
+          text: response
+        }
+      }
     } catch (error) {
       this.loggerService.error(error);
     }

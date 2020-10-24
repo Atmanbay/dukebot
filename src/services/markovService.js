@@ -6,23 +6,24 @@ export default class MarkovService {
   }
 
   buildMarkov({messages, stateSize, maxTries, variance}) {
-    let markov = new Markov(messages, { stateSize: stateSize });
-    markov.buildCorpus();
+    return 'this is a markov';
+    // let markov = new Markov(messages, { stateSize: stateSize });
+    // markov.buildCorpus();
 
-    let options = {
-      maxTries: maxTries,
-      prng: Math.random,
-      filter: (result) => {
-        return result.refs.length > variance && result.string.length <= 2000
-      }
-    };
+    // let options = {
+    //   maxTries: maxTries,
+    //   prng: Math.random,
+    //   filter: (result) => {
+    //     return result.refs.length > variance && result.string.length <= 2000
+    //   }
+    // };
 
-    try {
-      let result = markov.generate(options);
-      return result.string;
-    } catch (error) {
-      this.loggerService.error(error);
-      return 'Failed to build Markov';
-    }
+    // try {
+    //   let result = markov.generate(options);
+    //   return result.string;
+    // } catch (error) {
+    //   this.loggerService.error(error);
+    //   return 'Failed to build Markov';
+    // }
   }
 }

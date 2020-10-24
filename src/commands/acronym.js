@@ -21,6 +21,12 @@ export default class AcronymCommand extends Command {
 
   async execute(message, args) {
     let response = await this.acronymService.acronymize(args.text);
-    message.channel.send(response);
+    
+    return {
+      message: response,
+      args: {
+        text: response
+      }
+    };
   }
 }

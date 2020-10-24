@@ -54,7 +54,12 @@ export default class EmojifyCommand extends Command {
 
         message.react('👌');
       } else {
-        message.channel.send(this.emojifyService.emojifyText(args.text));
+        return {
+          message: this.emojifyService.emojifyText(args.text),
+          args: {
+            text: this.emojifyService.emojifyText(args.text)
+          }
+        };
       }
     } else if (args.delete) {
       this.emojifyService.deleteMapping(args.word, args.emoji);

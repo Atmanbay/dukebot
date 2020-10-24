@@ -1,5 +1,5 @@
-import { find } from 'lodash';
-import minimist from 'minimist';
+import { find } from "lodash";
+import minimist from "minimist";
 
 export default class CommandService {
   constructor(container) {
@@ -16,41 +16,55 @@ export default class CommandService {
       return false;
     }
 
-    try {
-      let parsedMessage = this.parseMessage(message);
-      let command = this.getCommand(parsedMessage.commandName);
-      if (!command) {
-        return false;
-      }
+    let content = message.content.substring(this.configService.prefix.length);
+    let matches = [...content.matchAll(/\s?(.*?)\s?(\||$)/g)];
+    let commands = matches.map((m) => m[1]).filter((m) => m);
 
-      return this.executeCommand(command, message, parsedMessage.args);
-    } catch (error) {
-      this.loggerService.error(error);
-      return true;
-    }
+    commands
+      .reduce(
+        (p, c) => p.then((context) => this.handleCommand(message, c, context)),
+        Promise.resolve()
+      )
+      .then((context) => {
+        if (context && context.message) {
+          message.channel.send(context.message);
+        }
+      });
   }
 
   shouldHandle(message) {
     return message.content.startsWith(this.configService.prefix);
   }
 
-  parseMessage(message) {
-    // Trim command prefix from beginning and then split on spaces (but keep quoted text together)
-    let content = message.content.substring(this.configService.prefix.length);
+  async handleCommand(message, content, context) {
+    let parsedMessage = this.parseMessage(content);
+    let command = this.getCommand(parsedMessage.commandName);
+
+    if (!command) {
+      return false;
+    }
+
+    if (context) {
+      Object.assign(parsedMessage.args, context.args);
+    }
+
+    return this.executeCommand(command, message, parsedMessage.args);
+  }
+
+  parseMessage(content) {
+    // split on spaces (but keep quoted text together)
     let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
     let matches = [...content.matchAll(regex)];
 
     let argArray = [];
-    for(let i = 0; i < matches.length; i++) {
+    for (let i = 0; i < matches.length; i++) {
       let match = matches[i];
-      if (!match)
-        continue;
-      
+      if (!match) continue;
+
       // If this match was quoted then retrieve the first group which will not include the quotes
-      if (match[1])
-        argArray.push(match[1]);
-      else // otherwise retrieve the entire match
-        argArray.push(match[0]);
+      if (match[1]) argArray.push(match[1]);
+      // otherwise retrieve the entire match
+      else argArray.push(match[0]);
     }
 
     // pass args into minimist which will convert it to an object
@@ -62,7 +76,7 @@ export default class CommandService {
 
     return {
       commandName,
-      args
+      args,
     };
   }
 
@@ -77,19 +91,22 @@ export default class CommandService {
       let validation = command.details.args.validate(args);
       if (validation.error) {
         await message.channel.send(validation.error.toString());
-        return true;
+        return null;
       } else {
         args = validation.value;
       }
     }
 
     try {
-      await command.execute(message, args);
+      let context = await command.execute(message, args);
       this.usageService.logCommandUse(command.details.name);
+      return context;
     } catch (error) {
-      this.loggerService.error(`Error when executing command ${commandName}`, args, error);
+      this.loggerService.error(
+        `Error when executing command ${commandName}`,
+        args,
+        error
+      );
     }
-
-    return true;
   }
 }

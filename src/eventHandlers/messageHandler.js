@@ -31,7 +31,7 @@ export default class MessageHandler {
       }
       
     } catch (error) {
-      this.loggerService.error(error, message);
+      this.loggerService.error(error);
     }
   }
 }

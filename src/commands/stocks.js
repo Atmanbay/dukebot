@@ -87,10 +87,15 @@ export default class StocksCommand extends Command {
     response.unshift('```');
     response.push('```');
 
-    await message.channel.send(response);
-
     if (!args.weekly) {
       this.stocksService.saveLeaderboard(rows);
+    }
+
+    return {
+      message: response,
+      args: {
+        text: response.join('\n')
+      }
     }
   }
 
