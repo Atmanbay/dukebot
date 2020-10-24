@@ -20,7 +20,7 @@ export default class CommandService {
     let matches = [...content.matchAll(/\s?(.*?)\s?(\||$)/g)];
     let commands = matches.map((m) => m[1]).filter((m) => m);
 
-    commands
+    let result = await commands
       .reduce(
         (p, c) => p.then((context) => this.handleCommand(message, c, context)),
         Promise.resolve()
@@ -29,7 +29,15 @@ export default class CommandService {
         if (context && context.message) {
           message.channel.send(context.message);
         }
+
+        return true;
+      })
+      .catch((error) => {
+        this.loggerService.error(error);
+        return false;
       });
+
+    return result;
   }
 
   shouldHandle(message) {
@@ -37,10 +45,6 @@ export default class CommandService {
   }
 
   async handleCommand(message, content, context) {
-    console.log({
-      content,
-      context,
-    });
     let parsedMessage = this.parseMessage(content);
     let command = this.getCommand(parsedMessage.commandName);
 
