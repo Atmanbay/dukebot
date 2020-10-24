@@ -20,7 +20,6 @@ export default class AcronymCommand extends Command {
   }
 
   async execute(message, args) {
-    this.loggerService.info('trying...');
     let response = await this.acronymService.acronymize(args.text);
     message.channel.send(response);
   }
