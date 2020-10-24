@@ -13,7 +13,11 @@ export default class MarkovService {
       maxTries: maxTries,
       prng: Math.random,
       filter: (result) => {
-        return result.refs.length > variance && result.string.length <= 2000;
+        return (
+          result.refs.length > variance &&
+          result.score > 1 &&
+          result.string.length <= 2000
+        );
       },
     };
 

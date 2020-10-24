@@ -10,7 +10,11 @@ export default class MessageHistoryService {
     this.commandPrefix = container.configService.prefix;
   }
 
-  save(userId, message) {
+  save(userId, message, minLength = 0) {
+    if (message.length < minLength) {
+      return;
+    }
+
     try {
       let dbUser = this.db.find({ userId: userId });
       if (isEmpty(dbUser.value())) {

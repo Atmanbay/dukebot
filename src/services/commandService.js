@@ -12,7 +12,7 @@ export default class CommandService {
 
   async handle(message) {
     if (!this.shouldHandle(message)) {
-      this.messageHistoryService.save(message.author.id, message.content);
+      this.messageHistoryService.save(message.author.id, message.content, 3);
       return false;
     }
 
