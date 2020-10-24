@@ -33,7 +33,7 @@ export default class AcronymService {
         }
       });
 
-      this.loggerService.info('response is', response);
+      this.loggerService.log('response is', response);
       if (some(response, r => !r)) {
         return 'Acronym could not be built';
       }
