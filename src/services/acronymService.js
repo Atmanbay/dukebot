@@ -31,7 +31,7 @@ export default class AcronymService {
           let trimmedWord = result.word.match(/\w+/)[0];
           return `**${letter.toUpperCase()}:** ${trimmedWord}`;
         } catch (error) {
-          this.loggerService.error(error);
+          this.loggerService.error('Error when trying to build acronym response', error);
         }
       });
       
@@ -42,7 +42,7 @@ export default class AcronymService {
 
       return response;
     } catch (error) {
-      this.loggerService.error(error);
+      this.loggerService.error('Error when acronymizing', error);
     }
   }
 }

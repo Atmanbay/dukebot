@@ -5,6 +5,7 @@ export default class AcronymCommand extends Command {
   constructor(container) {
     super();
     this.acronymService = container.acronymService;
+    this.loggerService = container.loggerService;
     this.details = {
       name: 'acronym',
       description: 'Make up a (fake) acronym for a given word/phrase',
@@ -19,6 +20,7 @@ export default class AcronymCommand extends Command {
   }
 
   async execute(message, args) {
+    this.loggerService.info('trying...');
     let response = await this.acronymService.acronymize(args.text);
     message.channel.send(response);
   }
