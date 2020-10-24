@@ -19,6 +19,8 @@ export default class AcronymService {
         });
       });
 
+      this.loggerService.info('wordObjects are', wordObjects);
+
       let response = word.split('').map(letter => {
         try {
           let matchingWords = filter(wordObjects, { letter: letter.toLowerCase() }); // get all matching words
@@ -32,8 +34,8 @@ export default class AcronymService {
           this.loggerService.error(error);
         }
       });
-
-      console.log('response is', response);
+      
+      this.loggerService.info('response is', response);
       if (some(response, r => !r)) {
         return 'Acronym could not be built';
       }
