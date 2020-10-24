@@ -37,6 +37,10 @@ export default class CommandService {
   }
 
   async handleCommand(message, content, context) {
+    console.log({
+      content,
+      context,
+    });
     let parsedMessage = this.parseMessage(content);
     let command = this.getCommand(parsedMessage.commandName);
 
