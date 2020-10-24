@@ -1,4 +1,4 @@
-import { filter, isEmpty } from 'lodash';
+import { filter, isEmpty } from "lodash";
 
 export default class CommandService {
   constructor(container) {
@@ -14,9 +14,13 @@ export default class CommandService {
 
     triggers.forEach((trigger) => {
       try {
-        trigger.execute(message);  
+        trigger.execute(message);
       } catch (error) {
-        this.loggerService.error('Error when trying to execute trigger', message.author.id, message.content); 
+        this.loggerService.error(
+          "Error when trying to execute trigger",
+          message.author.id,
+          message.content
+        );
       }
     });
   }

@@ -1,6 +1,6 @@
 export default class ResponseService {
   constructor(container) {
-    this.db = container.databaseService.get('responses');
+    this.db = container.databaseService.get("responses");
   }
 
   save(responder) {
@@ -14,7 +14,7 @@ export default class ResponseService {
 
   getResponder(messageContent) {
     let lowerContent = messageContent.toLowerCase();
-    let responder = this.db.find(function(responder) {
+    let responder = this.db.find(function (responder) {
       let regex = new RegExp(`\\b${responder.trigger.toLowerCase()}\\b`);
       return lowerContent.match(regex);
     });

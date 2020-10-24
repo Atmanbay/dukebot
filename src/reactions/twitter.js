@@ -1,5 +1,4 @@
 export default class TwitterEmojiReactionHandler {
-
   // Handles the detection + execution of tweeting
   constructor(container) {
     this.loggerService = container.loggerService;
@@ -24,13 +23,17 @@ export default class TwitterEmojiReactionHandler {
       return false;
     }
 
-    let filterUser = async function(user) {
+    let filterUser = async function (user) {
       let guildMember = this.guildService.getUser(user.id);
       return this.permissionsService.hasTwitterRole(guildMember);
     };
 
-    let reactedUserCount = messageReaction.users.cache.filter(filterUser.bind(this)).size;
-    let twitterRoleUserCount = this.guildService.getRole(this.configService.roles.twitter).members.size;
+    let reactedUserCount = messageReaction.users.cache.filter(
+      filterUser.bind(this)
+    ).size;
+    let twitterRoleUserCount = this.guildService.getRole(
+      this.configService.roles.twitter
+    ).members.size;
     let divided = twitterRoleUserCount / reactedUserCount;
     if (!divided || divided > 2) {
       return false;
@@ -39,13 +42,15 @@ export default class TwitterEmojiReactionHandler {
     return true;
   }
 
-  handle(messageReaction) { 
+  handle(messageReaction) {
     this.twitterService
       .tweet(messageReaction.message.content)
-      .then(response => {
-        messageReaction.message.channel.send(`https://twitter.com/${response.user.screen_name}/status/${response.id_str}`);
+      .then((response) => {
+        messageReaction.message.channel.send(
+          `https://twitter.com/${response.user.screen_name}/status/${response.id_str}`
+        );
       })
-      .catch(error => {
+      .catch((error) => {
         this.loggerService.error(error);
       });
   }

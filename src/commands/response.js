@@ -1,39 +1,42 @@
-import Command from '../objects/command';
-import emojiRegex from 'emoji-regex';
-import joi from 'joi';
+import Command from "../objects/command";
+import emojiRegex from "emoji-regex";
+import joi from "joi";
 
 export default class ResponseCommand extends Command {
   constructor(container) {
     super();
     this.responseService = container.responseService;
     this.details = {
-      name: 'response',
-      description: 'Add a custom responder to the bot',
-      args: joi.object({
-        trigger: joi
-          .string()
-          .required()
-          .note('Word (or phrase if using quotes) that will trigger the response'),
+      name: "response",
+      description: "Add a custom responder to the bot",
+      args: joi
+        .object({
+          trigger: joi
+            .string()
+            .required()
+            .note(
+              "Word (or phrase if using quotes) that will trigger the response"
+            ),
 
-        response: joi
-          .string()
-          .note('Phrase or emoji that the bot will respond with'),
+          response: joi
+            .string()
+            .note("Phrase or emoji that the bot will respond with"),
 
-        delete: joi
-          .boolean()
-          .note('Flag to tell the bot to delete specified trigger')
-      })
-        .xor('response', 'delete')
-        .rename('t', 'trigger')
-        .rename('r', 'response')
-        .rename('d', 'delete')
+          delete: joi
+            .boolean()
+            .note("Flag to tell the bot to delete specified trigger"),
+        })
+        .xor("response", "delete")
+        .rename("t", "trigger")
+        .rename("r", "response")
+        .rename("d", "delete"),
     };
   }
 
   execute(message, args) {
     if (args.delete) {
       this.responseService.delete(args.trigger);
-      message.react('🗑️');  
+      message.react("🗑️");
       return;
     }
 
@@ -46,10 +49,10 @@ export default class ResponseCommand extends Command {
 
     this.responseService.save({
       trigger: args.trigger,
-      responses: responses
+      responses: responses,
     });
-    
-    message.react('👌');  
+
+    message.react("👌");
   }
 
   parseResponse(value) {
@@ -60,25 +63,25 @@ export default class ResponseCommand extends Command {
     if (emojiMatch) {
       let emoji = emojiMatch[0];
       response.value = emoji;
-      response.type = 'emoji';
+      response.type = "emoji";
       return response;
     }
 
-    let isCustomEmoji = RegExp('\<:(.*?):(.*?)\>');
+    let isCustomEmoji = RegExp("<:(.*?):(.*?)>");
     let customEmojiMatch = value.match(isCustomEmoji);
     if (customEmojiMatch) {
       let customEmojiId = customEmojiMatch[2];
       response.value = customEmojiId;
-      response.type = 'customEmoji';
+      response.type = "customEmoji";
       return response;
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       response.value = value;
-      response.type = 'string';
+      response.type = "string";
       return response;
     }
 
-    return { };
+    return {};
   }
 }

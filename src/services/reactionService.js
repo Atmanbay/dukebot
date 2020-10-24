@@ -1,6 +1,6 @@
 export default class ReactionService {
   constructor(container) {
-    this.db = container.databaseService.get('reactedMessages');
+    this.db = container.databaseService.get("reactedMessages");
   }
 
   findOrCreate(messageId) {
@@ -10,7 +10,7 @@ export default class ReactionService {
     if (!cachedMessage.value()) {
       this.db
         .push({
-          id: messageId
+          id: messageId,
         })
         .write();
 
@@ -20,7 +20,7 @@ export default class ReactionService {
 
     return {
       cachedMessage: cachedMessage,
-      created: created
+      created: created,
     };
   }
 }

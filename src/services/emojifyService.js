@@ -1,25 +1,27 @@
-import { RegExp } from 'core-js';
-import fs from 'fs';
-import { sample } from 'lodash';
+import { RegExp } from "core-js";
+import fs from "fs";
+import { sample } from "lodash";
 
 export default class EmojifyService {
   constructor(container) {
-    this.db = container.databaseService.get('emojis');
+    this.db = container.databaseService.get("emojis");
     this.filePath = container.configService.paths.emojiMappingFile;
   }
 
   emojifyText(text) {
-    let words = [...text.matchAll(/\S+/g)].map(m => m[0]);
+    let words = [...text.matchAll(/\S+/g)].map((m) => m[0]);
     let newText = text;
-    words.forEach(w => {
+    words.forEach((w) => {
       let mapping = this.getMapping(w);
       if (mapping) {
         let emoji = sample(mapping);
-        let regex = new RegExp(`\\b${w}\\b(?!(\\s?[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+)`); // Don't add emojis to a word that already has any
+        let regex = new RegExp(
+          `\\b${w}\\b(?!(\\s?[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+)`
+        ); // Don't add emojis to a word that already has any
         newText = newText.replace(regex, `${w} ${emoji}`);
       }
     });
-    
+
     return newText;
   }
 
@@ -37,7 +39,7 @@ export default class EmojifyService {
     let matches = emojipasta.matchAll(regex);
     let pairings = {};
 
-    matches.forEach(m => {
+    matches.forEach((m) => {
       let word = m[1];
       let emoji = m[2];
 
@@ -48,11 +50,11 @@ export default class EmojifyService {
       pairings[word].push(emoji);
     });
 
-    return Object.keys(pairings).map(word => {
+    return Object.keys(pairings).map((word) => {
       return {
         word: word,
-        emojis: pairings[word]
-      }
+        emojis: pairings[word],
+      };
     });
   }
 
@@ -60,7 +62,7 @@ export default class EmojifyService {
     let dbWord = this.db.find({ word: word });
     if (dbWord.value()) {
       dbWord
-        .update('emojis', (emojis) => {
+        .update("emojis", (emojis) => {
           emojis.push(emoji);
           return emojis;
         })
@@ -69,7 +71,7 @@ export default class EmojifyService {
       this.db
         .push({
           word: word,
-          emojis: [ emoji ]
+          emojis: [emoji],
         })
         .write();
     }
@@ -79,7 +81,7 @@ export default class EmojifyService {
     let dbWord = this.db.find({ word: word });
     if (dbWord.value()) {
       dbWord
-        .update('emojis', (emojis) => {
+        .update("emojis", (emojis) => {
           let index = emojis.indexOf(emoji);
           if (index > -1) {
             emojis.splice(index, 1);

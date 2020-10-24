@@ -1,8 +1,8 @@
-import Command from '../objects/command';
-import fs from 'fs';
-import download from 'download';
-import sanitize from 'sanitize-filename';
-import joi from 'joi';
+import Command from "../objects/command";
+import fs from "fs";
+import download from "download";
+import sanitize from "sanitize-filename";
+import joi from "joi";
 
 export default class AudioCommand extends Command {
   constructor(container) {
@@ -11,46 +11,44 @@ export default class AudioCommand extends Command {
     this.configService = container.configService;
     let validator = container.validatorService;
     this.details = {
-      name: 'audio',
-      description: 'Play specified audio clip',
-      args: joi.object({
-        name: joi
-          .string()
-          .note('Name of the audio clip'),
+      name: "audio",
+      description: "Play specified audio clip",
+      args: joi
+        .object({
+          name: joi.string().note("Name of the audio clip"),
 
-        channel: joi
-          .custom(validator.channel.bind(validator))
-          .note('Name of the audio channel to play the clip in'),
+          channel: joi
+            .custom(validator.channel.bind(validator))
+            .note("Name of the audio channel to play the clip in"),
 
-        list: joi
-          .boolean()
-          .note('Flag to return a list of audio clips'),
+          list: joi.boolean().note("Flag to return a list of audio clips"),
 
-        upload: joi
-          .boolean()
-          .note('Flag to start the upload process for a new clip')
-      })
-        .with('channel', 'name')
-        .xor('name', 'list', 'upload')
-        .rename('n', 'name')
-        .rename('c', 'channel')
-        .rename('l', 'list')
-        .rename('u', 'upload')
+          upload: joi
+            .boolean()
+            .note("Flag to start the upload process for a new clip"),
+        })
+        .with("channel", "name")
+        .xor("name", "list", "upload")
+        .rename("n", "name")
+        .rename("c", "channel")
+        .rename("l", "list")
+        .rename("u", "upload"),
     };
   }
 
   async list(message) {
     let clips = this.audioService.getClips();
-    clips.unshift('```');
-    clips.push('```');
+    clips.unshift("```");
+    clips.push("```");
     message.channel.send(clips);
   }
 
   async upload(message) {
-    await message.channel.send('Please upload your file!');
-    let filter = m => message.author.id === m.author.id;
-    await message.channel.awaitMessages(filter, { time: 60000, max: 1, errors: ['time'] })
-      .then(messages => {
+    await message.channel.send("Please upload your file!");
+    let filter = (m) => message.author.id === m.author.id;
+    await message.channel
+      .awaitMessages(filter, { time: 60000, max: 1, errors: ["time"] })
+      .then((messages) => {
         let message = messages.first();
         let attachments = message.attachments;
         if (attachments && attachments.size === 1) {
@@ -63,7 +61,7 @@ export default class AudioCommand extends Command {
         }
       })
       .catch(() => {
-        message.channel.send('You took too long!');
+        message.channel.send("You took too long!");
       });
   }
 

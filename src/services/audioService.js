@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from "fs";
 
 export default class AudioService {
   constructor(container) {
@@ -11,21 +11,21 @@ export default class AudioService {
     if (!channel) {
       return;
     }
-    
+
     let logger = this.loggerService;
     let connection = await channel.join();
     let dispatcher = connection.play(path);
-    dispatcher.on('finish', () => {
+    dispatcher.on("finish", () => {
       connection.disconnect();
     });
-    
-    dispatcher.on('error', logger.error);
+
+    dispatcher.on("error", logger.error);
   }
 
   getClips() {
     let files = [];
     fs.readdirSync(this.configService.paths.audio).forEach((file) => {
-      files.push(file.replace('.mp3', ''));
+      files.push(file.replace(".mp3", ""));
     });
 
     return files;

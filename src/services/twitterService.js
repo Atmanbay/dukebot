@@ -1,4 +1,4 @@
-import Twitter from 'twitter';
+import Twitter from "twitter";
 
 export default class TwitterService {
   constructor(container) {
@@ -10,7 +10,7 @@ export default class TwitterService {
       consumer_key: this.configService.twitter.consumerKey,
       consumer_secret: this.configService.twitter.consumerSecret,
       access_token_key: this.configService.twitter.accessTokenKey,
-      access_token_secret: this.configService.twitter.accessTokenSecret
+      access_token_secret: this.configService.twitter.accessTokenSecret,
     });
   }
 
@@ -18,7 +18,7 @@ export default class TwitterService {
     if (!this.configService.useTwitter) {
       return;
     }
-    
-    return this.client.post('statuses/update', { status: status });
+
+    return this.client.post("statuses/update", { status: status });
   }
 }

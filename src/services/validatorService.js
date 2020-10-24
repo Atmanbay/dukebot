@@ -1,4 +1,4 @@
-import { GuildChannel } from 'discord.js'
+import { GuildChannel } from "discord.js";
 
 export default class ValidatorService {
   constructor(container) {
@@ -7,14 +7,16 @@ export default class ValidatorService {
   }
 
   user(value, helpers) {
-    if (!(typeof(value) === 'string')) {
-      this.loggerService.info(`Was expecting string, instead got ${typeof(value)}`)
-      throw new Error('Must be a user');
+    if (!(typeof value === "string")) {
+      this.loggerService.info(
+        `Was expecting string, instead got ${typeof value}`
+      );
+      throw new Error("Must be a user");
     }
 
     let user = this.conversionService.getUser(value);
     if (!user) {
-      throw new Error('No user found');
+      throw new Error("No user found");
     }
 
     return user;
@@ -23,13 +25,13 @@ export default class ValidatorService {
   channel(value, helpers) {
     if (value instanceof GuildChannel) {
       return value;
-    } else if (!(typeof(value) === 'string')) {
-      throw new Error('Must be a channel');
+    } else if (!(typeof value === "string")) {
+      throw new Error("Must be a channel");
     }
 
     let channel = this.conversionService.getChannelByName(value);
     if (!channel) {
-      throw new Error('No channel found');
+      throw new Error("No channel found");
     }
 
     return channel;

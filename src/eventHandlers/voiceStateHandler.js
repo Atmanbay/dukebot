@@ -1,8 +1,8 @@
-import fs from 'fs';
+import fs from "fs";
 
 export default class VoiceStateHandler {
   constructor(container) {
-    this.event = 'voiceStateUpdate';
+    this.event = "voiceStateUpdate";
     this.loggerService = container.loggerService;
     this.configService = container.configService;
     this.guildService = container.guildService;

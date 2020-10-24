@@ -1,5 +1,5 @@
-import Command from '../objects/command';
-import joi from 'joi';
+import Command from "../objects/command";
+import joi from "joi";
 
 export default class MockCommand extends Command {
   constructor(container) {
@@ -8,21 +8,22 @@ export default class MockCommand extends Command {
     this.guildService = container.guildService;
     let validator = container.validatorService;
     this.details = {
-      name: 'mock',
-      description: 'Mock some loser',
-      args: joi.object({
-        user: joi
-          .custom(validator.user.bind(validator))
-          .required()
-          .note('User to mock'),
+      name: "mock",
+      description: "Mock some loser",
+      args: joi
+        .object({
+          user: joi
+            .custom(validator.user.bind(validator))
+            .required()
+            .note("User to mock"),
 
-        text: joi
-          .string()
-          .note('Text to mock them with')
-          .default('I\'m a big ole dummy')
-      })
-        .rename('u', 'user')
-        .rename('t', 'text')
+          text: joi
+            .string()
+            .note("Text to mock them with")
+            .default("I'm a big ole dummy"),
+        })
+        .rename("u", "user")
+        .rename("t", "text"),
     };
   }
 
