@@ -11,7 +11,7 @@ export default class AcronymService {
       let messages = await this.messageHistoryService.fetchMessages();
       let wordObjects = [];
       messages.forEach(m => {
-        m.split(' ').forEach(w => {
+        m.split(' ').filter(w => w).forEach(w => {
           wordObjects.push({
             letter: w[0].toLowerCase(),
             word: w[0].toUpperCase() + w.substring(1)
