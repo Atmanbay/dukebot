@@ -1,6 +1,6 @@
 export default class WalkupService {
   constructor(container) {
-    this.db = container.databaseService.get('walkups');
+    this.db = container.databaseService.get("walkups");
   }
 
   getWalkup(userId) {

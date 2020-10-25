@@ -1,6 +1,6 @@
-import fs from 'fs';
-import FileSync from 'lowdb/adapters/FileSync';
-import low from 'lowdb';
+import fs from "fs";
+import FileSync from "lowdb/adapters/FileSync";
+import low from "lowdb";
 
 // Used to access the guild-specific JSON db
 export default class DatabaseService {
@@ -17,7 +17,7 @@ export default class DatabaseService {
 
   generateDb(dbName) {
     let fileName = `${this.dbFolder}/${dbName}.json`;
-    fs.closeSync(fs.openSync(fileName, 'a'));
+    fs.closeSync(fs.openSync(fileName, "a"));
   }
 
   buildDb(dbName) {

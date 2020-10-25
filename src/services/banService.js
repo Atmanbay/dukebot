@@ -1,4 +1,4 @@
-import { remove } from 'lodash';
+import { remove } from "lodash";
 
 export default class BanService {
   constructor() {
@@ -9,9 +9,11 @@ export default class BanService {
     this.bans.push(userId);
 
     // Waits 5 minutes and then removes user from banned list
-    return new Promise(resolve => setTimeout(() => resolve(), 300000)).then(() => {
-      this.bans = remove(this.bans, userId);
-    });
+    return new Promise((resolve) => setTimeout(() => resolve(), 300000)).then(
+      () => {
+        this.bans = remove(this.bans, userId);
+      }
+    );
   }
 
   isBanned(userId) {

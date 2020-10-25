@@ -7,11 +7,13 @@ export default class ConversionService {
   // Converts user/chanel IDs into the actual objects
   async convert(value) {
     let promise;
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
       promise = Promise.resolve(value);
-    } else if (value.startsWith('<@!')) { //value is user
+    } else if (value.startsWith("<@!")) {
+      //value is user
       promise = this.getUser(value);
-    } else if (value.startsWith('<#')) { //value is channel
+    } else if (value.startsWith("<#")) {
+      //value is channel
       promise = this.getChannel(value);
     } else {
       promise = Promise.resolve(value);
@@ -21,7 +23,11 @@ export default class ConversionService {
   }
 
   getUser(userId) {
-    let newVal = userId.substring(3, userId.length - 1);
+    let newVal = userId;
+    if (userId.startsWith("<")) {
+      newVal = userId.substring(3, userId.length - 1);
+    }
+
     return this.guildService.getUser(newVal);
   }
 

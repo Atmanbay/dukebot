@@ -1,5 +1,4 @@
 export default class TwitterEmojiReactionHandler {
-
   // Gives user a job based on emoji used
   constructor(container) {
     this.loggerService = container.loggerService;
@@ -12,26 +11,29 @@ export default class TwitterEmojiReactionHandler {
   shouldHandle(messageReaction) {
     let emojis = [
       this.configService.emojis.goodJob,
-      this.configService.emojis.badJob
-    ]
-    
-    return emojis.includes(messageReaction.emoji.name)
+      this.configService.emojis.badJob,
+    ];
+
+    return emojis.includes(messageReaction.emoji.name);
   }
 
-  async handle(messageReaction, user) { 
+  async handle(messageReaction, user) {
     try {
-      let jobType = 'bad';
+      let jobType = "bad";
       let authorId = null; // Prevent upvoting own message
       if (messageReaction.emoji.name === this.configService.emojis.goodJob) {
-        jobType = 'good';
+        jobType = "good";
         authorId = user.id;
       }
 
       let messageId = messageReaction.message.id;
-      let { cachedMessage, created } = this.reactionService.findOrCreate(messageId);
+      let { cachedMessage, created } = this.reactionService.findOrCreate(
+        messageId
+      );
 
       let users = cachedMessage.value()[jobType];
-      if (!users) { // Users can only react a certain way once
+      if (!users) {
+        // Users can only react a certain way once
         users = [];
       }
 
@@ -40,7 +42,9 @@ export default class TwitterEmojiReactionHandler {
       }
 
       // Actually give the job now
-      let guildMember = this.guildService.getUser(messageReaction.message.author.id);
+      let guildMember = this.guildService.getUser(
+        messageReaction.message.author.id
+      );
       let jobs = this.jobsService.resolveJobs(guildMember, jobType, authorId);
       let nickname = Object.keys(jobs)[0];
       if (!nickname) {
@@ -78,18 +82,18 @@ export default class TwitterEmojiReactionHandler {
         response += ` ${badJobCount} bad jobs`;
       }
 
-      response += ' from emoji reactions';
+      response += " from emoji reactions";
 
       let channel = messageReaction.message.channel;
       if (!created) {
-        let message = await channel.messages.fetch(cachedMessage.value().sentMessageId);
+        let message = await channel.messages.fetch(
+          cachedMessage.value().sentMessageId
+        );
         message.edit(response);
       } else {
         let message = await channel.send(response);
 
-        cachedMessage
-          .assign({ sentMessageId: message.id })
-          .write();
+        cachedMessage.assign({ sentMessageId: message.id }).write();
       }
     } catch (error) {
       this.loggerService.error(error);

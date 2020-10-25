@@ -9,7 +9,7 @@ export default class PermissionsService {
       return false;
     }
 
-    return guildMember.roles.cache.some(role => {
+    return guildMember.roles.cache.some((role) => {
       return role.name === adminRoleName;
     });
   }
@@ -20,7 +20,7 @@ export default class PermissionsService {
       return false;
     }
 
-    return guildMember.roles.cache.some(role => {
+    return guildMember.roles.cache.some((role) => {
       return role.name === twitterRoleName;
     });
   }

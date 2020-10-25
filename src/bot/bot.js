@@ -1,7 +1,7 @@
-import ContainerManager from '../objects/containerManager';
-import ConfigService from '../services/configService';
+import ContainerManager from "../objects/containerManager";
+import ConfigService from "../services/configService";
 
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 
 export default class Bot {
   constructor() {
@@ -21,24 +21,24 @@ export default class Bot {
       this.client.on(handler.event, handler.handle.bind(handler));
     });
 
-    guildContainer.cradle.loggerService.info('Ready!');
+    guildContainer.cradle.loggerService.info("Ready!");
   }
 
   start() {
-    this.client.on('ready', () => {
+    this.client.on("ready", () => {
       let guilds = this.client.guilds.cache;
       guilds.forEach((guild) => {
         this.buildGuildContainer({
           guild: guild,
-          botUser: this.client.user
+          botUser: this.client.user,
         });
       });
 
       this.buildGuildContainer({
         guild: {
-          id: 'dm'
+          id: "dm",
         },
-        botUser: this.client.user
+        botUser: this.client.user,
       });
     });
 

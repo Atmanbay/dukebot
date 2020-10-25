@@ -1,17 +1,22 @@
-import moment from 'moment-timezone';
-import { isEmpty } from 'lodash';
+import moment from "moment-timezone";
+import { isEmpty } from "lodash";
 
 export default class BlazeService {
   constructor(container) {
-    this.db = container.databaseService.get('blazes');
+    this.db = container.databaseService.get("blazes");
     this.guildService = container.guildService;
     this.loggerService = container.loggerService;
-    this.dateFormat = 'YYYY-MM-DD hh:mm a';
+    this.dateFormat = "YYYY-MM-DD hh:mm a";
   }
 
   isBlazingMinute(time) {
     let currentTime = moment.utc(time).tz("America/New_York");
-    if (!(currentTime.minute() === 20 && (currentTime.hour() === 4 || currentTime.hour() === 16))) {
+    if (
+      !(
+        currentTime.minute() === 20 &&
+        (currentTime.hour() === 4 || currentTime.hour() === 16)
+      )
+    ) {
       return false;
     }
 
@@ -26,10 +31,10 @@ export default class BlazeService {
       this.db
         .push({
           id: user.id,
-          timestamps: []
+          timestamps: [],
         })
         .write();
-      
+
       dbUser = this.db.find({ id: user.id });
     } else {
       let timestamps = dbUser.value().timestamps;
@@ -54,12 +59,12 @@ export default class BlazeService {
     let dateFormat = this.dateFormat;
     let guildService = this.guildService;
     let db = this.db.value();
-    let result = db.map(entry => {
+    let result = db.map((entry) => {
       let guildUser = guildService.getUser(entry.id);
       let name = guildUser.nickname || guildUser.user.username;
       let timestamps = entry.timestamps;
       if (start && end) {
-        timestamps = timestamps.filter(function(timestamp) {
+        timestamps = timestamps.filter(function (timestamp) {
           let momentTimestamp = moment(timestamp, dateFormat);
           return momentTimestamp >= start && momentTimestamp <= end;
         });
@@ -68,7 +73,7 @@ export default class BlazeService {
       return [name, count];
     });
 
-    result.sort(function(first, second) {
+    result.sort(function (first, second) {
       return second[1] - first[1];
     });
 

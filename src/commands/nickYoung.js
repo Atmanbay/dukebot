@@ -1,11 +1,11 @@
-import Command from '../objects/command';
+import Command from "../objects/command";
 
 export default class AliveCommand extends Command {
   constructor(container) {
     super();
     this.details = {
-      name: '???',
-      description: 'When you are confused',
+      name: "???",
+      description: "When you are confused",
     };
   }
 

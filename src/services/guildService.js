@@ -5,10 +5,10 @@ export default class GuildService {
   }
 
   isThisGuild(guild) {
-    if (!guild && this.guild.id === 'dm') {
+    if (!guild && this.guild.id === "dm") {
       return true;
     } else {
-      return guild && guild.id && this.guild.id === guild.id
+      return guild && guild.id && this.guild.id === guild.id;
     }
   }
 
@@ -16,15 +16,15 @@ export default class GuildService {
     if (!this.guild.members) {
       return null;
     }
-    
-    return this.guild.members.cache.find(user => user.id === userId);
+
+    return this.guild.members.cache.find((user) => user.id === userId);
   }
 
   getChannels(type) {
     if (type) {
-      return this.guild.channels.cache.filter(c => c.type === type);
-    } 
-    
+      return this.guild.channels.cache.filter((c) => c.type === type);
+    }
+
     return this.guild.channels.cache;
   }
 
@@ -33,7 +33,9 @@ export default class GuildService {
       return null;
     }
 
-    return this.guild.channels.cache.find(channel => channel.id === channelId);
+    return this.guild.channels.cache.find(
+      (channel) => channel.id === channelId
+    );
   }
 
   getChannelByName(name) {
@@ -41,10 +43,10 @@ export default class GuildService {
       return null;
     }
 
-    return this.guild.channels.cache.find(channel => channel.name === name);
+    return this.guild.channels.cache.find((channel) => channel.name === name);
   }
 
   getRole(roleName) {
-    return this.guild.roles.cache.find(role => role.name === roleName);
+    return this.guild.roles.cache.find((role) => role.name === roleName);
   }
 }

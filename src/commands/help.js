@@ -1,19 +1,18 @@
-import Command from '../objects/command';
-import joi from 'joi';
+import Command from "../objects/command";
+import joi from "joi";
 
 export default class HelpCommand extends Command {
   constructor(container) {
     super();
     this.helpService = container.helpService;
     this.details = {
-      name: 'help',
-      description: 'Get help',
-      args: joi.object({
-        name: joi
-          .string()
-          .note('Name of command to get help with')
-      })
-        .rename('n', 'name')
+      name: "help",
+      description: "Get help",
+      args: joi
+        .object({
+          name: joi.string().note("Name of command to get help with"),
+        })
+        .rename("n", "name"),
     };
   }
 
@@ -25,6 +24,11 @@ export default class HelpCommand extends Command {
       response = this.helpService.getBotHelpMessage();
     }
 
-    message.channel.send(response);
+    return {
+      message: response,
+      args: {
+        text: response,
+      },
+    };
   }
 }
