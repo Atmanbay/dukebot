@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d dist",
-    "dev": "nodemon -r esm src/"
+    "dev": "nodemon -r esm -r dotenv/config src/"
   },
   "author": "",
   "license": "MIT",
@@ -16,6 +16,7 @@
     "core-js": "^3.6.5",
     "decode-html": "^2.0.0",
     "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
     "download": "^8.0.0",
     "emoji-regex": "^9.0.0",
     "esm": "^3.2.25",
@@ -36,6 +37,7 @@
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
     "sanitize-filename": "^1.6.3",
+    "twit": "^2.2.11",
     "twitter": "^1.7.1",
     "winston": "^3.2.1"
   },

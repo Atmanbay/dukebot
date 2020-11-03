@@ -9,6 +9,7 @@ export default class LoggerService {
       logger = winston.createLogger({
         level: "info",
         format: winston.format.combine(
+          winston.format.errors({ stack: true }),
           winston.format.timestamp({
             format: "YYYY-MM-DD HH:mm:ss",
           }),
@@ -29,6 +30,7 @@ export default class LoggerService {
       logger = winston.createLogger({
         level: "info",
         format: winston.format.combine(
+          winston.format.errors({ stack: true }),
           winston.format.timestamp({
             format: "YYYY-MM-DD HH:mm:ss",
           }),
