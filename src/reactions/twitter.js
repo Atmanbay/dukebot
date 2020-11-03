@@ -20,7 +20,6 @@ export default class TwitterEmojiReactionHandler {
       return false;
     }
 
-    return true;
     let guildMember = this.guildService.getUser(user.id);
     if (!this.permissionsService.hasTwitterRole(guildMember)) {
       return false;
