@@ -12,12 +12,16 @@ export default class GuildService {
     }
   }
 
-  getUser(userId) {
+  async getUser(userId) {
     if (!this.guild.members) {
       return null;
     }
 
-    return this.guild.members.cache.find((user) => user.id === userId);
+    return this.guild.members.fetch(userId);
+    // console.log("cache", this.guild.members.cache);
+    // return this.guild.members.cache.find((user) => {
+    //   return user.id === userId;
+    // });
   }
 
   getChannels(type) {

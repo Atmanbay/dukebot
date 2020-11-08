@@ -15,8 +15,8 @@ export default class MessageHandler {
       return;
     }
 
-    this.reactionHandlers.forEach((rh) => {
-      if (rh.shouldHandle(messageReaction, user)) {
+    this.reactionHandlers.forEach(async (rh) => {
+      if (await rh.shouldHandle(messageReaction, user)) {
         rh.handle(messageReaction, user);
       }
     });

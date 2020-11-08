@@ -34,7 +34,7 @@ export default class MockCommand extends Command {
     // Currently only mocks using nickname, changing avi picture has a 5 minute cooldown
     // TODO: Add optional flag to change avatar picture?
     let botUser = this.botUserService.getBotUser();
-    let botGuildUser = this.guildService.getUser(botUser.id);
+    let botGuildUser = await this.guildService.getUser(botUser.id);
     let oldNickname = botGuildUser.nickname || botUser.username;
 
     botGuildUser.setNickname(nickname);

@@ -7,9 +7,9 @@ export default class JobsService {
     this.loggerService = container.loggerService;
   }
 
-  getJobs(user) {
+  async getJobs(user) {
     let jobCount = this.db.find({ id: user.id }).value();
-    let guildUser = this.guildService.getUser(user.id);
+    let guildUser = await this.guildService.getUser(user.id);
     let nickname = guildUser.nickname || guildUser.user.username;
     let goodJobs = 0;
     let badJobs = 0;

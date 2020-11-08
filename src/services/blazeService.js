@@ -57,10 +57,9 @@ export default class BlazeService {
   // Get all blazes that happened between start and end dates
   async getBlazes(start, end) {
     let dateFormat = this.dateFormat;
-    let guildService = this.guildService;
     let db = this.db.value();
-    let result = db.map((entry) => {
-      let guildUser = guildService.getUser(entry.id);
+    let promises = db.map(async (entry) => {
+      let guildUser = await this.guildService.getUser(entry.id);
       let name = guildUser.nickname || guildUser.user.username;
       let timestamps = entry.timestamps;
       if (start && end) {
@@ -73,6 +72,7 @@ export default class BlazeService {
       return [name, count];
     });
 
+    let result = await Promise.all(promises);
     result.sort(function (first, second) {
       return second[1] - first[1];
     });

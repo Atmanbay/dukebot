@@ -10,7 +10,7 @@ export default class TwitterEmojiReactionHandler {
     this.twitterService = container.twitterService;
   }
 
-  shouldHandle(messageReaction, user) {
+  async shouldHandle(messageReaction, user) {
     if (!this.configService.useTwitter) {
       return false;
     }
@@ -20,13 +20,13 @@ export default class TwitterEmojiReactionHandler {
       return false;
     }
 
-    let guildMember = this.guildService.getUser(user.id);
+    let guildMember = await this.guildService.getUser(user.id);
     if (!this.permissionsService.hasTwitterRole(guildMember)) {
       return false;
     }
 
     let filterUser = async function (user) {
-      let guildMember = this.guildService.getUser(user.id);
+      let guildMember = await this.guildService.getUser(user.id);
       return this.permissionsService.hasTwitterRole(guildMember);
     };
 

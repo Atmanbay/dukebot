@@ -42,7 +42,7 @@ export default class TwitterEmojiReactionHandler {
       }
 
       // Actually give the job now
-      let guildMember = this.guildService.getUser(
+      let guildMember = await this.guildService.getUser(
         messageReaction.message.author.id
       );
       let jobs = this.jobsService.resolveJobs(guildMember, jobType, authorId);
