@@ -34,10 +34,8 @@ export default class TwitterService {
 
   async retweet(tweetId) {
     if (!this.configService.useTwitter) {
-      console.log("not using twitter");
       return;
     }
-    console.log(tweetId);
     return this.client.post(`statuses/retweet/${tweetId}`, {});
   }
 

@@ -44,7 +44,7 @@ export default class TwitterEmojiReactionHandler {
     return true;
   }
 
-  handle(messageReaction) {
+  async handle(messageReaction) {
     let channel = messageReaction.message.channel;
     let content = messageReaction.message.content;
 
@@ -57,63 +57,52 @@ export default class TwitterEmojiReactionHandler {
       this.twitterService.setReplyTarget(null);
 
       // You have to @ them otherwise it won't actually reply
-      return this.twitterService
-        .tweet(`@${replyTarget.name} ${content}`, replyTarget.tweetId)
-        .then((response) => {
-          channel.send(
-            `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
-          );
-        })
-        .catch(this.loggerService.error);
-    }
-
-    if (!match) {
-      return this.twitterService
-        .tweet(content)
-        .then((response) => {
-          channel.send(
-            `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
-          );
-        })
-        .catch(this.loggerService.error);
-    }
-
-    let name = match[1];
-    let tweetId = match[2];
-
-    // Check if message has been reacted to with the retweet or reply emojis
-    let reactions = messageReaction.message.reactions.cache.map(
-      (r) => r.emoji.name
-    );
-
-    let retweetEmoji = some(reactions, (reaction) => {
-      return reaction == this.configService.emojis.retweet;
-    });
-
-    let replyEmoji = some(reactions, (reaction) => {
-      return reaction == this.configService.emojis.reply;
-    });
-
-    if (retweetEmoji && replyEmoji) {
-      channel.send(
-        "Message was reacted with retweet and reply so cannot handle"
+      let response = await this.twitterService.tweet(
+        `@${replyTarget.name} ${content}`,
+        replyTarget.tweetId
       );
-    } else if (retweetEmoji) {
-      return this.twitterService
-        .retweet(tweetId)
-        .then((response) => {
-          channel.send(
-            `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
-          );
-        })
-        .catch(this.loggerService.error);
-    } else if (replyEmoji) {
-      this.twitterService.setReplyTarget({
-        name: name,
-        tweetId: tweetId,
+      channel.send(
+        `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
+      );
+    } else if (!match) {
+      let response = await this.twitterService.tweet(content);
+      channel.send(
+        `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
+      );
+    } else {
+      let name = match[1];
+      let tweetId = match[2];
+
+      // Check if message has been reacted to with the retweet or reply emojis
+      let reactions = messageReaction.message.reactions.cache.map(
+        (r) => r.emoji.name
+      );
+
+      let retweetEmoji = some(reactions, (reaction) => {
+        return reaction == this.configService.emojis.retweet;
       });
 
-      channel.send(`The next tweet will be a reply to ${name}'s tweet`);
+      let replyEmoji = some(reactions, (reaction) => {
+        return reaction == this.configService.emojis.reply;
+      });
+
+      if (retweetEmoji && replyEmoji) {
+        channel.send(
+          "Message was reacted with retweet and reply so cannot handle"
+        );
+      } else if (retweetEmoji) {
+        let response = await this.twitterService.retweet(tweetId);
+        channel.send(
+          `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
+        );
+      } else if (replyEmoji) {
+        this.twitterService.setReplyTarget({
+          name: name,
+          tweetId: tweetId,
+        });
+
+        channel.send(`The next tweet will be a reply to ${name}'s tweet`);
+      }
     }
   }
 }

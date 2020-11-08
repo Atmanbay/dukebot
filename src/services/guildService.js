@@ -18,10 +18,6 @@ export default class GuildService {
     }
 
     return this.guild.members.fetch(userId);
-    // console.log("cache", this.guild.members.cache);
-    // return this.guild.members.cache.find((user) => {
-    //   return user.id === userId;
-    // });
   }
 
   getChannels(type) {

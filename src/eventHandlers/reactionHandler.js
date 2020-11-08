@@ -17,7 +17,11 @@ export default class MessageHandler {
 
     this.reactionHandlers.forEach(async (rh) => {
       if (await rh.shouldHandle(messageReaction, user)) {
-        rh.handle(messageReaction, user);
+        try {
+          await rh.handle(messageReaction, user);
+        } catch (error) {
+          this.loggerService.error(error);
+        }
       }
     });
   }
