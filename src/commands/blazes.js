@@ -57,6 +57,7 @@ export default class BlazeItCommand extends Command {
     try {
       let result = await this.blazeService.getBlazes(start, end);
       if (isEmpty(result)) {
+        message.channel.send("No blazes for the specified date range");
         return;
       }
       let response = "**Blazes";

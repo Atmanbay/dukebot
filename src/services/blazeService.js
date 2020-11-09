@@ -77,6 +77,8 @@ export default class BlazeService {
       return second[1] - first[1];
     });
 
+    result = result.filter((b) => b[1] > 0);
+
     return result;
   }
 }
