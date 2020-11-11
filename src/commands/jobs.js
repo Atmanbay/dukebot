@@ -58,15 +58,20 @@ export default class JobsCommand extends Command {
         };
       }
 
-      //Passing in message author to prevent giving yourself good jobs
-      let resolvedJobs = {
-        good: this.jobsService.resolveJobs(
+      let goodJobs = null;
+      if (args.good) {
+        //Passing in message author to prevent giving yourself good jobs
+        goodJobs = this.jobsService.resolveJobs(
           args.good,
           "good",
           message.author.id
-        ),
-        bad: this.jobsService.resolveJobs(args.bad, "bad"),
-      };
+        );
+      }
+
+      let badJobs = null;
+      if (args.bad) {
+        badJobs = this.jobsService.resolveJobs(args.bad, "bad");
+      }
 
       let response = "The following jobs have been given out";
       if (args.reason) {
@@ -75,23 +80,23 @@ export default class JobsCommand extends Command {
 
       response += "\n\n";
 
-      if (!isEmpty(resolvedJobs.good)) {
+      if (!isEmpty(goodJobs)) {
         response += "**Good Jobs**";
-        Object.keys(resolvedJobs.good).forEach((key) => {
-          let value = resolvedJobs.good[key];
+        Object.keys(goodJobs).forEach((key) => {
+          let value = goodJobs[key];
 
           response += `\n${key}: ${value}`;
         });
 
-        if (!isEmpty(resolvedJobs.bad)) {
+        if (!isEmpty(badJobs)) {
           response += "\n\n";
         }
       }
 
-      if (!isEmpty(resolvedJobs.bad)) {
+      if (!isEmpty(badJobs)) {
         response += "**Bad Jobs**";
-        Object.keys(resolvedJobs.bad).forEach((key) => {
-          let value = resolvedJobs.bad[key];
+        Object.keys(badJobs).forEach((key) => {
+          let value = badJobs[key];
 
           response += `\n${key}: ${value}`;
         });

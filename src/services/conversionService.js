@@ -4,24 +4,6 @@ export default class ConversionService {
     this.guildService = container.guildService;
   }
 
-  // Converts user/chanel IDs into the actual objects
-  async convert(value) {
-    let promise;
-    if (typeof value !== "string") {
-      promise = Promise.resolve(value);
-    } else if (value.startsWith("<@!")) {
-      //value is user
-      promise = this.getUser(value);
-    } else if (value.startsWith("<#")) {
-      //value is channel
-      promise = this.getChannel(value);
-    } else {
-      promise = Promise.resolve(value);
-    }
-
-    return promise;
-  }
-
   getUser(userId) {
     let newVal = userId;
     if (userId.startsWith("<")) {

@@ -30,6 +30,7 @@ export default class JobsService {
     if (!Array.isArray(users)) {
       users = [users];
     }
+
     users.forEach((user) => {
       try {
         if (authorUserId && user.user.id === authorUserId) {

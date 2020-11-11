@@ -6,13 +6,13 @@ export default class ValidatorService {
     this.conversionService = container.conversionService;
   }
 
-  async user(value, helpers) {
+  user(value, helpers) {
     if (!(typeof value === "string")) {
       this.loggerService.info(`Was expecting string, instead got ${value}`);
       throw new Error("Must be a user");
     }
 
-    let user = await this.conversionService.getUser(value);
+    let user = this.conversionService.getUser(value);
     if (!user) {
       throw new Error("No user found");
     }
