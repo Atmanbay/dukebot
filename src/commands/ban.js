@@ -12,7 +12,8 @@ export default class BanCommand extends Command {
       args: joi
         .object({
           user: joi
-            .custom(validator.user.bind(validator))
+            .any()
+            .external(validator.user.bind(validator))
             .required()
             .note("The user to ban"),
         })

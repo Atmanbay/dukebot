@@ -18,7 +18,7 @@ export default class MarkovCommand extends Command {
         .object({
           user: joi
             .array()
-            .items(joi.custom(validator.user.bind(validator)))
+            .items(joi.any().external(validator.user.bind(validator)))
             .single()
             .note("Target user to markov (defaults to message author)"),
 

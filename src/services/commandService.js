@@ -1,3 +1,4 @@
+import { valid } from "joi";
 import { find } from "lodash";
 import minimist from "minimist";
 
@@ -96,12 +97,12 @@ export default class CommandService {
 
   async executeCommand(command, message, args) {
     if (command.details.args) {
-      let validation = command.details.args.validate(args);
-      if (validation.error) {
-        await message.channel.send(validation.error.toString());
+      try {
+        let validation = await command.details.args.validateAsync(args);
+        args = validation;
+      } catch (error) {
+        await message.channel.send(error.toString());
         return null;
-      } else {
-        args = validation.value;
       }
     }
 

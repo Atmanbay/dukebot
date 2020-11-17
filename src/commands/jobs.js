@@ -15,20 +15,21 @@ export default class JobsCommand extends Command {
         .object({
           good: joi
             .array()
-            .items(joi.custom(validator.user.bind(validator)))
+            .items(joi.any().external(validator.user.bind(validator)))
             .single()
             .note("User to give a good job to"),
 
           bad: joi
             .array()
-            .items(joi.custom(validator.user.bind(validator)))
+            .items(joi.any().external(validator.user.bind(validator)))
             .single()
             .note("User to give a bad job to"),
 
           reason: joi.string().note("Reason for the jobs"),
 
           user: joi
-            .custom(validator.user.bind(validator))
+            .any()
+            .external(validator.user.bind(validator))
             .note("User to check the jobs of"),
         })
         .without("user", ["reason", "good", "bad"])

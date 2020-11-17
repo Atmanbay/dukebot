@@ -4,7 +4,7 @@ export default class ConversionService {
     this.guildService = container.guildService;
   }
 
-  getUser(userId) {
+  async getUser(userId) {
     let newVal = userId;
     if (userId.startsWith("<")) {
       newVal = userId.substring(3, userId.length - 1);

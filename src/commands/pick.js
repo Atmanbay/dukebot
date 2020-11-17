@@ -13,7 +13,7 @@ export default class PickCommand extends Command {
         .object({
           exclude: joi
             .array()
-            .items(joi.custom(validator.user.bind(validator)))
+            .items(joi.any().external(validator.user.bind(validator)))
             .single()
             .note("Users to exclude from process"),
 
