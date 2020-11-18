@@ -61,14 +61,8 @@ export default class TwitterEmojiReactionHandler {
         `@${replyTarget.name} ${content}`,
         replyTarget.tweetId
       );
-      channel.send(
-        `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
-      );
     } else if (!match) {
       let response = await this.twitterService.tweet(content);
-      channel.send(
-        `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
-      );
     } else {
       let name = match[1];
       let tweetId = match[2];
@@ -92,9 +86,6 @@ export default class TwitterEmojiReactionHandler {
         );
       } else if (retweetEmoji) {
         let response = await this.twitterService.retweet(tweetId);
-        channel.send(
-          `https://twitter.com/${response.data.user.screen_name}/status/${response.data.id_str}`
-        );
       } else if (replyEmoji) {
         this.twitterService.setReplyTarget({
           name: name,

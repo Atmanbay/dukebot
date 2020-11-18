@@ -39,6 +39,29 @@ export default class TwitterService {
     return this.client.post(`statuses/retweet/${tweetId}`, {});
   }
 
+  async subscribe(username, callback) {
+    try {
+      let user = await this.client.get("users/show", {
+        screen_name: username,
+      });
+
+      let stream = this.client.stream("statuses/filter", {
+        follow: [user.data.id_str],
+      });
+
+      stream.on("tweet", (tweet) => {
+        console.log("tweet is", tweet);
+        callback(tweet);
+      });
+
+      stream.on("message", (event) => {
+        console.log("***** MESSAGE *****", event);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   setReplyTarget(replyTarget) {
     this.replyTarget = replyTarget;
   }
