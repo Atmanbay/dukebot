@@ -26,5 +26,6 @@ export default class TwitterCommand extends Command {
     };
 
     this.twitterService.subscribe(args.name, callback);
+    message.react("👌");
   }
 }
