@@ -1,5 +1,3 @@
-import { find } from "lodash";
-
 export default class MessageHandler {
   constructor(container) {
     this.event = "messageReactionAdd";

@@ -1,4 +1,5 @@
 import Twitter from "twit";
+import { find, pull } from "lodash";
 
 export default class TwitterService {
   constructor(container) {
@@ -14,6 +15,7 @@ export default class TwitterService {
     });
 
     this.replyTarget = null;
+    this.streams = [];
   }
 
   async tweet(status, tweetId) {
@@ -40,26 +42,34 @@ export default class TwitterService {
   }
 
   async subscribe(username, callback) {
-    try {
-      let user = await this.client.get("users/show", {
-        screen_name: username,
-      });
+    let user = await this.client.get("users/show", {
+      screen_name: username,
+    });
 
-      let stream = this.client.stream("statuses/filter", {
-        follow: [user.data.id_str],
-      });
+    let stream = this.client.stream("statuses/filter", {
+      follow: [user.data.id_str],
+    });
 
-      stream.on("tweet", (tweet) => {
-        console.log("tweet is", tweet);
-        callback(tweet);
-      });
+    stream.on("tweet", callback);
 
-      stream.on("message", (event) => {
-        console.log("***** MESSAGE *****", event);
-      });
-    } catch (error) {
-      console.log(error);
+    this.streams.push({
+      username,
+      stream,
+    });
+  }
+
+  async unsubscribe(username) {
+    let streamEntry = find(this.streams, (s) => {
+      return s.username === username;
+    });
+
+    if (!streamEntry) {
+      return;
     }
+
+    pull(this.streams, streamEntry);
+
+    streamEntry.stream.stop();
   }
 
   setReplyTarget(replyTarget) {
