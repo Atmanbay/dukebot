@@ -2,10 +2,15 @@
 export default class GuildService {
   constructor(container) {
     this.guild = container.guild;
+    this.configService = container.configService;
+  }
+
+  isDm() {
+    return this.guild.id === "dm";
   }
 
   isThisGuild(guild) {
-    if (!guild && this.guild.id === "dm") {
+    if (!guild && this.isDm()) {
       return true;
     } else {
       return guild && guild.id && this.guild.id === guild.id;
@@ -48,5 +53,11 @@ export default class GuildService {
 
   getRole(roleName) {
     return this.guild.roles.cache.find((role) => role.name === roleName);
+  }
+
+  async addEmoji(userId, avatarId, name) {
+    let url = `https://cdn.discordapp.com/avatars/${userId}/${avatarId}.png`;
+    name = name.replace(/[^A-za-z]/g, "");
+    return this.guild.emojis.create(url, name);
   }
 }
