@@ -1,3 +1,5 @@
+import { some } from "lodash";
+
 // Wrapper for guild-related logic
 export default class GuildService {
   constructor(container) {
@@ -55,9 +57,16 @@ export default class GuildService {
     return this.guild.roles.cache.find((role) => role.name === roleName);
   }
 
-  async addEmoji(userId, avatarId, name) {
+  addEmoji(userId, avatarId, name) {
+    let cleanedName = name.replace(/[^A-za-z]/g, "");
+    let emoji = this.guild.emojis.cache.find(
+      (emoji) => emoji.name === cleanedName
+    );
+    if (emoji) {
+      return;
+    }
+
     let url = `https://cdn.discordapp.com/avatars/${userId}/${avatarId}.png`;
-    name = name.replace(/[^A-za-z]/g, "");
-    return this.guild.emojis.create(url, name);
+    this.guild.emojis.create(url, cleanedName);
   }
 }
