@@ -46,11 +46,18 @@ export default class TwitterService {
       screen_name: username,
     });
 
+    let userId = user.data.id_str;
     let stream = this.client.stream("statuses/filter", {
-      follow: [user.data.id_str],
+      follow: [userId],
     });
 
-    stream.on("tweet", callback);
+    stream.on("tweet", (tweet) => {
+      if (tweet.user.id_str !== userId) {
+        return;
+      }
+
+      callback(tweet);
+    });
 
     this.streams.push({
       username,
