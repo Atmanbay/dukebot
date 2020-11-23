@@ -1,0 +1,120 @@
+import { find } from "lodash";
+import minimist from "minimist";
+
+export default class {
+  constructor(services) {
+    this.configService = services.config;
+    this.loggerService = services.logger;
+    this.messageHistoryService = services.messageHistory;
+    this.usageService = services.usage;
+    // this.commands = container.commands;
+  }
+
+  // async handle(message) {
+  //   if (!this.shouldHandle(message)) {
+  //     this.messageHistoryService.save(message.author.id, message.content, 3);
+  //     return false;
+  //   }
+
+  //   let content = message.content.substring(this.configService.prefix.length);
+  //   let matches = [...content.matchAll(/\s?(.*?)\s?(\||$)/g)];
+  //   let commands = matches.map((m) => m[1]).filter((m) => m);
+
+  //   let result = await commands
+  //     .reduce(
+  //       (p, c) => p.then((context) => this.handleCommand(message, c, context)),
+  //       Promise.resolve()
+  //     )
+  //     .then((context) => {
+  //       if (context && context.message) {
+  //         message.channel.send(context.message);
+  //       }
+
+  //       return true;
+  //     })
+  //     .catch((error) => {
+  //       this.loggerService.error(error);
+  //       return false;
+  //     });
+
+  //   return result;
+  // }
+
+  // shouldHandle(message) {
+  //   return message.content.startsWith(this.configService.prefix);
+  // }
+
+  // async handleCommand(message, content, context) {
+  //   let parsedMessage = this.parseMessage(content);
+  //   let command = this.getCommand(parsedMessage.commandName);
+
+  //   if (!command) {
+  //     return false;
+  //   }
+
+  //   if (context) {
+  //     Object.assign(parsedMessage.args, context.args);
+  //   }
+
+  //   return this.executeCommand(command, message, parsedMessage.args);
+  // }
+
+  // parseMessage(content) {
+  //   // split on spaces (but keep quoted text together)
+  //   let regex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
+  //   let matches = [...content.matchAll(regex)];
+
+  //   let argArray = [];
+  //   for (let i = 0; i < matches.length; i++) {
+  //     let match = matches[i];
+  //     if (!match) continue;
+
+  //     // If this match was quoted then retrieve the first group which will not include the quotes
+  //     if (match[1]) argArray.push(match[1]);
+  //     // otherwise retrieve the entire match
+  //     else argArray.push(match[0]);
+  //   }
+
+  //   // pass args into minimist which will convert it to an object
+  //   // e.g. -a test -b "hello there" -> { a: test, b: hello there }
+  //   // this arg object is what is passed into the commands
+  //   let args = minimist(argArray);
+  //   let commandName = args._[0];
+  //   delete args._;
+
+  //   return {
+  //     commandName,
+  //     args,
+  //   };
+  // }
+
+  // getCommand(commandName) {
+  //   return find(this.commands, (command) => {
+  //     return command.isMatch(commandName);
+  //   });
+  // }
+
+  // async executeCommand(command, message, args) {
+  //   if (command.details.args) {
+  //     try {
+  //       let validation = await command.details.args.validateAsync(args);
+  //       args = validation;
+  //     } catch (error) {
+  //       await message.channel.send(error.toString());
+  //       return null;
+  //     }
+  //   }
+
+  //   try {
+  //     let context = await command.execute(message, args);
+  //     this.usageService.logCommandUse(command.details.name);
+  //     return context;
+  //   } catch (error) {
+  //     this.loggerService.error(
+  //       `Error when executing command ${commandName}`,
+  //       args,
+  //       error
+  //     );
+  //   }
+  // }
+}

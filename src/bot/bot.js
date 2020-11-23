@@ -1,44 +1,26 @@
-import ContainerManager from "../objects/containerManager";
-import ConfigService from "../services/configService";
-
+import ConfigService from "../services/config";
+import Events from "../events";
 const Discord = require("discord.js");
 
-export default class Bot {
+export default class {
   constructor() {
     this.client = new Discord.Client();
-  }
-
-  // Creates a ContainerManager for a specific guild
-  // Means each guild has its own event handling, database, and logging
-  buildGuildContainer(options) {
-    let guildContainerManager = new ContainerManager(options);
-
-    let guildContainer = guildContainerManager.build();
-
-    // Set commands of helpService here to avoid circular reference
-    guildContainer.cradle.helpService.commands = guildContainer.cradle.commands;
-    guildContainer.cradle.eventHandlers.forEach((handler) => {
-      this.client.on(handler.event, handler.handle.bind(handler));
-    });
-
-    guildContainer.cradle.loggerService.info("Ready!");
+    this.eventsManager = new Events();
   }
 
   start() {
     this.client.on("ready", () => {
       let guilds = this.client.guilds.cache;
       guilds.forEach((guild) => {
-        this.buildGuildContainer({
+        let events = this.eventsManager.buildEvents({
           guild: guild,
           botUser: this.client.user,
         });
-      });
 
-      this.buildGuildContainer({
-        guild: {
-          id: "dm",
-        },
-        botUser: this.client.user,
+        Object.keys(events).forEach((event) => {
+          let handler = events[event];
+          this.client.on(event, handler.handle.bind(handler));
+        });
       });
     });
 
