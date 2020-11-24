@@ -7,6 +7,7 @@ export default class {
   constructor(services) {
     this.audioService = services.audio;
     this.configService = services.config;
+    this.tableService = services.table; // tableService lol
     this.validatorService = services.validator;
   }
 
@@ -52,9 +53,25 @@ export default class {
 
   async list(message) {
     let clips = this.audioService.getClips();
-    clips.unshift("```");
-    clips.push("```");
-    message.channel.send(clips);
+
+    let buffer = 5;
+    let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
+    let halfway = Math.ceil(clips.length / 2);
+    let leftColumn = clips.splice(0, halfway);
+
+    let rows = [];
+    for (let i = 0; i < halfway; i++) {
+      let row = [leftColumn.shift(), clips.shift()];
+
+      rows.push(row);
+    }
+
+    let columnWidths = [columnWidth, columnWidth];
+    let response = this.tableService.build(columnWidths, rows);
+    response.unshift("```");
+    response.push("```");
+
+    message.channel.send(response);
   }
 
   async upload(message) {
