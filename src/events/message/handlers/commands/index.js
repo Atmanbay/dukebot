@@ -5,6 +5,7 @@ export default class {
   constructor(services) {
     this.banService = services.ban;
     this.configService = services.config;
+    this.helpService = services.help;
     this.loggerService = services.logger;
     this.messageHistoryService = services.messageHistory;
     this.usageService = services.usage;
@@ -91,16 +92,21 @@ export default class {
     let argArray = [];
     for (let i = 0; i < matches.length; i++) {
       let match = matches[i];
-      if (!match) continue;
+      if (!match) {
+        continue;
+      }
 
       // If this match was quoted then retrieve the first group which will not include the quotes
-      if (match[1]) argArray.push(match[1]);
-      // otherwise retrieve the entire match
-      else argArray.push(match[0]);
+      if (match[1]) {
+        argArray.push(match[1]);
+      } else {
+        // otherwise retrieve the entire match
+        argArray.push(match[0]);
+      }
     }
 
     // pass args into minimist which will convert it to an object
-    // e.g. -a test -b "hello there" -> { a: test, b: hello there }
+    // e.g. -a test -b "hello there" -> { a: test, b: "hello there" }
     // this arg object is what is passed into the commands
     let args = minimist(argArray);
     let commandName = args._[0];
@@ -126,6 +132,10 @@ export default class {
 
   async executeCommand(command, message, parsedMessage) {
     let args = parsedMessage.args;
+    if (args.help === true) {
+      return this.helpService.commandHelp(parsedMessage.commandName, command);
+    }
+
     if (command.details.args) {
       try {
         let validation = await command.details.args.validateAsync(args);
