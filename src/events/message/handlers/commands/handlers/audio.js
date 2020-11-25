@@ -7,6 +7,7 @@ export default class {
   constructor(services) {
     this.audioService = services.audio;
     this.configService = services.config;
+    this.fileService = services.file;
     this.tableService = services.table; // tableService lol
     this.validatorService = services.validator;
   }
@@ -97,8 +98,11 @@ export default class {
   }
 
   async play(message, args) {
-    let path = `${this.configService.paths.audio}/${args.name}.mp3`;
-    if (!fs.existsSync(path)) {
+    let path = this.fileService.getPath(
+      this.configService.paths.audio,
+      `${args.name}.mp3`
+    );
+    if (!path || !fs.existsSync(path)) {
       return;
     }
 

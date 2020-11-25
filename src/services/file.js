@@ -1,8 +1,22 @@
 import { sync } from "glob";
+import fs from "fs";
+import path from "path";
 
 export default class {
   constructor(services) {
     this.services = services;
+  }
+
+  getPath(directory, fileName) {
+    let names = fs.readdirSync(directory);
+    let realPath = "";
+    names.forEach((name) => {
+      if (name.toLowerCase() === fileName.toLowerCase()) {
+        realPath = path.join(directory, name);
+      }
+    });
+
+    return realPath;
   }
 
   getClasses(pattern, directory) {
