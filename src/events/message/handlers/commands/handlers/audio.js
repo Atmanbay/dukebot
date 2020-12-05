@@ -69,10 +69,23 @@ export default class {
 
     let columnWidths = [columnWidth, columnWidth];
     let response = this.tableService.build(columnWidths, rows);
-    response.unshift("```");
-    response.push("```");
 
-    message.channel.send(response);
+    let cutoff = 20;
+    if (response.length > cutoff) {
+      let firstResponse = response.splice(0, cutoff);
+      firstResponse.unshift("```");
+      firstResponse.push("```");
+
+      response.unshift("```");
+      response.push("```");
+
+      message.channel.send(firstResponse);
+      message.channel.send(response);
+    } else {
+      response.unshift("```");
+      response.push("```");
+      message.channel.send(response);
+    }
   }
 
   async upload(message) {
