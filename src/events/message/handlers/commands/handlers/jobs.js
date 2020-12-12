@@ -4,6 +4,7 @@ export default class {
   constructor(services) {
     this.guildService = services.guild;
     this.jobsService = services.jobs;
+    this.loggerService = services.logger;
     this.tableService = services.table;
     this.validatorService = services.validator;
   }
@@ -68,6 +69,15 @@ export default class {
     let maxWidth = 0;
     let promises = jobs.map(async (job) => {
       let guildUser = await this.guildService.getUser(job.userId);
+
+      // temp debugging code while I figure out why this is null
+      if (!guildUser) {
+        this.loggerService.info(
+          `No guild user found for user ID ${job.userId}`
+        );
+        return ["", ""];
+      }
+
       let name = guildUser.nickname || guildUser.user.username;
       if (name.length > maxWidth) {
         maxWidth = name.length;
