@@ -11,25 +11,16 @@ export default class {
       args: joi
         .object({
           name: joi.string().note("The title of the bet to create"),
-          odds: joi.string(),
-          amount: joi.number(),
-          balance: joi.boolean(),
-          list: joi.boolean(),
-          create: joi.boolean(),
-          addOption: joi.boolean(),
-          placeBet: joi.boolean(),
-          close: joi.boolean(),
-          end: joi.boolean(),
+          odds: joi.string().note("The odds to set on the bet option"),
+          amount: joi.number().note("The amount to place on the bet option"),
+          list: joi.boolean().note("Show the current bet"),
+          create: joi.boolean().note("Create a new bet"),
+          addOption: joi.boolean().note("Create a new bet option"),
+          placeBet: joi.boolean().note("Place a bet on a bet option"),
+          close: joi.boolean().note("Close betting"),
+          end: joi.boolean().note("End bet and pay out"),
         })
-        .xor(
-          "balance",
-          "list",
-          "create",
-          "addOption",
-          "placeBet",
-          "close",
-          "end"
-        )
+        .xor("list", "create", "addOption", "placeBet", "close", "end")
         .with("create", "name")
         .with("addOption", ["name", "odds"])
         .with("placeBet", ["name", "amount"])
@@ -41,11 +32,6 @@ export default class {
   }
 
   async execute({ message, args }) {
-    if (args.balance) {
-      let response = this.betService.getBalance(message.author.id);
-      message.channel.send(response);
-    }
-
     if (args.list) {
       let response = await this.betService.list();
       message.channel.send(response);

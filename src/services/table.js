@@ -5,10 +5,6 @@ export default class {
 
       for (let col = 0; col < row.length; col++) {
         let cell = row[col];
-        if (!cell) {
-          continue;
-        }
-
         let width = columnWidths[col];
 
         rowString += cell;

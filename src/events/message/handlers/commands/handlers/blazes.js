@@ -5,6 +5,7 @@ import joi from "joi";
 export default class {
   constructor(services) {
     this.blazeService = services.blaze;
+    this.tableService = services.table;
   }
 
   get details() {
@@ -58,20 +59,23 @@ export default class {
       message.channel.send("No blazes for the specified date range");
       return;
     }
-    let response = "**Blazes";
+    let header = "**Blazes";
     if (frame) {
-      response += ` ${frame}`;
+      header += ` ${frame}`;
     }
 
-    response += "** \n";
-    let lines = [];
-    result.forEach((entry) => {
-      let name = entry[0];
-      let count = entry[1];
-      lines.push(`${name}: ${count}`);
-    });
+    header += "**";
 
-    response += lines.join("\n");
-    message.channel.send(response);
+    let colWidths = [20, 5];
+    let table = this.tableService.build(colWidths, result);
+
+    table.unshift("```");
+    table.push("```");
+
+    if (frame) {
+      table.unshift(`**Blazes ${frame}**`);
+    }
+
+    message.channel.send(table);
   }
 }

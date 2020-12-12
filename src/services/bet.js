@@ -7,10 +7,6 @@ export default class {
     this.db = services.database.get("bets");
   }
 
-  getBalance(userId) {
-    return this.currencyService.getBalance(userId);
-  }
-
   async list() {
     let bet = this.db.first().value();
     if (!bet) {

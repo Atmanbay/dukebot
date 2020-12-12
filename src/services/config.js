@@ -29,6 +29,7 @@ export default class {
 
     this.currency = {
       beginningBalance: this.getEnvironmentVariable("BEGINNING_BALANCE"),
+      jobToDukes: this.getEnvironmentVariable("JOB_TO_DUKES"),
     };
 
     this.useTwitter =
