@@ -3,7 +3,7 @@ import { find } from "lodash";
 export default class {
   constructor(services) {
     this.guildService = services.guild;
-    this.currencyService = services.currency;
+    this.bankService = services.bank;
     this.db = services.database.get("bets");
   }
 
@@ -87,7 +87,7 @@ export default class {
           placedBet.amount + placedBet.amount * (splitOdds[0] / splitOdds[1]);
 
         payout = payout.toFixed(2);
-        this.currencyService.addBalance(placedBet.userId, payout);
+        this.bankService.addBalance(placedBet.userId, payout);
 
         return {
           nickname: nickname,
@@ -150,12 +150,12 @@ export default class {
       return "No option with that name was found";
     }
 
-    let balance = this.currencyService.getBalance(userId);
+    let balance = this.bankService.getBalance(userId);
     if (amount > balance) {
       return "The bet amount is greater than your current balance";
     }
 
-    this.currencyService.addBalance(userId, amount * -1);
+    this.bankService.addBalance(userId, amount * -1);
 
     bet
       .update("bets", (bets) => {

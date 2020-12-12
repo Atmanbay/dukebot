@@ -2,7 +2,7 @@ import joi from "joi";
 
 export default class {
   constructor(services) {
-    this.currencyService = services.currency;
+    this.bankService = services.bank;
     this.guildService = services.guild;
     this.jobsService = services.jobs;
     this.tableService = services.table;
@@ -40,14 +40,14 @@ export default class {
 
   async execute({ message, args }) {
     if (args.user) {
-      this.currencyService.send(message.author.id, [...args.user], args.amount);
+      this.bankService.send(message.author.id, [...args.user], args.amount);
       message.channel.send("Dukes sent successfully!");
 
       return;
     }
 
     if (args.rate) {
-      let rate = this.currencyService.getConversion();
+      let rate = this.bankService.getConversion();
       message.channel.send(`1 job can be converted to ${rate} Dukes`);
 
       return;
@@ -56,11 +56,11 @@ export default class {
     if (args.convert) {
       let userId = message.author.id;
       let jobs = this.jobsService.getJobs(userId);
-      let rate = this.currencyService.getConversion();
+      let rate = this.bankService.getConversion();
 
       let amount = Number.parseFloat(jobs * rate).toFixed(2);
 
-      this.currencyService.addBalance(userId, amount);
+      this.bankService.addBalance(userId, amount);
       message.channel.send(
         `${jobs} jobs have been converted into ${amount} Dukes`
       );
@@ -69,16 +69,23 @@ export default class {
       return;
     }
 
-    let balances = this.currencyService.getBalances();
+    let balances = this.bankService.getBalances();
 
+    balances.sort((a, b) => b.balance - a.balance);
+
+    let maxWidth = 0;
     let promises = balances.map(async (balance) => {
       let guildUser = await this.guildService.getUser(balance.userId);
       let name = guildUser.nickname || guildUser.user.username;
+      if (name.length > maxWidth) {
+        maxWidth = name.length;
+      }
+
       return [name, balance.balance];
     });
 
-    let colWidths = [20, 5];
     let rows = await Promise.all(promises);
+    let colWidths = [maxWidth + 5, 5];
     let table = this.tableService.build(colWidths, rows);
 
     table.unshift("```");

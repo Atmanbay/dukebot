@@ -65,14 +65,19 @@ export default class {
 
     jobs.sort((a, b) => b.jobs - a.jobs);
 
+    let maxWidth = 0;
     let promises = jobs.map(async (job) => {
       let guildUser = await this.guildService.getUser(job.userId);
       let name = guildUser.nickname || guildUser.user.username;
+      if (name.length > maxWidth) {
+        maxWidth = name.length;
+      }
+
       return [name, job.jobs];
     });
 
-    let colWidths = [20, 5];
     let rows = await Promise.all(promises);
+    let colWidths = [maxWidth + 5, 5];
     let table = this.tableService.build(colWidths, rows);
 
     table.unshift("```");

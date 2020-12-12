@@ -1,8 +1,8 @@
 export default class {
   constructor(services) {
-    this.db = services.database.get("currency");
-    this.beginningBalance = Number(services.config.currency.beginningBalance);
-    this.jobToDukes = Number(services.config.currency.jobToDukes);
+    this.db = services.database.get("bank");
+    this.beginningBalance = Number(services.config.bank.beginningBalance);
+    this.jobToDukes = Number(services.config.bank.jobToDukes);
   }
 
   getBalances() {

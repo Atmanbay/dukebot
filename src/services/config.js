@@ -27,7 +27,7 @@ export default class {
       admin: this.getEnvironmentVariable("ROLES_ADMIN"),
     };
 
-    this.currency = {
+    this.bank = {
       beginningBalance: this.getEnvironmentVariable("BEGINNING_BALANCE"),
       jobToDukes: this.getEnvironmentVariable("JOB_TO_DUKES"),
     };
