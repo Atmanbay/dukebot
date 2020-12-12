@@ -61,6 +61,7 @@ export default class {
       return;
     }
 
+    result = result.filter((blaze) => blaze.blazes > 0);
     result.sort((a, b) => b.blazes - a.blazes);
 
     let maxWidth = 0;

@@ -58,8 +58,6 @@ export default class {
   async getBlazes(start, end) {
     let dateFormat = this.dateFormat;
     return this.db.value().map((entry) => {
-      // let guildUser = await this.guildService.getUser(entry.id);
-      // let name = guildUser.nickname || guildUser.user.username;
       let timestamps = entry.timestamps;
       if (start && end) {
         timestamps = timestamps.filter(function (timestamp) {
@@ -70,14 +68,5 @@ export default class {
       let count = timestamps.length;
       return { userId: entry.id, blazes: count };
     });
-
-    // let result = await Promise.all(promises);
-    // result.sort(function (first, second) {
-    //   return second[1] - first[1];
-    // });
-
-    // result = result.filter((b) => b[1] > 0);
-
-    // return result;
   }
 }
