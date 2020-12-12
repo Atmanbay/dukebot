@@ -29,8 +29,6 @@ export default class {
         example: decode(example.structuredText),
       };
     } catch (error) {
-      this.loggerService.error(`Error when requesting url ${url}`, error);
-
       return null;
     }
   }
