@@ -5,6 +5,7 @@ import joi from "joi";
 export default class {
   constructor(services) {
     this.blazeService = services.blaze;
+    this.guildService = services.guild;
     this.tableService = services.table;
   }
 
@@ -59,15 +60,23 @@ export default class {
       message.channel.send("No blazes for the specified date range");
       return;
     }
-    let header = "**Blazes";
-    if (frame) {
-      header += ` ${frame}`;
-    }
 
-    header += "**";
+    result.sort((a, b) => b.blazes - a.blazes);
 
-    let colWidths = [20, 5];
-    let table = this.tableService.build(colWidths, result);
+    let maxWidth = 0;
+    let promises = result.map(async (blaze) => {
+      let guildUser = await this.guildService.getUser(blaze.userId);
+      let name = guildUser.nickname || guildUser.user.username;
+      if (name.length > maxWidth) {
+        maxWidth = name.length;
+      }
+
+      return [name, blaze.blazes];
+    });
+
+    let rows = await Promise.all(promises);
+    let colWidths = [maxWidth + 5, 5];
+    let table = this.tableService.build(colWidths, rows);
 
     table.unshift("```");
     table.push("```");
