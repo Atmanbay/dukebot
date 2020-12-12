@@ -7,6 +7,7 @@ export default class {
     if (!this.configService.useTwitter) {
       return;
     }
+
     this.client = new Twitter({
       consumer_key: this.configService.twitter.consumerKey,
       consumer_secret: this.configService.twitter.consumerSecret,
@@ -15,7 +16,19 @@ export default class {
     });
 
     this.replyTarget = null;
-    this.streams = [];
+
+    this.db = services.database.get("twitter");
+    this.streams = {};
+
+    this.db.value().forEach((entry) => {
+      let channel = services.guild.getChannelById(entry.channelId);
+      let callback = (tweet) => {
+        let url = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
+        channel.send(url);
+      };
+
+      this.subscribe(entry.userId, entry.options, callback);
+    });
   }
 
   async tweet(status, tweetId) {
@@ -41,12 +54,20 @@ export default class {
     return this.client.post(`statuses/retweet/${tweetId}`, {});
   }
 
-  async subscribe(username, callback) {
+  async getUserId(username) {
     let user = await this.client.get("users/show", {
       screen_name: username,
     });
 
-    let userId = user.data.id_str;
+    return user.data.id_str;
+  }
+
+  async subscribe(userId, options, callback) {
+    if (userId in this.streams) {
+      await this.unsubscribe(userId);
+      delete this.streams[userId];
+    }
+
     let stream = this.client.stream("statuses/filter", {
       follow: [userId],
     });
@@ -56,27 +77,36 @@ export default class {
         return;
       }
 
+      if (options.includeReplies !== false && tweet.in_reply_to_status_id) {
+        return;
+      }
+
       callback(tweet);
     });
 
-    this.streams.push({
-      username,
-      stream,
-    });
+    this.streams[userId] = stream;
   }
 
-  async unsubscribe(username) {
-    let streamEntry = find(this.streams, (s) => {
-      return s.username === username;
-    });
+  save(userId, options, channelId) {
+    this.db
+      .push({
+        userId: userId,
+        channelId: channelId,
+        options: options,
+      })
+      .write();
+  }
 
+  async unsubscribe(userId) {
+    let streamEntry = this.streams[userId];
     if (!streamEntry) {
       return;
     }
 
-    pull(this.streams, streamEntry);
-
     streamEntry.stream.stop();
+
+    this.db.remove({ userId: userId }).write();
+    delete this.streams[userId];
   }
 
   setReplyTarget(replyTarget) {

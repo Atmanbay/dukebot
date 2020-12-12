@@ -15,14 +15,20 @@ export default class {
             .required()
             .note("Screen name (not nickname) of user you want to follow"),
 
+          excludeReplies: joi
+            .boolean()
+            .default(false)
+            .note("Flag to disable alerts on replies"),
+
           delete: joi.boolean().note("Boolean flag to end subscription"),
         })
         .rename("n", "name")
+        .rename("e", "excludeReplies")
         .rename("d", "delete"),
     };
   }
 
-  execute({ message, args }) {
+  async execute({ message, args }) {
     if (args.delete) {
       this.twitterService.unsubscribe(args.name);
     } else {
@@ -31,7 +37,12 @@ export default class {
         message.channel.send(url);
       };
 
-      this.twitterService.subscribe(args.name, callback);
+      let userId = await this.twitterService.getUserId(args.name);
+      let options = { includeReplies: args.includeReplies };
+
+      this.twitterService.subscribe(userId, options, callback);
+
+      this.twitterService.save(userId, options, message.channel.id);
     }
 
     message.react("👌");
