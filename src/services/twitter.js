@@ -1,5 +1,4 @@
 import Twitter from "twit";
-import { find, pull } from "lodash";
 
 export default class {
   constructor(services) {
@@ -98,12 +97,12 @@ export default class {
   }
 
   async unsubscribe(userId) {
-    let streamEntry = this.streams[userId];
-    if (!streamEntry) {
+    let stream = this.streams[userId];
+    if (!stream) {
       return;
     }
 
-    streamEntry.stream.stop();
+    stream.stop();
 
     this.db.remove({ userId: userId }).write();
     delete this.streams[userId];
