@@ -3,7 +3,7 @@ import joi from "joi";
 export default class {
   constructor(services) {
     this.acronymService = services.acronym;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
   }
 
   get details() {

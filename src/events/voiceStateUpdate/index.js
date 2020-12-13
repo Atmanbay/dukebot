@@ -1,7 +1,7 @@
 export default class {
   constructor(services) {
     this.guildService = services.guild;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
 
     let handlers = services.file.getClasses("handlers/*.js", __dirname);
 
@@ -32,7 +32,7 @@ export default class {
         stateHandler.handle({ oldState, newState })
       );
     } catch (error) {
-      this.loggerService.error(error, oldState, newState);
+      this.loggingService.error(error, oldState, newState);
     }
   }
 }

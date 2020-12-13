@@ -2,7 +2,7 @@ import { filter, sample, some } from "lodash";
 
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.messageHistoryService = services.messageHistory;
   }
 
@@ -39,7 +39,7 @@ export default class {
 
       return response;
     } catch (error) {
-      this.loggerService.error("Error when acronymizing", error);
+      this.loggingService.error("Error when acronymizing", error);
     }
   }
 }

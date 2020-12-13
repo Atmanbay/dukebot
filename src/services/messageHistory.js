@@ -4,7 +4,7 @@ export default class {
   constructor(services) {
     this.db = services.database.get("messages");
     this.guildService = services.guild;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.messageCount = services.config.messageCount;
 
     this.commandPrefix = services.config.prefix;
@@ -32,7 +32,7 @@ export default class {
         })
         .write();
     } catch (error) {
-      this.loggerService.error(error);
+      this.loggingService.error(error);
     }
   }
 
@@ -78,7 +78,7 @@ export default class {
           }
         });
       })
-      .catch((error) => this.loggerService.error(error));
+      .catch((error) => this.loggingService.error(error));
 
     if (messages.length > this.messageCount) {
       messages.splice(0, messages.length - this.messageCount);
@@ -128,7 +128,7 @@ export default class {
           break;
         }
       } catch (error) {
-        this.loggerService.error(error);
+        this.loggingService.error(error);
         return null;
       }
     }

@@ -4,7 +4,7 @@ import joi from "joi";
 export default class {
   constructor(services) {
     this.audioService = services.audio;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.validatorService = services.validator;
   }
 
@@ -39,7 +39,7 @@ export default class {
       let url = await googleTts(args.text, "en", args.speed);
       this.audioService.play(url, channel);
     } catch (error) {
-      this.loggerService.error(
+      this.loggingService.error(
         `Error when attempting to do TTS in channel ${channel.name}`,
         error
       );

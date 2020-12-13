@@ -2,7 +2,7 @@ import { GuildChannel } from "discord.js";
 
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.conversionService = services.conversion;
   }
 

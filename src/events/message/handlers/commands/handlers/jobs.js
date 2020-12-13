@@ -4,7 +4,7 @@ export default class {
   constructor(services) {
     this.guildService = services.guild;
     this.jobsService = services.jobs;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.tableService = services.table;
     this.validatorService = services.validator;
   }
@@ -72,7 +72,7 @@ export default class {
 
       // temp debugging code while I figure out why this is null
       if (!guildUser) {
-        this.loggerService.info(
+        this.loggingService.info(
           `No guild user found for user ID ${job.userId}`
         );
         return ["", ""];

@@ -5,7 +5,7 @@ export default class {
   constructor(services) {
     this.markovService = services.markov;
     this.guildService = services.guild;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.messageHistoryService = services.messageHistory;
     this.validatorService = services.validator;
   }
@@ -88,7 +88,7 @@ export default class {
         },
       };
     } catch (error) {
-      this.loggerService.error(error);
+      this.loggingService.error(error);
     }
   }
 }

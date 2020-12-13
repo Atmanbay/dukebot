@@ -86,7 +86,7 @@ export default class {
 
         return rowString;
       } catch (error) {
-        this.loggerService.error(error);
+        this.loggingService.error(error);
       }
     });
 

@@ -2,12 +2,11 @@ import winston from "winston";
 
 export default class {
   constructor(services) {
-    let logger = {};
+    let logging = {};
     if (services.config.isProduction) {
       let logPath = services.config.paths.logging;
       let guildId = services.guild.guild.id;
-      logger = winston.createLogger({
-        level: "info",
+      logging = winston.createLogger({
         format: winston.format.combine(
           winston.format.errors({ stack: true }),
           winston.format.timestamp({
@@ -27,8 +26,7 @@ export default class {
         ],
       });
     } else {
-      logger = winston.createLogger({
-        level: "info",
+      logging = winston.createLogger({
         format: winston.format.combine(
           winston.format.errors({ stack: true }),
           winston.format.timestamp({
@@ -44,8 +42,8 @@ export default class {
     }
 
     // Binds info, log, and error methods to self
-    this.info = logger.info.bind(logger);
-    this.log = logger.log.bind(logger);
-    this.error = logger.error.bind(logger);
+    this.info = logging.info.bind(logging);
+    this.log = logging.log.bind(logging);
+    this.error = logging.error.bind(logging);
   }
 }

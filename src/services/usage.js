@@ -3,7 +3,7 @@ import { isEmpty } from "lodash";
 export default class {
   constructor(services) {
     this.db = services.database.get("commandUsage");
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
   }
 
   getCounts() {

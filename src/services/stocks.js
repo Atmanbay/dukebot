@@ -6,7 +6,7 @@ export default class {
   constructor(services) {
     this.configService = services.config;
     this.db = services.database.get("stocks");
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
   }
 
   getPreviousEntry(name) {
@@ -47,7 +47,7 @@ export default class {
     try {
       // Logon request
       await r(options).catch((error) => {
-        this.loggerService.error(error);
+        this.loggingService.error(error);
       });
 
       let rankingType = "Overall";
@@ -68,7 +68,7 @@ export default class {
           date: encodeURI(moment().format("L")),
         },
       }).catch((error) => {
-        this.loggerService.error(error);
+        this.loggingService.error(error);
       });
 
       if (!jsonString) {
@@ -106,7 +106,7 @@ export default class {
 
       return mappedRows;
     } catch (error) {
-      this.loggerService.error(error);
+      this.loggingService.error(error);
     }
   }
 }

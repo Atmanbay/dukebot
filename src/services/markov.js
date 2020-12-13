@@ -2,7 +2,7 @@ import Markov from "markov-strings";
 
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
   }
 
   buildMarkov({ messages, stateSize, maxTries, variance }) {
@@ -25,7 +25,7 @@ export default class {
       let result = markov.generate(options);
       return result.string;
     } catch (error) {
-      this.loggerService.error(error);
+      this.loggingService.error(error);
       return "Failed to build Markov";
     }
   }

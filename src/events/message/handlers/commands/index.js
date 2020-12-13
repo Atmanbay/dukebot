@@ -6,7 +6,7 @@ export default class {
     this.banService = services.ban;
     this.configService = services.config;
     this.helpService = services.help;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.messageHistoryService = services.messageHistory;
     this.usageService = services.usage;
     this.fileService = services.file;
@@ -58,7 +58,7 @@ export default class {
         return true;
       })
       .catch((error) => {
-        this.loggerService.error(error);
+        this.loggingService.error(error);
         return false;
       });
 
@@ -151,7 +151,7 @@ export default class {
       this.usageService.logCommandUse(parsedMessage.commandName);
       return context;
     } catch (error) {
-      this.loggerService.error(error);
+      this.loggingService.error(error);
     }
   }
 }

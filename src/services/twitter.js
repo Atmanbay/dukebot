@@ -17,6 +17,7 @@ export default class {
     this.replyTarget = null;
 
     this.db = services.database.get("twitter");
+    this.loggingService = services.logging;
     this.streams = {};
 
     this.db.value().forEach((entry) => {
@@ -84,6 +85,8 @@ export default class {
     });
 
     this.streams[userId] = stream;
+
+    this.loggingService.info(`Subscribed to ${userId}`);
   }
 
   save(userId, options, channelId) {
@@ -106,6 +109,8 @@ export default class {
 
     this.db.remove({ userId: userId }).write();
     delete this.streams[userId];
+
+    this.loggingService.info(`Unsubscribed to ${userId}`);
   }
 
   setReplyTarget(replyTarget) {

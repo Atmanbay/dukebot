@@ -5,7 +5,7 @@ export default class {
   constructor(services) {
     this.db = services.database.get("blazes");
     this.guildService = services.guild;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.dateFormat = "YYYY-MM-DD hh:mm a";
   }
 

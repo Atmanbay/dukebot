@@ -1,6 +1,6 @@
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.guildService = services.guild;
   }
 

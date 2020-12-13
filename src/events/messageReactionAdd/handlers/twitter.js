@@ -3,7 +3,7 @@ import { some } from "lodash";
 export default class {
   // Handles the detection + execution of tweeting
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.guildService = services.guild;
     this.permissionsService = services.permissions;
     this.configService = services.config;

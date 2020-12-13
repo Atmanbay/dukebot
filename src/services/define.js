@@ -4,7 +4,7 @@ import decode from "decode-html";
 
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
   }
 
   async define(word) {

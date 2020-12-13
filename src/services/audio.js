@@ -3,7 +3,7 @@ import fs from "fs";
 export default class {
   constructor(services) {
     this.configService = services.config;
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
   }
 
   // Path can be a file path or a URL
@@ -12,14 +12,14 @@ export default class {
       return;
     }
 
-    let logger = this.loggerService;
+    let logging = this.loggingService;
     let connection = await channel.join();
     let dispatcher = connection.play(path);
     dispatcher.on("finish", () => {
       connection.disconnect();
     });
 
-    dispatcher.on("error", logger.error);
+    dispatcher.on("error", logging.error);
   }
 
   getClips() {

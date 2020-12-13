@@ -1,6 +1,6 @@
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
     this.guildService = services.guild;
 
     let handlers = services.file.getClasses("handlers/*.js", __dirname);
@@ -19,7 +19,7 @@ export default class {
         try {
           await rh.handle(messageReaction, user);
         } catch (error) {
-          this.loggerService.error(error);
+          this.loggingService.error(error);
         }
       }
     });

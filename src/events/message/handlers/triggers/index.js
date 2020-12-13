@@ -2,7 +2,7 @@ import { filter, isEmpty } from "lodash";
 
 export default class {
   constructor(services) {
-    this.loggerService = services.logger;
+    this.loggingService = services.logging;
 
     let handlers = services.file.getClasses("handlers/*.js", __dirname);
 
@@ -19,7 +19,7 @@ export default class {
       try {
         trigger.execute(message);
       } catch (error) {
-        this.loggerService.error(
+        this.loggingService.error(
           "Error when trying to execute trigger",
           message.author.id,
           message.content
