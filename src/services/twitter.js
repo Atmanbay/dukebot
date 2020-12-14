@@ -23,6 +23,12 @@ export default class {
     this.db.value().forEach((entry) => {
       let channel = services.guild.getChannelById(entry.channelId);
       let callback = (tweet) => {
+        if (!channel) {
+          this.loggingService.info(
+            `No channel to send tweet by ${tweet.user.screen_name}`
+          );
+          return;
+        }
         let url = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
         channel.send(url);
       };
