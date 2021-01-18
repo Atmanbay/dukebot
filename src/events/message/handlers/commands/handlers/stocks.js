@@ -1,10 +1,10 @@
-import { some } from "lodash";
 import joi from "joi";
 
 export default class {
   constructor(services) {
     this.configService = services.config;
     this.stocksService = services.stocks;
+    this.tableService = services.table;
   }
 
   get details() {
@@ -13,9 +13,18 @@ export default class {
       description: "Check the stocks leaderboard",
       args: joi
         .object({
-          weekly: joi.boolean().note("Flag to show leaderboard for this week"),
+          ticker: joi.string().note("Ticker to check"),
+          add: joi.boolean().note("Boolean flag to add ticker to watchlist"),
+          remove: joi
+            .boolean()
+            .note("Boolean flag to remove ticker from watchlist"),
         })
-        .rename("w", "weekly"),
+        .oxor("remove", "add")
+        .with("add", "ticker")
+        .with("remove", "ticker")
+        .rename("t", "ticker")
+        .rename("a", "add")
+        .rename("r", "remove"),
     };
   }
 
@@ -25,94 +34,50 @@ export default class {
       return;
     }
 
-    message.react("📈"); //Reacting to message immediately so user knows we're working on it
-    let rows = await this.stocksService.fetchLeaderboard(args.weekly);
+    message.react("📈"); // React to message so user knows we're working on it
 
-    // Use set column widths so that all columns line up
-    // Creates spaces to fill each column dynamically
-    let hasNegative = some(rows, function (r) {
-      return r.percentChange.startsWith("-");
-    });
-
-    let columnWidths = [4, 17, 13];
-    let response = rows.map((row) => {
-      try {
-        let rowString = "";
-
-        let previousEntry = null;
-        if (!args.weekly) {
-          previousEntry = this.stocksService.getPreviousEntry(row.name);
-        }
-
-        rowString += row.rank;
-        let cellLength = row.rank.length;
-        if (previousEntry) {
-          if (previousEntry.rank > row.rank) {
-            // moved up
-            rowString += "↑";
-            cellLength += 1;
-          } else if (previousEntry.rank < row.rank) {
-            // moved down
-            rowString += "↓";
-            cellLength += 1;
-          }
-        }
-        rowString += this.createBuffer(columnWidths[0], cellLength);
-
-        rowString += row.name;
-        rowString += this.createBuffer(columnWidths[1], row.name.length);
-
-        rowString += row.value;
-        rowString += this.createBuffer(columnWidths[2], row.value.length);
-
-        if (hasNegative && !row.percentChange.startsWith("-")) {
-          rowString += " ";
-        } else if (!hasNegative) {
-          rowString += " ";
-        }
-
-        rowString += row.percentChange + "%";
-
-        if (previousEntry) {
-          let percentDiff = row.percentChange - previousEntry.percentChange;
-          if (percentDiff !== 0) {
-            rowString += " (";
-            if (percentDiff >= 0) {
-              rowString += "+";
-            }
-            rowString += `${percentDiff.toFixed(2)})`;
-          }
-        }
-
-        return rowString;
-      } catch (error) {
-        this.loggingService.error(error);
+    if (args.ticker) {
+      if (args.remove) {
+        this.stocksService.remove(args.ticker);
+        return;
       }
-    });
 
-    response.unshift("    NAME             VALUE         GAIN/LOSS");
-    response.unshift("```");
-    response.push("```");
+      let quote = await this.stocksService.lookup(args.ticker);
+      let lines = [];
+      lines.push(["Current", quote.c]);
+      lines.push(["Open", quote.o]);
 
-    if (!args.weekly) {
-      this.stocksService.saveLeaderboard(rows);
+      let response = this.tableService.build([10, 10], lines);
+      response.unshift(args.ticker);
+      response.unshift("```");
+      response.push("```");
+
+      if (args.add) {
+        this.stocksService.add(args.ticker, quote.c);
+      }
+
+      return {
+        message: response,
+        args: {
+          text: response.join("\n"),
+        },
+      };
     }
 
+    // Default to responding with watchlist
+    let watchlist = await this.stocksService.getWatchlist();
+    if (watchlist.length == 0) {
+      return;
+    }
+
+    let response = this.tableService.build([10, 12, 10], watchlist);
+    response.unshift("```");
+    response.push("```");
     return {
       message: response,
       args: {
         text: response.join("\n"),
       },
     };
-  }
-
-  createBuffer(columnWidth, cellLength) {
-    let diff = columnWidth - cellLength;
-    let buffer = "";
-    for (let i = 0; i < diff; i++) {
-      buffer += " ";
-    }
-
-    return buffer;
   }
 }

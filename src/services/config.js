@@ -52,9 +52,7 @@ export default class {
       "true" == this.getEnvironmentVariable("USE_STOCKS").toLowerCase();
     if (this.useStocks) {
       this.stocks = {
-        username: this.getEnvironmentVariable("STOCKS_USER"),
-        password: this.getEnvironmentVariable("STOCKS_PW"),
-        contestId: this.getEnvironmentVariable("STOCKS_CONTEST_ID"),
+        apiKey: this.getEnvironmentVariable("STOCKS_API_KEY"),
       };
     }
   }

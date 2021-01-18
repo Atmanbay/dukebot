@@ -20,6 +20,10 @@ export default class {
     this.loggingService = services.logging;
     this.streams = {};
 
+    if (!this.configService.isProduction) {
+      return;
+    }
+
     this.db.value().forEach((entry) => {
       let channel = services.guild.getChannelById(entry.channelId);
       let callback = (tweet) => {
