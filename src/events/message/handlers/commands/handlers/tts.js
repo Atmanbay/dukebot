@@ -1,4 +1,4 @@
-import googleTts from "google-tts-api";
+import * as googleTTS from "google-tts-api";
 import joi from "joi";
 
 export default class {
@@ -15,7 +15,10 @@ export default class {
         .object({
           text: joi.string().required().max(200).note("Text to TTS"),
 
-          speed: joi.number().default(1).note("Voice speed"),
+          slow: joi
+            .boolean()
+            .default(false)
+            .note("Boolean flag to make TTS slow"),
 
           channel: joi
             .custom(this.validatorService.channel.bind(this.validatorService))
@@ -24,7 +27,7 @@ export default class {
             ),
         })
         .rename("t", "text")
-        .rename("s", "speed")
+        .rename("s", "slow")
         .rename("c", "channel"),
     };
   }
@@ -36,7 +39,11 @@ export default class {
     }
 
     try {
-      let url = await googleTts(args.text, "en", args.speed);
+      let url = await googleTTS.getAudioUrl(args.text, {
+        lang: "en-US",
+        slow: args.slow,
+        host: "https://translate.google.com",
+      });
       this.audioService.play(url, channel);
     } catch (error) {
       this.loggingService.error(
