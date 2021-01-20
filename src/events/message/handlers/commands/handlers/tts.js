@@ -1,10 +1,10 @@
-import * as googleTTS from "google-tts-api";
 import joi from "joi";
 
 export default class {
   constructor(services) {
     this.audioService = services.audio;
     this.loggingService = services.logging;
+    this.ttsService = services.tts;
     this.validatorService = services.validator;
   }
 
@@ -13,12 +13,11 @@ export default class {
       description: "Join specified channel and say specified text",
       args: joi
         .object({
-          text: joi.string().required().max(200).note("Text to TTS"),
+          text: joi.string().max(200).note("Text to TTS"),
 
-          slow: joi
-            .boolean()
-            .default(false)
-            .note("Boolean flag to make TTS slow"),
+          list: joi.boolean().note("Boolean flag to list character choices"),
+
+          voice: joi.string().note("Character voice to use"),
 
           channel: joi
             .custom(this.validatorService.channel.bind(this.validatorService))
@@ -26,30 +25,32 @@ export default class {
               "Name of voice channel to play in (defaults to user current channel"
             ),
         })
+        .xor("text", "list")
         .rename("t", "text")
-        .rename("s", "slow")
+        .rename("l", "list")
+        .rename("v", "voice")
         .rename("c", "channel"),
     };
   }
 
   async execute({ message, args }) {
+    if (args.list) {
+      let characters = this.ttsService.list();
+      message.channel.send(characters);
+      return;
+    }
+
+    if (!this.ttsService.voiceExists(args.voice)) {
+      message.channel.send(`No character voice was found for ${args.voice}`);
+      return;
+    }
+
     let channel = args.channel ? args.channel : message.member.voice.channel;
     if (!channel) {
       return;
     }
 
-    try {
-      let url = await googleTTS.getAudioUrl(args.text, {
-        lang: "en-US",
-        slow: args.slow,
-        host: "https://translate.google.com",
-      });
-      this.audioService.play(url, channel);
-    } catch (error) {
-      this.loggingService.error(
-        `Error when attempting to do TTS in channel ${channel.name}`,
-        error
-      );
-    }
+    message.react("⌛");
+    this.ttsService.play(args.voice, args.text, channel);
   }
 }

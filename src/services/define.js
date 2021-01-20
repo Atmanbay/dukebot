@@ -3,10 +3,6 @@ import { parse } from "node-html-parser";
 import decode from "decode-html";
 
 export default class {
-  constructor(services) {
-    this.loggingService = services.logging;
-  }
-
   async define(word) {
     let escapedWord = encodeURI(word);
     let url = `https://www.urbandictionary.com/define.php?term=${escapedWord}`;
