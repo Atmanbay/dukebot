@@ -54,42 +54,40 @@ export default class {
   }
 
   async list(message) {
-    try {
-      let clips = this.audioService.getClips();
+    let clips = this.audioService.getClips();
 
-      let buffer = 5;
-      let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
-      let halfway = Math.ceil(clips.length / 2);
-      let leftColumn = clips.splice(0, halfway);
+    let buffer = 5;
+    let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
+    let halfway = Math.ceil(clips.length / 2);
+    let leftColumn = clips.splice(0, halfway);
 
-      let rows = [];
-      for (let i = 0; i < halfway; i++) {
-        let row = [leftColumn.shift(), clips.shift()];
+    let rows = [];
+    for (let i = 0; i < halfway; i++) {
+      let row = [leftColumn.shift(), clips.shift()];
 
-        rows.push(row);
+      rows.push(row);
+    }
+
+    let columnWidths = [columnWidth, columnWidth];
+    let response = this.tableService.build(columnWidths, rows);
+
+    let cutoff = 15;
+    if (response.length > cutoff) {
+      let chunkedResponses = [];
+      while (response.length) {
+        chunkedResponses.push(response.splice(0, cutoff));
       }
 
-      let columnWidths = [columnWidth, columnWidth];
-      let response = this.tableService.build(columnWidths, rows);
+      chunkedResponses.forEach((chunkedResponse) => {
+        chunkedResponse.unshift("```");
+        chunkedResponse.push("```");
 
-      let cutoff = 20;
-      if (response.length > cutoff) {
-        let firstResponse = response.splice(0, cutoff);
-        firstResponse.unshift("```");
-        firstResponse.push("```");
-
-        response.unshift("```");
-        response.push("```");
-
-        message.channel.send(firstResponse);
-        message.channel.send(response);
-      } else {
-        response.unshift("```");
-        response.push("```");
-        message.channel.send(response);
-      }
-    } catch (error) {
-      this.loggingService.error(error);
+        message.channel.send(chunkedResponse);
+      });
+    } else {
+      response.unshift("```");
+      response.push("```");
+      message.channel.send(response);
     }
   }
 
