@@ -10,6 +10,7 @@ export default class {
     this.fileService = services.file;
     this.tableService = services.table; // tableService lol
     this.validatorService = services.validator;
+    this.loggingService = services.logging;
   }
 
   get details() {
@@ -53,38 +54,42 @@ export default class {
   }
 
   async list(message) {
-    let clips = this.audioService.getClips();
+    try {
+      let clips = this.audioService.getClips();
 
-    let buffer = 5;
-    let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
-    let halfway = Math.ceil(clips.length / 2);
-    let leftColumn = clips.splice(0, halfway);
+      let buffer = 5;
+      let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
+      let halfway = Math.ceil(clips.length / 2);
+      let leftColumn = clips.splice(0, halfway);
 
-    let rows = [];
-    for (let i = 0; i < halfway; i++) {
-      let row = [leftColumn.shift(), clips.shift()];
+      let rows = [];
+      for (let i = 0; i < halfway; i++) {
+        let row = [leftColumn.shift(), clips.shift()];
 
-      rows.push(row);
-    }
+        rows.push(row);
+      }
 
-    let columnWidths = [columnWidth, columnWidth];
-    let response = this.tableService.build(columnWidths, rows);
+      let columnWidths = [columnWidth, columnWidth];
+      let response = this.tableService.build(columnWidths, rows);
 
-    let cutoff = 20;
-    if (response.length > cutoff) {
-      let firstResponse = response.splice(0, cutoff);
-      firstResponse.unshift("```");
-      firstResponse.push("```");
+      let cutoff = 20;
+      if (response.length > cutoff) {
+        let firstResponse = response.splice(0, cutoff);
+        firstResponse.unshift("```");
+        firstResponse.push("```");
 
-      response.unshift("```");
-      response.push("```");
+        response.unshift("```");
+        response.push("```");
 
-      message.channel.send(firstResponse);
-      message.channel.send(response);
-    } else {
-      response.unshift("```");
-      response.push("```");
-      message.channel.send(response);
+        message.channel.send(firstResponse);
+        message.channel.send(response);
+      } else {
+        response.unshift("```");
+        response.push("```");
+        message.channel.send(response);
+      }
+    } catch (error) {
+      this.loggingService.error(error);
     }
   }
 
