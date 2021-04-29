@@ -19,7 +19,9 @@ export default class {
             ),
 
           response: joi
-            .string()
+            .array()
+            .items(joi.string())
+            .single()
             .note("Phrase or emoji that the bot will respond with"),
 
           delete: joi
