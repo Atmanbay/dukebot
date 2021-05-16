@@ -26,7 +26,7 @@
     "glob": "^7.1.6",
     "google-tts-api": "2.x",
     "joi": "^17.2.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "markov-strings": "^2.1.1",
     "minimist": "^1.2.5",
