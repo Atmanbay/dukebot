@@ -71,7 +71,7 @@ export default class {
     let columnWidths = [columnWidth, columnWidth];
     let response = this.tableService.build(columnWidths, rows);
 
-    let cutoff = 15;
+    let cutoff = 10;
     if (response.length > cutoff) {
       let chunkedResponses = [];
       while (response.length) {

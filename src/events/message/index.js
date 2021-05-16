@@ -2,7 +2,7 @@ export default class {
   constructor(services) {
     this.guildService = services.guild;
 
-    let handlers = services.file.getClasses("handlers/*/index.js", __dirname);
+    let handlers = services.file.getClasses("./*/index.js", __dirname);
 
     this.handlers = Object.values(handlers);
   }

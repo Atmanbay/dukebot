@@ -3,7 +3,8 @@ export default class {
     this.guildService = services.guild;
   }
 
-  handle({ newMember }) {
+  handle({ oldMember, newMember }) {
+    this.guildService.deleteEmoji(oldMember.nickname);
     this.guildService.addEmoji(
       newMember.user.id,
       newMember.user.avatar,

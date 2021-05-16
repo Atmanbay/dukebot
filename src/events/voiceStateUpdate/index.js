@@ -3,7 +3,7 @@ export default class {
     this.guildService = services.guild;
     this.loggingService = services.logging;
 
-    let handlers = services.file.getClasses("handlers/*.js", __dirname);
+    let handlers = services.file.getClasses("./*.handler.js", __dirname);
 
     this.stateHandlers = Object.values(handlers);
   }

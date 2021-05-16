@@ -55,6 +55,17 @@ export default class {
     return this.guild.roles.cache.find((role) => role.name === roleName);
   }
 
+  deleteEmoji(name) {
+    let cleanedName = name.replace(/[^A-za-z]/g, "");
+    let emoji = this.guild.emojis.cache.find(
+      (emoji) => emoji.name === cleanedName
+    );
+
+    if (emoji) {
+      emoji.delete();
+    }
+  }
+
   addEmoji(userId, avatarId, name) {
     let cleanedName = name.replace(/[^A-za-z]/g, "");
     let emoji = this.guild.emojis.cache.find(

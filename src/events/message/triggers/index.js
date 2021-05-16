@@ -4,7 +4,7 @@ export default class {
   constructor(services) {
     this.loggingService = services.logging;
 
-    let handlers = services.file.getClasses("handlers/*.js", __dirname);
+    let handlers = services.file.getClasses("./*.handler.js", __dirname);
 
     this.triggers = Object.values(handlers);
   }

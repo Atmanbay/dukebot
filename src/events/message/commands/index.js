@@ -11,12 +11,13 @@ export default class {
     this.usageService = services.usage;
     this.fileService = services.file;
 
-    let classes = services.file.getClasses("handlers/*.js", __dirname);
+    let classes = services.file.getClasses("./*.handler.js", __dirname);
     let commands = [];
 
-    Object.keys(classes).forEach((commandName) => {
+    Object.keys(classes).forEach((fileName) => {
+      let commandName = fileName.replace(".handler", "");
       let names = [commandName];
-      let command = classes[commandName];
+      let command = classes[fileName];
       if (command.details.aliases) {
         names.push(...command.details.aliases);
       }

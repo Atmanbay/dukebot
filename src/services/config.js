@@ -47,14 +47,6 @@ export default class {
       this.emojis.twitter = this.getEnvironmentVariable("EMOJIS_TWITTER");
       this.roles.twitter = this.getEnvironmentVariable("ROLES_TWITTER");
     }
-
-    this.useStocks =
-      "true" == this.getEnvironmentVariable("USE_STOCKS").toLowerCase();
-    if (this.useStocks) {
-      this.stocks = {
-        apiKey: this.getEnvironmentVariable("STOCKS_API_KEY"),
-      };
-    }
   }
 
   getEnvironmentVariable(name) {
