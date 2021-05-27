@@ -15,8 +15,12 @@ export default class {
   getResponder(messageContent) {
     let lowerContent = messageContent.toLowerCase();
     let responder = this.db.find((responder) => {
-      let regex = new RegExp(`\\b${responder.trigger.toLowerCase()}\\b`);
-      return lowerContent.match(regex);
+      try {
+        let regex = new RegExp(`\\b${responder.trigger.toLowerCase()}\\b`);
+        return lowerContent.match(regex);
+      } catch (error) {
+        return false;
+      }
     });
 
     return responder.value();
