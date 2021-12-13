@@ -1,6 +1,6 @@
-import Markov from "markov-strings";
+const Markov = require("markov-strings").default;
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.loggingService = services.logging;
   }
@@ -29,4 +29,4 @@ export default class {
       return "Failed to build Markov";
     }
   }
-}
+};

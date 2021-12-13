@@ -1,21 +1,31 @@
-import fs from "fs";
-import FileSync from "lowdb/adapters/FileSync";
-import low from "lowdb";
+const fs = require("fs");
+const FileSync = require("lowdb/adapters/FileSync");
+const low = require("lowdb");
 
 // Used to access the guild-specific JSON db
-export default class {
+module.exports = class {
   constructor(services) {
     this.dbFolder = services.config.paths.database;
     this.configService = services.config;
-    let guildId = services.guild.guild.id;
+    this.databases = {};
 
-    this.generateDb(guildId);
+    // services.guilds.forEach((guild) => {
+    //   this.createDbFile(guild.guild.id);
+    //   let db = this.buildDb(guild.guild.id);
 
-    let db = this.buildDb(guildId);
+    //   //databaseService.databases[guildId].get("tableName");
+    //   this.databases[guild.guild.id] = {
+    //     get: db.get.bind(db),
+    //   };
+    // });
+
+    this.createDbFile(services.values.guild.id);
+
+    let db = this.buildDb(services.values.guild.id);
     this.get = db.get.bind(db);
   }
 
-  generateDb(dbName) {
+  createDbFile(dbName) {
     let fileName = `${this.dbFolder}/${dbName}.json`;
     fs.closeSync(fs.openSync(fileName, "a"));
   }
@@ -29,4 +39,4 @@ export default class {
 
     return db;
   }
-}
+};

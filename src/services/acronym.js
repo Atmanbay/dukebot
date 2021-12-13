@@ -1,6 +1,8 @@
-import { filter, sample, some } from "lodash";
+const filter = require("lodash/filter");
+const sample = require("lodash/sample");
+const some = require("lodash/some");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.loggingService = services.logging;
     this.messageHistoryService = services.messageHistory;
@@ -42,4 +44,4 @@ export default class {
       this.loggingService.error("Error when acronymizing", error);
     }
   }
-}
+};

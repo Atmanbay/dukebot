@@ -1,6 +1,7 @@
-import { filter, isEmpty } from "lodash";
+const filter = require("lodash/filter");
+const isEmpty = require("lodash/isEmpty");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.loggingService = services.logging;
 
@@ -33,4 +34,4 @@ export default class {
       return trigger.isMatch(message);
     });
   }
-}
+};

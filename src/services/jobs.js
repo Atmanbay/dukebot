@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("jobs");
   }
@@ -56,4 +56,4 @@ export default class {
 
     dbUser.update("jobs", () => amount).write();
   }
-}
+};

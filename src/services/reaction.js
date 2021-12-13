@@ -1,6 +1,6 @@
-import { some } from "lodash";
+const some = require("lodash/some");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("reactedMessages");
   }
@@ -56,4 +56,4 @@ export default class {
 
     return ele;
   }
-}
+};

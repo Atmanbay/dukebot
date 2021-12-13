@@ -1,8 +1,8 @@
-import { sync } from "glob";
-import fs from "fs";
-import path from "path";
+const sync = require("glob/sync");
+const fs = require("fs");
+const path = require("path");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.services = services;
   }
@@ -29,7 +29,7 @@ export default class {
         className = file.split("/")[0];
       }
 
-      let defaultClass = require(`${directory}/${file}`).default;
+      let defaultClass = require(`${directory}/${file}`);
       let instance = new defaultClass(this.services);
 
       classes[className] = instance;
@@ -37,4 +37,4 @@ export default class {
 
     return classes;
   }
-}
+};

@@ -1,6 +1,6 @@
-import { some } from "lodash";
+const some = require("lodash/some");
 
-export default class {
+module.exports = class {
   // Handles the detection + execution of tweeting
   constructor(services) {
     this.loggingService = services.logging;
@@ -96,4 +96,4 @@ export default class {
       }
     }
   }
-}
+};

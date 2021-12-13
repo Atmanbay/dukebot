@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   build(columnWidths, rows) {
     return rows.map((row) => {
       let rowString = "";
@@ -20,4 +20,4 @@ export default class {
       return rowString;
     });
   }
-}
+};

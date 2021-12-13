@@ -1,9 +1,10 @@
-import moment from "moment-timezone";
-import { isEmpty } from "lodash";
+const moment = require("moment-timezone");
+const isEmpty = require("lodash/isEmpty");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("blazes");
+    this.databaseService = services.database;
     this.guildService = services.guild;
     this.loggingService = services.logging;
     this.dateFormat = "YYYY-MM-DD hh:mm a";
@@ -69,4 +70,4 @@ export default class {
       return { userId: entry.id, blazes: count };
     });
   }
-}
+};

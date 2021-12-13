@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("responses");
   }
@@ -25,4 +25,4 @@ export default class {
 
     return responder.value();
   }
-}
+};

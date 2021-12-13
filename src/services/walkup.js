@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("walkups");
   }
@@ -20,4 +20,4 @@ export default class {
   removeWalkup(userId) {
     this.db.remove({ id: userId }).write();
   }
-}
+};

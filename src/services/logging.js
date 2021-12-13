@@ -1,6 +1,6 @@
-import winston from "winston";
+const winston = require("winston");
 
-export default class {
+module.exports = class {
   constructor(services) {
     let logging = {};
     if (services.config.isProduction) {
@@ -46,4 +46,4 @@ export default class {
     this.log = logging.log.bind(logging);
     this.error = logging.error.bind(logging);
   }
-}
+};

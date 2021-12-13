@@ -1,11 +1,18 @@
-import dbDefaults from "../../config/dbDefaults";
+const dbDefaults = require("../../config/dbDefaults.js");
 
-export default class {
+module.exports = class {
   constructor() {
     this.isProduction =
       this.getEnvironmentVariable("NODE_ENV") === "production";
 
-    this.prefix = this.getEnvironmentVariable("COMMAND_PREFIX");
+    this.clientId = this.getEnvironmentVariable("DISCORD_CLIENT_ID");
+    if (this.isProduction) {
+      this.serverId = this.getEnvironmentVariable("PROD_SERVER_ID");
+    } else {
+      this.serverId = this.getEnvironmentVariable("DEV_SERVER_ID");
+    }
+
+    // this.prefix = this.getEnvironmentVariable("COMMAND_PREFIX");
     this.paths = {
       audio: this.getEnvironmentVariable("AUDIO_PATH"),
       database: this.getEnvironmentVariable("DATABASE_PATH"),
@@ -27,10 +34,10 @@ export default class {
       admin: this.getEnvironmentVariable("ROLES_ADMIN"),
     };
 
-    this.bank = {
-      beginningBalance: this.getEnvironmentVariable("BEGINNING_BALANCE"),
-      jobToDukes: this.getEnvironmentVariable("JOB_TO_DUKES"),
-    };
+    // this.bank = {
+    //   beginningBalance: this.getEnvironmentVariable("BEGINNING_BALANCE"),
+    //   jobToDukes: this.getEnvironmentVariable("JOB_TO_DUKES"),
+    // };
 
     this.useTwitter =
       "true" == this.getEnvironmentVariable("USE_TWITTER").toLowerCase();
@@ -55,4 +62,4 @@ export default class {
 
     return value;
   }
-}
+};
