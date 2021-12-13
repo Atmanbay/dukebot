@@ -1,6 +1,6 @@
-import fs from "fs";
+const fs = require("fs");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.audioService = services.audio;
     this.configService = services.config;
@@ -8,7 +8,7 @@ export default class {
     this.walkupService = services.walkup;
   }
 
-  handle({ newState }) {
+  async handle({ newState }) {
     let walkup = this.walkupService.getWalkup(newState.id);
     if (!walkup) {
       return;
@@ -19,11 +19,13 @@ export default class {
       return;
     }
 
-    let channel = this.guildService.getChannelById(newState.channelID);
+    let channel = this.guildService.getChannelById(newState.channelId);
     if (!channel) {
       return;
     }
 
-    this.audioService.play(path, channel);
+    await this.audioService.play(path);
+    await this.audioService.connect(channel);
+    await this.audioService.execute();
   }
-}
+};

@@ -1,9 +1,10 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.guildService = services.guild;
 
     let handlers = services.file.getClasses("./*/index.js", __dirname);
 
+    this.handlers = [];
     this.handlers = Object.values(handlers);
   }
 
@@ -12,7 +13,7 @@ export default class {
       return;
     }
 
-    if (!this.guildService.isThisGuild(message.guild)) {
+    if (!this.guildService.isThisGuild(message.guild.id)) {
       return;
     }
 
@@ -23,4 +24,4 @@ export default class {
       }
     }
   }
-}
+};

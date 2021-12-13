@@ -1,6 +1,6 @@
-import { isEmpty } from "lodash";
+const isEmpty = require("lodash/isEmpty");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("messages");
     this.guildService = services.guild;
@@ -135,4 +135,4 @@ export default class {
 
     return messages.map((m) => m[1]);
   }
-}
+};

@@ -1,5 +1,5 @@
 // Wrapper for guild-related logic
-export default class {
+module.exports = class {
   constructor(services) {
     this.guild = services.values.guild;
     this.configService = services.config;
@@ -9,12 +9,8 @@ export default class {
     return this.guild.id === "dm";
   }
 
-  isThisGuild(guild) {
-    if (!guild && this.isDm()) {
-      return true;
-    } else {
-      return guild && guild.id && this.guild.id === guild.id;
-    }
+  isThisGuild(guildId) {
+    return this.guild.id === guildId;
   }
 
   async getUser(userId) {
@@ -78,4 +74,4 @@ export default class {
     let url = `https://cdn.discordapp.com/avatars/${userId}/${avatarId}.png`;
     this.guild.emojis.create(url, cleanedName);
   }
-}
+};

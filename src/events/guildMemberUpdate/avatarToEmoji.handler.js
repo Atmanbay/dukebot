@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.guildService = services.guild;
   }
@@ -11,4 +11,4 @@ export default class {
       newMember.nickname
     );
   }
-}
+};

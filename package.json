@@ -1,31 +1,38 @@
 {
   "name": "dukebot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Discord bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d dist",
-    "dev": "nodemon -r esm -r dotenv/config src/"
+    "dev": "nodemon -r dotenv/config src/"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
-    "awilix": "^4.2.6",
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/opus": "^0.5.3",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "@discordjs/voice": "^0.6.0",
+    "awilix": "^5.0.1",
+    "bufferutil": "^4.0.3",
     "core-js": "^3.6.5",
     "decode-html": "^2.0.0",
-    "discord.js": "^12.2.0",
+    "discord-api-types": "^0.23.1",
+    "discord-reply": "^0.1.2",
+    "discord.js": "^13.1.0",
     "dotenv": "^8.2.0",
     "download": "^8.0.0",
     "emoji-regex": "^9.0.0",
     "es6-promisify": "^6.1.1",
     "esm": "^3.2.25",
-    "ffmpeg-static": "^4.2.1",
+    "ffmpeg-static": "^4.4.0",
     "finnhub": "^1.2.1",
     "glob": "^7.1.6",
     "google-tts-api": "2.x",
     "joi": "^17.2.1",
+    "libsodium-wrappers": "^0.7.9",
     "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "markov-strings": "^2.1.1",
@@ -39,13 +46,16 @@
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
     "sanitize-filename": "^1.6.3",
+    "sodium": "^3.0.2",
+    "tweetnacl": "^1.0.3",
     "twit": "^2.2.11",
     "twitter": "^1.7.1",
+    "utf-8-validate": "^5.0.5",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.4",
-    "@babel/core": "^7.10.4",
-    "@babel/preset-env": "^7.10.4"
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6"
   }
 }

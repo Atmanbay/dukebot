@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.configService = services.config;
   }
@@ -24,4 +24,10 @@ export default class {
       return role.name === twitterRoleName;
     });
   }
-}
+
+  hasRole(guildMember, roleName) {
+    return guildMember.roles.cache.some((role) => {
+      return role.name === roleName;
+    });
+  }
+};

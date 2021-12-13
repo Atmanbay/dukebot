@@ -1,6 +1,6 @@
-import Twitter from "twit";
+const Twitter = require("twit");
 
-export default class {
+module.exports = class {
   constructor(services) {
     this.configService = services.config;
     if (!this.configService.useTwitter) {
@@ -130,4 +130,4 @@ export default class {
   getReplyTarget() {
     return this.replyTarget;
   }
-}
+};

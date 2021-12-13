@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.configService = services.config;
     this.reactionService = services.reaction;
@@ -28,4 +28,4 @@ export default class {
     this.reactionService.addUser(messageId, reactionName, reactorId);
     this.jobsService.addJob(authorId, -1);
   }
-}
+};

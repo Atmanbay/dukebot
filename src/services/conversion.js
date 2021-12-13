@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.loggingService = services.logging;
     this.guildService = services.guild;
@@ -21,4 +21,4 @@ export default class {
   getChannelByName(name) {
     return this.guildService.getChannelByName(name);
   }
-}
+};

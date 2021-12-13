@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.responseService = services.response;
     this.guildService = services.guild;
@@ -29,4 +29,4 @@ export default class {
       }
     });
   }
-}
+};

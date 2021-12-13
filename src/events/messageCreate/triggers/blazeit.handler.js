@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.blazeService = services.blaze;
   }
@@ -27,4 +27,4 @@ export default class {
       message.react("🔥");
     }
   }
-}
+};

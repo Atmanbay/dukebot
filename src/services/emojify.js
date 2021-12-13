@@ -1,7 +1,9 @@
-import { RegExp } from "core-js";
-import { sample } from "lodash";
+// const { RegExp } = require("core-js");
 
-export default class {
+const RegExp = require("core-js/features/regexp");
+const sample = require("lodash/sample");
+
+module.exports = class {
   constructor(services) {
     this.db = services.database.get("emojis");
     this.filePath = services.config.paths.emojiMappingFile;
@@ -96,4 +98,4 @@ export default class {
       }
     }
   }
-}
+};

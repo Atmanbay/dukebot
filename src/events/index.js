@@ -1,13 +1,13 @@
 const awilix = require("awilix");
 
-export default class {
-  buildEvents(options) {
+module.exports = class {
+  constructor(options) {
     let services = awilix.createContainer();
     services.register({
       values: awilix.asValue(options),
     });
 
-    services.loadModules(`${__dirname}/../services/**/*.js`, {
+    services.loadModules([`${__dirname}/../services/*.js`], {
       formatName: "camelCase",
       resolverOptions: {
         lifetime: awilix.Lifetime.SINGLETON,
@@ -19,4 +19,4 @@ export default class {
 
     return events;
   }
-}
+};

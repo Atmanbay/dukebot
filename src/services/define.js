@@ -1,15 +1,15 @@
-import request from "request-promise-native";
-import { parse } from "node-html-parser";
-import decode from "decode-html";
+const request = require("request-promise-native");
+const HTMLParser = require("node-html-parser");
+const decode = require("decode-html");
 
-export default class {
+module.exports = class {
   async define(word) {
     let escapedWord = encodeURI(word);
     let url = `https://www.urbandictionary.com/define.php?term=${escapedWord}`;
 
     try {
       let htmlString = await request(url);
-      let root = parse(htmlString);
+      let root = HTMLParser.parse(htmlString);
 
       // Not sure why I need to grab the parentNode here, quirk with the library or I'm dumb
       let topDefinition = root.querySelector(".def-panel ").parentNode;
@@ -28,4 +28,4 @@ export default class {
       return null;
     }
   }
-}
+};

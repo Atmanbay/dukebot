@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.loggingService = services.logging;
     this.guildService = services.guild;
@@ -9,8 +9,9 @@ export default class {
   }
 
   async handle(messageReaction, user) {
-    // Only respond to event if it occurred in the guild this handler is responsible for
-    if (!this.guildService.isThisGuild(messageReaction.message.channel.guild)) {
+    if (
+      !this.guildService.isThisGuild(messageReaction.message.channel.guild.id)
+    ) {
       return;
     }
 
@@ -24,4 +25,4 @@ export default class {
       }
     });
   }
-}
+};

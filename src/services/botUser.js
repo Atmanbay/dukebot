@@ -1,4 +1,4 @@
-export default class {
+module.exports = class {
   constructor(services) {
     this.botUser = services.values.botUser;
   }
@@ -6,4 +6,4 @@ export default class {
   getBotUser() {
     return this.botUser;
   }
-}
+};
