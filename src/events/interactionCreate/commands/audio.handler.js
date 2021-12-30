@@ -6,10 +6,11 @@ const sanitize = require("sanitize-filename");
 module.exports = class {
   constructor(services) {
     this.audioService = services.audio;
+    this.buttonService = services.button;
     this.configService = services.config;
     this.fileService = services.file;
-    this.tableService = services.table;
     this.loggingService = services.logging;
+    this.tableService = services.table;
     this.walkupService = services.walkup;
   }
 
@@ -67,7 +68,6 @@ module.exports = class {
   }
 
   async execute(interaction) {
-    console.log(interaction.options.getSubcommand());
     switch (interaction.options.getSubcommand()) {
       case "list":
         await this.list(interaction);
@@ -85,24 +85,69 @@ module.exports = class {
         await this.deleteWalkup(interaction);
         break;
     }
-    // console.log(interaction);
-    // if (args.list) {
-    //   await this.list(message);
-    //   return;
-    // }
-    // if (args.upload) {
-    //   await this.upload(message);
-    //   return;
-    // }
-    // await this.play(message, args);
   }
 
   async list(interaction) {
-    interaction.reply({
-      content: "Listing is not yet supported",
+    let clips = this.audioService.getClips();
+
+    let perChunk = 20;
+    let chunkedClips = clips.reduce((all, one, i) => {
+      const ch = Math.floor(i / perChunk);
+      all[ch] = [].concat(all[ch] || [], one);
+      return all;
+    }, []);
+
+    let onPageChange = async (buttonInteraction, newPage) => {
+      let newPageTemp = [...newPage];
+      let buffer = 5;
+      let columnWidth = Math.max(...newPageTemp.map((c) => c.length)) + buffer;
+      let halfway = Math.ceil(newPageTemp.length / 2);
+      let leftColumn = newPageTemp.splice(0, halfway);
+
+      let rows = [];
+      for (let i = 0; i < halfway; i++) {
+        let row = [leftColumn.shift(), newPageTemp.shift()];
+        rows.push(row);
+      }
+
+      let columnWidths = [columnWidth, columnWidth];
+      let response = this.tableService.build(columnWidths, rows);
+      response.unshift("```");
+      response.push("```");
+      await buttonInteraction.update({
+        content: response.join("\n"),
+        ephemeral: true,
+      });
+    };
+
+    let buttons = this.buttonService.createPaginationButtons({
+      pages: chunkedClips,
+      onPageChange,
+    });
+    let buttonRow = this.buttonService.createMessageActionRow(buttons);
+
+    let firstPage = [...chunkedClips[0]];
+    let buffer = 5;
+    let columnWidth = Math.max(...firstPage.map((c) => c.length)) + buffer;
+    let halfway = Math.ceil(firstPage.length / 2);
+    let leftColumn = firstPage.splice(0, halfway);
+
+    let rows = [];
+    for (let i = 0; i < halfway; i++) {
+      let row = [leftColumn.shift(), firstPage.shift()];
+      rows.push(row);
+    }
+
+    let columnWidths = [columnWidth, columnWidth];
+    let response = this.tableService.build(columnWidths, rows);
+    response.unshift("```");
+    response.push("```");
+
+    await interaction.reply({
+      content: response.join("\n"),
+      components: [buttonRow],
       ephemeral: true,
     });
-    // let clips = this.audioService.getClips();
 
     // let buffer = 5;
     // let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
@@ -185,9 +230,7 @@ module.exports = class {
     }
 
     interaction.reply({ content: `Playing ${clipName}!`, ephemeral: true });
-    await this.audioService.play(path);
-    await this.audioService.connect(channel);
-    await this.audioService.execute();
+    await this.audioService.play(channel, path);
   }
 
   async setWalkup(interaction) {

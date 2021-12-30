@@ -21,8 +21,8 @@ module.exports = class {
     this.connection = null;
   }
 
-  async connect(channel) {
-    this.connection = joinVoiceChannel({
+  async play(channel, path) {
+    let connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
       adapterCreator: channel.guild.voiceAdapterCreator,
@@ -30,47 +30,25 @@ module.exports = class {
       selfDeaf: false,
     });
 
-    await entersState(this.connection, VoiceConnectionStatus.Ready, 30e3);
+    connection.on(VoiceConnectionStatus.Ready, () => {
+      let resource = createAudioResource(path);
+      this.player.play(resource);
+      this.player.on(AudioPlayerStatus.Idle, () => this.disconnect(connection));
+      this.player.on("error", () => this.disconnect(connection));
+      connection.subscribe(this.player);
+    });
+
+    await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
   }
 
-  async disconnect() {
+  async disconnect(connection) {
     if (
-      this.connection &&
-      this.connection.state.status !== VoiceConnectionStatus.Destroyed
+      connection &&
+      connection.state.status !== VoiceConnectionStatus.Destroyed
     ) {
-      this.connection.destroy();
+      connection.destroy();
     }
   }
-
-  async play(path) {
-    let resource = createAudioResource(path);
-    this.player.play(resource);
-
-    await entersState(this.player, AudioPlayerStatus.Playing, 5e3);
-  }
-
-  async execute() {
-    this.player.on(AudioPlayerStatus.Idle, () => this.disconnect());
-    this.player.on("error", () => this.disconnect());
-
-    this.connection.subscribe(this.player);
-  }
-
-  // // Path can be a file path or a URL
-  // async play(path, channel) {
-  //   if (!channel) {
-  //     return;
-  //   }
-
-  //   let logging = this.loggingService;
-  //   let connection = await channel.join();
-  //   let dispatcher = connection.play(path);
-  //   dispatcher.on("finish", () => {
-  //     connection.disconnect();
-  //   });
-
-  //   dispatcher.on("error", logging.error);
-  // }
 
   getClips() {
     let files = [];
@@ -78,6 +56,7 @@ module.exports = class {
       files.push(file.replace(".mp3", ""));
     });
 
+    files.sort();
     return files;
   }
 };

@@ -4,7 +4,11 @@ module.exports = class {
       let rowString = "";
 
       for (let col = 0; col < row.length; col++) {
-        let cell = String(row[col]);
+        let cell = "";
+        if (row[col]) {
+          cell = String(row[col]);
+        }
+        // let cell = String(row[col]);
         let width = columnWidths[col];
 
         rowString += cell;
