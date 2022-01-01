@@ -101,7 +101,7 @@ module.exports = class {
     // }
   }
 
-  async yes({ interaction, onApproval, embedTitle }) {
+  async run({ interaction, onApproval, content, embedTitle }) {
     let role = this.guildService.getRole(this.configService.roles.twitter);
     let requiredApprovals = 4;
 
@@ -144,7 +144,7 @@ module.exports = class {
 
     let embedTitle = "Send as tweet";
 
-    this.yes({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onApproval, content, embedTitle });
   }
 
   async reply(interaction) {
@@ -165,7 +165,7 @@ module.exports = class {
 
     let embedTitle = "Reply to tweet";
 
-    this.yes({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onApproval, embedTitle });
   }
 
   async retweet(interaction) {
@@ -184,7 +184,7 @@ module.exports = class {
 
     let embedTitle = "Retweet this tweet";
 
-    this.yes({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onApproval, embedTitle });
   }
 
   async quotetweet(interaction) {
@@ -199,7 +199,7 @@ module.exports = class {
 
     let embedTitle = "Quote Tweet this tweet";
 
-    this.yes({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onApproval, embedTitle });
   }
 
   async postUrl(interaction, apiResponse) {
