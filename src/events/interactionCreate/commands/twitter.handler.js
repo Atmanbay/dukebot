@@ -6,6 +6,7 @@ module.exports = class {
     this.configService = services.config;
     this.buttonService = services.button;
     this.guildService = services.guild;
+    this.twitterService = services.twitter;
   }
 
   get getSlashCommand() {
@@ -94,34 +95,50 @@ module.exports = class {
     // }
   }
 
-  async tweet(interaction) {
-    return;
-    let content = interaction.options.getString("content");
-
+  async yes({ interaction, onApproval, embedTitle }) {
     let role = this.guildService.getRole(this.configService.roles.twitter);
-    let requiredApprovals = 2;
-    // let onApproval = () =>
-    //   await this.twitterService
-    //     .tweet(content)
-    //     .then((apiResponse) => this.postUrl(interaction, apiResponse));
+    let requiredApprovals = 4;
 
-    let onApproval = () => console.log(content);
-
-    let { button, messageContent } = this.buttonService.register({
-      author: interaction.member,
+    let { button, messageContent } = this.buttonService.createRoleButton({
       role,
       requiredApprovals,
       onApproval,
     });
+    let cancelButton = this.buttonService.createAuthorButton({
+      author: interaction.member.id,
+      onClick: (int) =>
+        int.update({
+          content: "This action has been cancelled by the caller",
+          components: [],
+        }),
+      label: "Cancel",
+      style: "DANGER",
+    }).button;
 
-    let componentRow = this.buttonService.createMessageActionRow(button);
-    let embed = new MessageEmbed().setDescription(content);
+    let componentRow = this.buttonService.createMessageActionRow(
+      button,
+      cancelButton
+    );
+    let embed = new MessageEmbed().setTitle(embedTitle).setDescription(content);
 
     await interaction.reply({
       content: messageContent,
       components: [componentRow],
       embeds: [embed],
     });
+  }
+
+  async tweet(interaction) {
+    let content = interaction.options.getString("content");
+
+    let onApproval = (int) =>
+      this.twitterService
+        .tweet(content)
+        .then((apiResponse) => this.postUrl(int, apiResponse));
+
+    let embedTitle = "Send as tweet";
+
+    this.yes({ interaction, onApproval, embedTitle });
   }
 
   async reply(interaction) {
@@ -135,9 +152,14 @@ module.exports = class {
     let name = match[1];
     let tweetId = match[2];
 
-    await this.twitterService
-      .tweet(`@${name} ${content}`, tweetId)
-      .then((apiResponse) => this.postUrl(interaction, apiResponse));
+    let onApproval = (int) =>
+      this.twitterService
+        .tweet(`@${name} ${content}`, tweetId)
+        .then((apiResponse) => this.postUrl(int, apiResponse));
+
+    let embedTitle = "Reply to tweet";
+
+    this.yes({ interaction, onApproval, embedTitle });
   }
 
   async retweet(interaction) {
@@ -149,9 +171,14 @@ module.exports = class {
 
     let tweetId = match[2];
 
-    await this.twitterService
-      .retweet(tweetId)
-      .then((apiResponse) => this.postUrl(interaction, apiResponse));
+    let onApproval = (int) =>
+      this.twitterService
+        .retweet(tweetId)
+        .then((apiResponse) => this.postUrl(int, apiResponse));
+
+    let embedTitle = "Retweet this tweet";
+
+    this.yes({ interaction, onApproval, embedTitle });
   }
 
   async quotetweet(interaction) {
@@ -159,13 +186,18 @@ module.exports = class {
     let url = interaction.options.getString("URL");
     let content = interaction.options.getString("content");
 
-    await this.twitterService
-      .tweet(`${content} ${url}`)
-      .then((apiResponse) => this.postUrl(interaction, apiResponse));
+    let onApproval = (int) =>
+      this.twitterService
+        .tweet(`${content} ${url}`)
+        .then((apiResponse) => this.postUrl(int, apiResponse));
+
+    let embedTitle = "Quote Tweet this tweet";
+
+    this.yes({ interaction, onApproval, embedTitle });
   }
 
   async postUrl(interaction, apiResponse) {
-    return;
-    console.log(apiResponse);
+    let url = `https://twitter.com/${apiResponse.data.user.screen_name}/status/${apiResponse.data.id_str}`;
+    interaction.followUp(url);
   }
 };

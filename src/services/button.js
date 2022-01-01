@@ -13,15 +13,20 @@ module.exports = class {
     this.buttons = {};
   }
 
-  createRoleButton({ role, requiredApprovals, onApproval }) {
+  createRoleButton({ role, requiredApprovals, onApproval, style }) {
     let customId = crypto.randomBytes(16).toString("hex");
     this.buttons[customId] = {
+      id: customId,
       type: ButtonTypes.ROLE,
       role: role,
       approvals: 0,
       requiredApprovals,
       onApproval,
     };
+
+    if (!style) {
+      style = "PRIMARY";
+    }
 
     // let button = new MessageActionRow().addComponents(
     //   new MessageButton()
@@ -33,41 +38,44 @@ module.exports = class {
     let button = new MessageButton()
       .setCustomId(customId)
       .setLabel("Approve")
-      .setStyle("PRIMARY");
+      .setStyle(style);
 
     let messageContent = `This will be executed on ${requiredApprovals} approvals from the ${role.name} role (0/${requiredApprovals})`;
 
     return { button, messageContent };
   }
 
-  createAuthorButton({ author, contents, onClick }) {
+  createAuthorButton({ author, label, onClick, style }) {
     let authorGating = (interaction) => {
       if (interaction.member.id == author) {
         onClick(interaction);
+      } else {
+        interaction.reply({
+          content: "You must be the original caller of this action",
+          ephemeral: true,
+        });
       }
     };
 
-    this.createGenericButton({ contents, onClick: authorGating });
+    return this.createGenericButton({ label, onClick: authorGating, style });
   }
 
-  createGenericButton({ contents, onClick }) {
+  createGenericButton({ label, onClick, style }) {
     let customId = crypto.randomBytes(16).toString("hex");
     this.buttons[customId] = {
+      id: customId,
       type: ButtonTypes.GENERIC,
       onClick,
     };
 
-    // let button = new MessageActionRow().addComponents(
-    //   new MessageButton()
-    //     .setCustomId(customId)
-    //     .setLabel(contents)
-    //     .setStyle("PRIMARY")
-    // );
+    if (!style) {
+      style = "PRIMARY";
+    }
 
     let button = new MessageButton()
       .setCustomId(customId)
-      .setLabel(contents)
-      .setStyle("PRIMARY");
+      .setLabel(label)
+      .setStyle(style);
 
     return { button };
   }
@@ -172,6 +180,9 @@ module.exports = class {
   async handle(interaction) {
     let customId = interaction.customId;
     let button = this.buttons[customId];
+    if (!button) {
+      return;
+    }
 
     if (button.type == ButtonTypes.GENERIC) {
       this.handleGenericButton(button, interaction);
@@ -203,7 +214,7 @@ module.exports = class {
     button.approvals++;
     if (button.approvals == button.requiredApprovals) {
       button.onApproval(interaction);
-      delete this.buttons[customId];
+      delete this.buttons[button.id];
 
       let messageContent = `This has been approved`;
       interaction.update({ content: messageContent, components: [] });
