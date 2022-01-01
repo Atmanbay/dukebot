@@ -21,6 +21,7 @@ module.exports = class {
             option
               .setName("content")
               .setDescription("Content of the tweet you want to send")
+              .setRequired(true)
           )
       )
       .addSubcommand((subcommand) =>
@@ -31,11 +32,13 @@ module.exports = class {
             option
               .setName("url")
               .setDescription("URL of the tweet you want to reply to")
+              .setRequired(true)
           )
           .addStringOption((option) =>
             option
               .setName("content")
               .setDescription("Content of the tweet you want to send")
+              .setRequired(true)
           )
       )
       .addSubcommand((subcommand) =>
@@ -46,6 +49,7 @@ module.exports = class {
             option
               .setName("url")
               .setDescription("URL of the tweet you want to reply to")
+              .setRequired(true)
           )
       )
       .addSubcommand((subcommand) =>
@@ -56,11 +60,13 @@ module.exports = class {
             option
               .setName("url")
               .setDescription("URL of the tweet you want to quote tweet")
+              .setRequired(true)
           )
           .addStringOption((option) =>
             option
               .setName("content")
               .setDescription("Content of the tweet you want to send")
+              .setRequired(true)
           )
       );
   }

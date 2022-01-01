@@ -9,31 +9,31 @@ module.exports = class {
 
     this.commands = services.file.getClasses("./*.handler.js", __dirname);
 
-    // let slashCommandJson = Object.values(this.commands).map((instance) => {
-    //   let scjson = instance.getSlashCommand.toJSON();
-    //   return scjson;
-    // });
+    let slashCommandJson = Object.values(this.commands).map((instance) => {
+      let scjson = instance.getSlashCommand.toJSON();
+      return scjson;
+    });
 
-    // const rest = new REST({ version: "9" }).setToken(services.config.token);
-    // (async () => {
-    //   try {
-    //     console.log("Started refreshing application (/) commands.");
+    const rest = new REST({ version: "9" }).setToken(services.config.token);
+    (async () => {
+      try {
+        console.log("Started refreshing application (/) commands.");
 
-    //     await rest.put(
-    //       Routes.applicationGuildCommands(
-    //         services.config.clientId,
-    //         services.values.guild.id
-    //       ),
-    //       {
-    //         body: slashCommandJson,
-    //       }
-    //     );
+        await rest.put(
+          Routes.applicationGuildCommands(
+            services.config.clientId,
+            services.values.guild.id
+          ),
+          {
+            body: slashCommandJson,
+          }
+        );
 
-    //     console.log("Successfully reloaded application (/) commands.");
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // })();
+        console.log("Successfully reloaded application (/) commands.");
+      } catch (error) {
+        console.error(error);
+      }
+    })();
   }
 
   async handle(interaction) {
