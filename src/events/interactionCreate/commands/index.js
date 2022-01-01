@@ -37,15 +37,19 @@ module.exports = class {
   }
 
   async handle(interaction) {
-    if (interaction.isCommand()) {
-      let command = this.commands[`${interaction.commandName}.handler`];
-      if (!command) {
-        return;
-      }
+    try {
+      if (interaction.isCommand()) {
+        let command = this.commands[`${interaction.commandName}.handler`];
+        if (!command) {
+          return;
+        }
 
-      await command.execute(interaction);
-    } else if (interaction.isButton()) {
-      this.buttonService.handle(interaction);
+        await command.execute(interaction);
+      } else if (interaction.isButton()) {
+        this.buttonService.handle(interaction);
+      }
+    } catch (error) {
+      this.loggingService.error(error);
     }
   }
 };
