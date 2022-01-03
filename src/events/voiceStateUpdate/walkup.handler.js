@@ -24,8 +24,6 @@ module.exports = class {
       return;
     }
 
-    await this.audioService.play(path);
-    await this.audioService.connect(channel);
-    await this.audioService.execute();
+    await this.audioService.play(channel, path);
   }
 };

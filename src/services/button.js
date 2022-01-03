@@ -3,7 +3,7 @@ const { MessageActionRow, MessageButton } = require("discord.js");
 
 const ButtonTypes = {
   GENERIC: 0,
-  ROLE: 1,
+  APPROVAL: 1,
   PAGINATION: 2,
 };
 
@@ -13,36 +13,101 @@ module.exports = class {
     this.buttons = {};
   }
 
-  createRoleButton({ role, requiredApprovals, onApproval, style }) {
-    let customId = crypto.randomBytes(16).toString("hex");
-    this.buttons[customId] = {
-      id: customId,
-      type: ButtonTypes.ROLE,
-      role: role,
-      approvals: 0,
+  createButton({ id, type, onClick, label, style }) {
+    this.buttons[id] = {
+      id: id,
+      type: type,
+      onClick: onClick,
+    };
+
+    return new MessageButton().setCustomId(id).setLabel(label).setStyle(style);
+  }
+
+  createApprovalButtons({ role, requiredApprovals, onSuccess, style }) {
+    let buttons = [];
+    let approvalId = crypto.randomBytes(16).toString("hex");
+    let removeApprovalId = crypto.randomBytes(16).toString("hex");
+
+    let approval = {
       requiredApprovals,
-      onApproval,
+      role,
+      currentApprovals: [],
+      onSuccess,
+    };
+
+    approval.onApproval = async (interaction) => {
+      let isCorrectRole = true;
+      if (approval.role) {
+        isCorrectRole = interaction.member.roles.cache.has(role.id);
+      }
+
+      if (!isCorrectRole) {
+        await interaction.reply({
+          content: "You are not the correct role",
+          ephemeral: true,
+        });
+        return;
+      }
+
+      if (approval.currentApprovals.includes(interaction.member.id)) {
+        await interaction.reply({
+          content: "You have already approved this",
+          ephemeral: true,
+        });
+        return;
+      }
+
+      approval.currentApprovals.push(interaction.member.id);
+      if (approval.currentApprovals.length >= approval.requiredApprovals) {
+        approval.onSuccess(interaction);
+        delete this.buttons[approvalId];
+        delete this.buttons[removeApprovalId];
+
+        let messageContent = `This has been approved`;
+        interaction.update({ content: messageContent, components: [] });
+      } else {
+        let messageContent = `This will be executed on ${approval.requiredApprovals} approvals from the ${approval.role.name} role (${approval.currentApprovals.length}/${approval.requiredApprovals})`;
+        interaction.update(messageContent);
+      }
+    };
+
+    approval.onRemoveApproval = async (interaction) => {
+      let index = approval.currentApprovals.indexOf(interaction.member.id);
+      if (index > -1) {
+        approval.currentApprovals.splice(index, 1);
+      }
+
+      let messageContent = `This will be executed on ${approval.requiredApprovals} approvals from the ${approval.role.name} role (${approval.currentApprovals.length}/${approval.requiredApprovals})`;
+      interaction.update(messageContent);
     };
 
     if (!style) {
       style = "PRIMARY";
     }
 
-    // let button = new MessageActionRow().addComponents(
-    //   new MessageButton()
-    //     .setCustomId(customId)
-    //     .setLabel("Approve")
-    //     .setStyle("PRIMARY")
-    // );
+    buttons.push(
+      this.createButton({
+        id: approvalId,
+        type: ButtonTypes.APPROVAL,
+        onClick: approval.onApproval,
+        label: "Approve",
+        style,
+      })
+    );
 
-    let button = new MessageButton()
-      .setCustomId(customId)
-      .setLabel("Approve")
-      .setStyle(style);
+    buttons.push(
+      this.createButton({
+        id: removeApprovalId,
+        type: ButtonTypes.APPROVAL,
+        onClick: approval.onRemoveApproval,
+        label: "Remove Approval",
+        style: "SECONDARY",
+      })
+    );
 
     let messageContent = `This will be executed on ${requiredApprovals} approvals from the ${role.name} role (0/${requiredApprovals})`;
 
-    return { button, messageContent };
+    return { buttons, messageContent };
   }
 
   createAuthorButton({ author, label, onClick, style }) {
@@ -61,23 +126,23 @@ module.exports = class {
   }
 
   createGenericButton({ label, onClick, style }) {
-    let customId = crypto.randomBytes(16).toString("hex");
-    this.buttons[customId] = {
-      id: customId,
-      type: ButtonTypes.GENERIC,
-      onClick,
-    };
+    let buttons = [];
 
     if (!style) {
       style = "PRIMARY";
     }
 
-    let button = new MessageButton()
-      .setCustomId(customId)
-      .setLabel(label)
-      .setStyle(style);
+    buttons.push(
+      this.createButton({
+        id: crypto.randomBytes(16).toString("hex"),
+        type: ButtonTypes.GENERIC,
+        onClick,
+        label,
+        style,
+      })
+    );
 
-    return { button };
+    return { buttons };
   }
 
   createPaginationButtons({ pages, onPageChange }) {
@@ -118,59 +183,47 @@ module.exports = class {
       onPageChange(interaction, pagination.pages[pagination.currentPage]);
     };
 
-    let customId = crypto.randomBytes(16).toString("hex");
-    this.buttons[customId] = {
-      type: ButtonTypes.PAGINATION,
-      onClick: goToFirstPage,
-    };
-
     buttons.push(
-      new MessageButton()
-        .setCustomId(customId)
-        .setLabel("<<")
-        .setStyle("SECONDARY")
+      this.createButton({
+        id: crypto.randomBytes(16).toString("hex"),
+        type: ButtonTypes.PAGINATION,
+        onClick: goToFirstPage,
+        label: "<<",
+        style: "SECONDARY",
+      })
     );
 
-    customId = crypto.randomBytes(16).toString("hex");
-    this.buttons[customId] = {
-      type: ButtonTypes.PAGINATION,
-      onClick: previousPage,
-    };
-
     buttons.push(
-      new MessageButton()
-        .setCustomId(customId)
-        .setLabel("<")
-        .setStyle("SECONDARY")
+      this.createButton({
+        id: crypto.randomBytes(16).toString("hex"),
+        type: ButtonTypes.PAGINATION,
+        onClick: previousPage,
+        label: "<",
+        style: "SECONDARY",
+      })
     );
 
-    customId = crypto.randomBytes(16).toString("hex");
-    this.buttons[customId] = {
-      type: ButtonTypes.PAGINATION,
-      onClick: nextPage,
-    };
-
     buttons.push(
-      new MessageButton()
-        .setCustomId(customId)
-        .setLabel(">")
-        .setStyle("SECONDARY")
+      this.createButton({
+        id: crypto.randomBytes(16).toString("hex"),
+        type: ButtonTypes.PAGINATION,
+        onClick: nextPage,
+        label: ">",
+        style: "SECONDARY",
+      })
     );
 
-    customId = crypto.randomBytes(16).toString("hex");
-    this.buttons[customId] = {
-      type: ButtonTypes.PAGINATION,
-      onClick: goToLastPage,
-    };
-
     buttons.push(
-      new MessageButton()
-        .setCustomId(customId)
-        .setLabel(">>")
-        .setStyle("SECONDARY")
+      this.createButton({
+        id: crypto.randomBytes(16).toString("hex"),
+        type: ButtonTypes.PAGINATION,
+        onClick: goToLastPage,
+        label: ">>",
+        style: "SECONDARY",
+      })
     );
 
-    return buttons;
+    return { buttons };
   }
 
   createMessageActionRow(...buttons) {
@@ -186,10 +239,15 @@ module.exports = class {
 
     if (button.type == ButtonTypes.GENERIC) {
       this.handleGenericButton(button, interaction);
-    } else if (button.type == ButtonTypes.ROLE) {
+    } else if (button.type == ButtonTypes.APPROVAL) {
       this.handleRoleButton(button, interaction);
     } else if (button.type == ButtonTypes.PAGINATION) {
       this.handlePaginationButton(button, interaction);
+    } else {
+      interaction.reply({
+        content: "Button cannot be handled",
+        ephemeral: true,
+      });
     }
   }
 
@@ -198,30 +256,31 @@ module.exports = class {
   }
 
   async handleRoleButton(button, interaction) {
-    let isCorrectRole = true;
-    if (button.roleId) {
-      isCorrectRole = interaction.member.roles.cache.has(button.role.id);
-    }
+    button.onClick(interaction);
+    // let isCorrectRole = true;
+    // if (button.roleId) {
+    //   isCorrectRole = interaction.member.roles.cache.has(button.role.id);
+    // }
 
-    if (!isCorrectRole) {
-      await interaction.followUp({
-        content: "You are not the correct role",
-        ephemeral: true,
-      });
-      return;
-    }
+    // if (!isCorrectRole) {
+    //   await interaction.followUp({
+    //     content: "You are not the correct role",
+    //     ephemeral: true,
+    //   });
+    //   return;
+    // }
 
-    button.approvals++;
-    if (button.approvals == button.requiredApprovals) {
-      button.onApproval(interaction);
-      delete this.buttons[button.id];
+    // button.approvals++;
+    // if (button.approvals == button.requiredApprovals) {
+    //   button.onApproval(interaction);
+    //   delete this.buttons[button.id];
 
-      let messageContent = `This has been approved`;
-      interaction.update({ content: messageContent, components: [] });
-    } else {
-      let messageContent = `This will be executed on ${button.requiredApprovals} approvals from the ${button.role.name} role (${button.approvals}/${button.requiredApprovals})`;
-      interaction.update(messageContent);
-    }
+    //   let messageContent = `This has been approved`;
+    //   interaction.update({ content: messageContent, components: [] });
+    // } else {
+    //   let messageContent = `This will be executed on ${button.requiredApprovals} approvals from the ${button.role.name} role (${button.approvals}/${button.requiredApprovals})`;
+    //   interaction.update(messageContent);
+    // }
   }
 
   async handlePaginationButton(button, interaction) {

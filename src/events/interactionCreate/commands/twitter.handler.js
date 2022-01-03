@@ -84,32 +84,18 @@ module.exports = class {
     if (subcommand) {
       await subcommand.bind(this)(interaction);
     }
-
-    // switch (interaction.options.getSubcommand()) {
-    //   case "tweet":
-    //     await this.tweet(interaction);
-    //     break;
-    //   case "reply":
-    //     await this.reply(interaction);
-    //     break;
-    //   case "retweet":
-    //     await this.retweet(interaction);
-    //     break;
-    //   case "quotetweet":
-    //     await this.quotetweet(interaction);
-    //     break;
-    // }
   }
 
-  async run({ interaction, onApproval, content, embedTitle }) {
+  async run({ interaction, onSuccess, content, embedTitle }) {
     let role = this.guildService.getRole(this.configService.roles.twitter);
     let requiredApprovals = 4;
 
-    let { button, messageContent } = this.buttonService.createRoleButton({
+    let { buttons, messageContent } = this.buttonService.createApprovalButtons({
       role,
       requiredApprovals,
-      onApproval,
+      onSuccess,
     });
+
     let cancelButton = this.buttonService.createAuthorButton({
       author: interaction.member.id,
       onClick: (int) =>
@@ -119,12 +105,12 @@ module.exports = class {
         }),
       label: "Cancel",
       style: "DANGER",
-    }).button;
+    }).buttons;
 
-    let componentRow = this.buttonService.createMessageActionRow(
-      button,
-      cancelButton
-    );
+    let componentRow = this.buttonService.createMessageActionRow([
+      ...buttons,
+      ...cancelButton,
+    ]);
     let embed = new MessageEmbed().setTitle(embedTitle).setDescription(content);
 
     await interaction.reply({
@@ -137,14 +123,16 @@ module.exports = class {
   async tweet(interaction) {
     let content = interaction.options.getString("content");
 
-    let onApproval = (int) =>
-      this.twitterService
-        .tweet(content)
-        .then((apiResponse) => this.postUrl(int, apiResponse));
+    // let onSuccess = (int) =>
+    //   this.twitterService
+    //     .tweet(content)
+    //     .then((apiResponse) => this.postUrl(int, apiResponse));
+
+    let onSuccess = (int) => console.log("successful");
 
     let embedTitle = "Send as tweet";
 
-    this.run({ interaction, onApproval, content, embedTitle });
+    this.run({ interaction, onSuccess, content, embedTitle });
   }
 
   async reply(interaction) {
@@ -158,14 +146,14 @@ module.exports = class {
     let name = match[1];
     let tweetId = match[2];
 
-    let onApproval = (int) =>
+    let onSuccess = (int) =>
       this.twitterService
         .tweet(`@${name} ${content}`, tweetId)
         .then((apiResponse) => this.postUrl(int, apiResponse));
 
     let embedTitle = "Reply to tweet";
 
-    this.run({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onSuccess, embedTitle });
   }
 
   async retweet(interaction) {
@@ -177,14 +165,14 @@ module.exports = class {
 
     let tweetId = match[2];
 
-    let onApproval = (int) =>
+    let onSuccess = (int) =>
       this.twitterService
         .retweet(tweetId)
         .then((apiResponse) => this.postUrl(int, apiResponse));
 
     let embedTitle = "Retweet this tweet";
 
-    this.run({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onSuccess, embedTitle });
   }
 
   async quotetweet(interaction) {
@@ -192,14 +180,14 @@ module.exports = class {
     let url = interaction.options.getString("URL");
     let content = interaction.options.getString("content");
 
-    let onApproval = (int) =>
+    let onSuccess = (int) =>
       this.twitterService
         .tweet(`${content} ${url}`)
         .then((apiResponse) => this.postUrl(int, apiResponse));
 
     let embedTitle = "Quote Tweet this tweet";
 
-    this.run({ interaction, onApproval, embedTitle });
+    this.run({ interaction, onSuccess, embedTitle });
   }
 
   async postUrl(interaction, apiResponse) {

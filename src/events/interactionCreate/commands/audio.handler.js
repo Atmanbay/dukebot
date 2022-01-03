@@ -120,7 +120,7 @@ module.exports = class {
       });
     };
 
-    let buttons = this.buttonService.createPaginationButtons({
+    let { buttons } = this.buttonService.createPaginationButtons({
       pages: chunkedClips,
       onPageChange,
     });
