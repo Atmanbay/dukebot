@@ -123,12 +123,10 @@ module.exports = class {
   async tweet(interaction) {
     let content = interaction.options.getString("content");
 
-    // let onSuccess = (int) =>
-    //   this.twitterService
-    //     .tweet(content)
-    //     .then((apiResponse) => this.postUrl(int, apiResponse));
-
-    let onSuccess = (int) => console.log("successful");
+    let onSuccess = (int) =>
+      this.twitterService
+        .tweet(content)
+        .then((apiResponse) => this.postUrl(int, apiResponse));
 
     let embedTitle = "Send as tweet";
 
