@@ -8,6 +8,6 @@ module.exports = class {
   }
 
   execute(interaction) {
-    interaction.reply("I'm alive!");
+    interaction.reply({ content: "I'm alive!", ephemeral: true });
   }
 };
