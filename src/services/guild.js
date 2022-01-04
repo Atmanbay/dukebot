@@ -18,7 +18,11 @@ module.exports = class {
       return null;
     }
 
-    return this.guild.members.fetch(userId);
+    if (this.guild.members.cache.some((member) => member.user.id == userId)) {
+      return this.guild.members.fetch(userId);
+    } else {
+      return null;
+    }
   }
 
   getChannels(type) {

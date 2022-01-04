@@ -148,39 +148,6 @@ module.exports = class {
       components: [buttonRow],
       ephemeral: true,
     });
-
-    // let buffer = 5;
-    // let columnWidth = Math.max(...clips.map((c) => c.length)) + buffer;
-    // let halfway = Math.ceil(clips.length / 2);
-    // let leftColumn = clips.splice(0, halfway);
-
-    // let rows = [];
-    // for (let i = 0; i < halfway; i++) {
-    //   let row = [leftColumn.shift(), clips.shift()];
-
-    //   rows.push(row);
-    // }
-
-    // let columnWidths = [columnWidth, columnWidth];
-    // let response = this.tableService.build(columnWidths, rows);
-
-    // // response.unshift("```");
-    // // response.push("```");
-    // // interaction.reply({ content: response.join("\n"), ephemeral: true });
-
-    // // console.log(response);
-
-    // let cutoff = 10;
-    // let chunkedResponses = [];
-    // while (response.length) {
-    //   chunkedResponses.push(response.splice(0, cutoff));
-    // }
-
-    // chunkedResponses.forEach((chunkedResponse) => {
-    //   chunkedResponse.unshift("```");
-    //   chunkedResponse.push("```");
-    //   interaction.followUp({ content: chunkedResponse, ephemeral: true });
-    // });
   }
 
   async upload(interaction) {

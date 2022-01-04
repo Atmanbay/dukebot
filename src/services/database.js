@@ -9,16 +9,6 @@ module.exports = class {
     this.configService = services.config;
     this.databases = {};
 
-    // services.guilds.forEach((guild) => {
-    //   this.createDbFile(guild.guild.id);
-    //   let db = this.buildDb(guild.guild.id);
-
-    //   //databaseService.databases[guildId].get("tableName");
-    //   this.databases[guild.guild.id] = {
-    //     get: db.get.bind(db),
-    //   };
-    // });
-
     this.createDbFile(services.values.guild.id);
 
     let db = this.buildDb(services.values.guild.id);
