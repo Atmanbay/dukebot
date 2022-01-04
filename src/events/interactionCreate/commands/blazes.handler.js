@@ -5,6 +5,7 @@ const isEmpty = require("lodash/isEmpty");
 const TIMEFRAME = {
   WEEK: "WEEK",
   MONTH: "MONTH",
+  LAST_MONTH: "LAST_MONTH",
   YEAR: "YEAR",
   ALL: "ALL",
 };
@@ -26,6 +27,7 @@ module.exports = class {
           .setDescription("The timeframe to fetch blazes from")
           .addChoice("week", TIMEFRAME.WEEK)
           .addChoice("month", TIMEFRAME.MONTH)
+          .addChoice("last month", TIMEFRAME.LAST_MONTH)
           .addChoice("year", TIMEFRAME.YEAR)
           .addChoice("all", TIMEFRAME.ALL)
       );
@@ -33,15 +35,20 @@ module.exports = class {
 
   async execute(interaction) {
     let timeframe = interaction.options.getString("timeframe");
+    if (!timeframe) {
+      timeframe = TIMEFRAME.MONTH;
+    }
 
-    let start = moment().startOf("month");
-    let end = moment().endOf("month");
-    let frame = "this month";
+    let start, end, frame;
     if (timeframe == TIMEFRAME.WEEK) {
       start = moment().startOf("week");
       end = moment().endOf("week");
       frame = "this week";
     } else if (timeframe == TIMEFRAME.MONTH) {
+      start = moment().startOf("month");
+      end = moment().endOf("month");
+      frame = "this month";
+    } else if (timeframe == TIMEFRAME.LAST_MONTH) {
       start = moment().subtract(1, "month").startOf("month");
       end = moment().subtract(1, "month").endOf("month");
       frame = "last month";
