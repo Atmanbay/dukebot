@@ -4,7 +4,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = class {
   constructor(services) {
     this.configService = services.config;
-    this.buttonService = services.button;
+    this.messageActionService = services.messageAction;
     this.guildService = services.guild;
     this.twitterService = services.twitter;
   }
@@ -90,13 +90,14 @@ module.exports = class {
     let role = this.guildService.getRole(this.configService.roles.twitter);
     let requiredApprovals = 4;
 
-    let { buttons, messageContent } = this.buttonService.createApprovalButtons({
-      role,
-      requiredApprovals,
-      onSuccess,
-    });
+    let { buttons, messageContent } =
+      this.messageActionService.createApprovalButtons({
+        role,
+        requiredApprovals,
+        onSuccess,
+      });
 
-    let cancelButton = this.buttonService.createAuthorButton({
+    let cancelButton = this.messageActionService.createAuthorButton({
       author: interaction.member.id,
       onClick: (int) =>
         int.update({
@@ -107,7 +108,7 @@ module.exports = class {
       style: "DANGER",
     }).buttons;
 
-    let componentRow = this.buttonService.createMessageActionRow([
+    let componentRow = this.messageActionService.createMessageActionRow([
       ...buttons,
       ...cancelButton,
     ]);
@@ -134,7 +135,6 @@ module.exports = class {
   }
 
   async reply(interaction) {
-    return;
     let url = interaction.options.getString("URL");
     let content = interaction.options.getString("content");
 
@@ -151,7 +151,7 @@ module.exports = class {
 
     let embedTitle = "Reply to tweet";
 
-    this.run({ interaction, onSuccess, embedTitle });
+    this.run({ interaction, onSuccess, content, embedTitle });
   }
 
   async retweet(interaction) {

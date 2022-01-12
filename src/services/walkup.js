@@ -13,6 +13,7 @@ module.exports = class {
   }
 
   saveWalkup(walkup) {
+    console.log("setting walkup", walkup);
     this.removeWalkup(walkup.id);
     this.db.push(walkup).write();
   }

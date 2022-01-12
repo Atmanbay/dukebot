@@ -6,7 +6,7 @@ module.exports = class {
   constructor(services) {
     this.configService = services.config;
     this.loggingService = services.logging;
-    this.buttonService = services.button;
+    this.messageActionService = services.messageAction;
     let commands = services.database.get("commands");
 
     this.commands = services.file.getClasses("./*.handler.js", __dirname);
@@ -58,8 +58,8 @@ module.exports = class {
         }
 
         await command.execute(interaction);
-      } else if (interaction.isButton()) {
-        this.buttonService.handle(interaction);
+      } else if (interaction.isButton() || interaction.isSelectMenu()) {
+        this.messageActionService.handle(interaction);
       }
     } catch (error) {
       this.loggingService.error(error);

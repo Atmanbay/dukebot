@@ -6,7 +6,7 @@ const sanitize = require("sanitize-filename");
 module.exports = class {
   constructor(services) {
     this.audioService = services.audio;
-    this.buttonService = services.button;
+    this.messageActionService = services.messageAction;
     this.configService = services.config;
     this.fileService = services.file;
     this.loggingService = services.logging;
@@ -120,11 +120,48 @@ module.exports = class {
       });
     };
 
-    let { buttons } = this.buttonService.createPaginationButtons({
+    let { buttons } = this.messageActionService.createPaginationButtons({
       pages: chunkedClips,
       onPageChange,
+      dropdowns: [
+        {
+          label: "Play",
+          onSelect: (int, selection) => {
+            let channel = int.member.voice.channel;
+            if (!channel) {
+              return;
+            }
+
+            let path = this.fileService.getPath(
+              this.configService.paths.audio,
+              `${selection}.mp3`
+            );
+
+            if (!path || !fs.existsSync(path)) {
+              return;
+            }
+
+            int.reply({ content: `Playing ${clipName}`, ephemeral: true });
+            this.audioService.play(channel, path);
+          },
+        },
+        {
+          label: "Set as Walkup",
+          onSelect: (int, selection) => {
+            this.walkupService.saveWalkup({
+              id: int.member.id,
+              clip: selection,
+            });
+
+            int.reply({
+              content: `Set ${clipName} as walkup`,
+              ephemeral: true,
+            });
+          },
+        },
+      ],
     });
-    let buttonRow = this.buttonService.createMessageActionRow(buttons);
+    let buttonRow = this.messageActionService.createMessageActionRow(buttons);
 
     let firstPage = [...chunkedClips[0]];
     let buffer = 5;
@@ -161,12 +198,34 @@ module.exports = class {
 
       if (fromUser) {
         let url = fromUser.attachments.first().url;
+        let rawFileName = interaction.options.getString("name");
         let options = {
-          filename: `${sanitize(interaction.options.getString("name"))}.mp3`,
+          filename: `${sanitize(rawFileName)}.mp3`,
         };
         download(url, this.configService.paths.audio, options);
+
+        let { buttons } = this.messageActionService.createGenericButton({
+          label: "Set as Walkup",
+          onClick: (int) => {
+            console.log("here", rawFileName);
+            this.walkupService.saveWalkup({
+              id: int.member.id,
+              clip: rawFileName,
+            });
+
+            int.reply({
+              content: `Walkup set to ${rawFileName}`,
+              ephemeral: true,
+            });
+          },
+        });
+
+        let buttonRow =
+          this.messageActionService.createMessageActionRow(buttons);
+
         interaction.reply({
-          content: `Successfully uploaded ${options.filename}`,
+          content: `Successfully uploaded ${rawFileName}`,
+          components: [buttonRow],
           ephemeral: true,
         });
       } else {
