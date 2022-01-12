@@ -64,9 +64,16 @@ module.exports = class {
     return dbUser.value().hints;
   }
 
-  assignWord(userId, { word, length }) {
+  getWordId(word) {
+    return this.words.indexOf(word);
+  }
+
+  assignWord(userId, { word, length, wordID }) {
     let dbUser = this.db.find({ id: userId });
-    if (!word) {
+    if (wordID) {
+      word = this.words[wordID];
+      length = word.length;
+    } else if (!word) {
       word = sample(
         this.words.filter((word) => word.length === length)
       ).toUpperCase();
@@ -131,6 +138,8 @@ module.exports = class {
       }
     });
 
+    let knownCountBy = countBy(hints.known);
+
     guessArray.forEach((letter, index) => {
       if (hints.known[index] === letter) {
         return;
@@ -142,10 +151,11 @@ module.exports = class {
 
       let wordInstancesOf = wordCountBy[letter];
       let guessInstancesOf = guessCountBy[letter];
+      let knownInstancesOf = knownCountBy[letter];
 
       if (
         wordInstancesOf == guessInstancesOf &&
-        !hints.known.includes(letter)
+        knownInstancesOf !== guessInstancesOf
       ) {
         if (!hints.unknown.includes(letter)) {
           hints.unknown.push(letter);

@@ -3,7 +3,6 @@ const crypto = require("crypto");
 
 module.exports = class {
   constructor(services) {
-    this.guildService = services.guild;
     this.messageActionService = services.messageAction;
     this.wordleService = services.wordle;
     this.loggingService = services.logging;
@@ -21,6 +20,11 @@ module.exports = class {
             option
               .setName("length")
               .setDescription("Length of the word (default is 5)")
+          )
+          .addIntegerOption((option) =>
+            option
+              .setName("id")
+              .setDescription("The Word ID of the word to guess")
           )
       )
       .addSubcommand((subcommand) =>
@@ -45,13 +49,17 @@ module.exports = class {
 
   async start(interaction) {
     let length = interaction.options.getInteger("length");
+    let wordID = interaction.options.getInteger("id");
     if (!length) {
       length = 5;
     }
     let userId = interaction.member.id;
     let currentWord = this.wordleService.getCurrentWord(userId);
     let assignNewWord = () =>
-      this.wordleService.assignWord(userId, { length: length });
+      this.wordleService.assignWord(userId, {
+        length: length,
+        wordID: wordID,
+      });
 
     if (currentWord) {
       let guesses = this.wordleService.getGuesses(userId);
@@ -167,8 +175,6 @@ module.exports = class {
       );
     }
 
-    console.log(currentWord);
-
     if (win || lose) {
       let newButton = this.messageActionService.createGenericButton({
         label: "Start New Of Same Length",
@@ -193,11 +199,7 @@ module.exports = class {
             }`,
             "",
             nickname,
-            `Hash: ${crypto
-              .createHash("md5")
-              .update(currentWord)
-              .digest("hex")
-              .substring(0, 6)}`,
+            `Word ID: ${this.wordleService.getWordId(currentWord)}`,
             `Word: ||${currentWord}||`,
           ];
           guesses.forEach((guess) => {
