@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const some = require("lodash/some");
+const crypto = require("crypto");
 
 module.exports = class {
   constructor(services) {
+    this.guildService = services.guild;
     this.messageActionService = services.messageAction;
     this.wordleService = services.wordle;
     this.loggingService = services.logging;
@@ -166,6 +167,8 @@ module.exports = class {
       );
     }
 
+    console.log(currentWord);
+
     if (win || lose) {
       let newButton = this.messageActionService.createGenericButton({
         label: "Start New Of Same Length",
@@ -180,11 +183,22 @@ module.exports = class {
       let publishButton = this.messageActionService.createGenericButton({
         label: "Publish Your Results",
         onClick: (int) => {
+          let nickname = int.member.nickname;
+          if (!nickname) {
+            nickname = int.member.user.username;
+          }
           let content = [
             `Wordle ${currentWord.length} ${guesses.length}/${
               currentWord.length + 1
             }`,
             "",
+            nickname,
+            `Hash: ${crypto
+              .createHash("md5")
+              .update(currentWord)
+              .digest("hex")
+              .substring(0, 6)}`,
+            `Word: ||${currentWord}||`,
           ];
           guesses.forEach((guess) => {
             let guessEmojis = [];
