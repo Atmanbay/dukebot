@@ -49,11 +49,8 @@ module.exports = class {
     }
     let userId = interaction.member.id;
     let currentWord = this.wordleService.getCurrentWord(userId);
-    // let assignNewWord = () =>
-    //   this.wordleService.assignWord(userId, { length: length });
-
     let assignNewWord = () =>
-      this.wordleService.assignWord(userId, { word: "PRIVY" });
+      this.wordleService.assignWord(userId, { length: length });
 
     if (currentWord) {
       let guesses = this.wordleService.getGuesses(userId);
