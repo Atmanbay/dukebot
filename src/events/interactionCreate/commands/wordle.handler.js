@@ -49,8 +49,11 @@ module.exports = class {
     }
     let userId = interaction.member.id;
     let currentWord = this.wordleService.getCurrentWord(userId);
+    // let assignNewWord = () =>
+    //   this.wordleService.assignWord(userId, { length: length });
+
     let assignNewWord = () =>
-      this.wordleService.assignWord(userId, { length: length });
+      this.wordleService.assignWord(userId, { word: "PRIVY" });
 
     if (currentWord) {
       let guesses = this.wordleService.getGuesses(userId);
@@ -136,9 +139,22 @@ module.exports = class {
 
     win = !hints.known.includes("_");
 
+    let nos = new Set();
+    guesses.forEach((guess) => {
+      guess.split("").forEach((letter) => {
+        if (!(hints.known.includes(letter) || hints.unknown.includes(letter))) {
+          nos.add(letter);
+        }
+      });
+    });
+
+    nos = Array.from(nos);
+    nos.sort();
+
     content.push("");
     content.push(hints.known.join(" "));
     content.push(`HAS: ${hints.unknown.join(" ")}`);
+    content.push(`GUESSED: ${nos.join(" ")}`);
     content.push("```");
     content.unshift("```");
 
@@ -176,10 +192,11 @@ module.exports = class {
           guesses.forEach((guess) => {
             let guessEmojis = [];
             let guessArray = guess.split("");
+            let wordArray = currentWord.split("");
             guessArray.forEach((letter, index) => {
-              if (hints.known[index] === letter) {
+              if (wordArray[index] === letter) {
                 guessEmojis[index] = ":green_square:";
-              } else if (hints.unknown.includes(letter)) {
+              } else if (wordArray.includes(letter)) {
                 guessEmojis[index] = ":yellow_square:";
               } else {
                 guessEmojis[index] = ":black_large_square:";
