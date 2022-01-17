@@ -153,10 +153,7 @@ module.exports = class {
       let guessInstancesOf = guessCountBy[letter];
       let knownInstancesOf = knownCountBy[letter];
 
-      if (
-        wordInstancesOf == guessInstancesOf &&
-        knownInstancesOf !== guessInstancesOf
-      ) {
+      if (wordInstancesOf > 0 && knownInstancesOf !== guessInstancesOf) {
         if (!hints.unknown.includes(letter)) {
           hints.unknown.push(letter);
         }
