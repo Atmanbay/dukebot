@@ -57,7 +57,6 @@ module.exports = class {
     let currentWord = this.wordleService.getCurrentWord(userId);
     let assignNewWord = () =>
       this.wordleService.assignWord(userId, {
-        word: "KIBBE",
         length: length,
         wordID: wordID,
       });

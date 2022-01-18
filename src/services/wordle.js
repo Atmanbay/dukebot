@@ -14,6 +14,7 @@ module.exports = class {
     this.loggingService = services.logging;
     this.words = services.database.get("words").value();
     this.db = services.database.get("wordle");
+    this.validGuesses = services.database.get("validGuesses").value();
     this.RESULT = RESULT;
   }
 
@@ -27,7 +28,7 @@ module.exports = class {
       return false;
     }
 
-    if (!this.words.includes(guess)) {
+    if (!this.validGuesses.includes(guess)) {
       return false;
     }
 
