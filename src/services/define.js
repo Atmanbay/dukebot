@@ -12,7 +12,7 @@ module.exports = class {
       let root = HTMLParser.parse(htmlString);
 
       // Not sure why I need to grab the parentNode here, quirk with the library or I'm dumb
-      let topDefinition = root.querySelector(".def-panel ").parentNode;
+      let topDefinition = root.querySelector(".definition").parentNode;
       if (!topDefinition) {
         return null;
       }

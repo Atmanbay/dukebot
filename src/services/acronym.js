@@ -32,7 +32,7 @@ module.exports = class {
           return null;
         }
         let trimmedWord = result.word.match(/\w+/)[0];
-        return `**${letter.toUpperCase()}:** ${trimmedWord}`;
+        return trimmedWord;
       });
 
       if (some(response, (r) => !r)) {
