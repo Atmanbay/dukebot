@@ -27,7 +27,7 @@ module.exports = class {
     let a = interaction.options.getString("a");
     let b = interaction.options.getString("b");
 
-    let combinedEmoji = this.emojiKitchenService.getCombinedEmoji(a, b);
+    let combinedEmoji = await this.emojiKitchenService.getCombinedEmoji(a, b);
     interaction.reply(combinedEmoji);
   }
 };
