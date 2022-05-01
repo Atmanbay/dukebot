@@ -11,6 +11,10 @@ module.exports = class {
       url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${bUnicode}/u${bUnicode}_u${aUnicode}.png`;
     });
 
+    await request({ uri: url }).catch(() => {
+      url = null;
+    });
+
     return url;
   }
 };

@@ -28,6 +28,13 @@ module.exports = class {
     let b = interaction.options.getString("b");
 
     let combinedEmoji = await this.emojiKitchenService.getCombinedEmoji(a, b);
-    interaction.reply(combinedEmoji);
+    if (combinedEmoji) {
+      interaction.reply(combinedEmoji);
+    } else {
+      interaction.reply({
+        content: "That emoji combo does not exist",
+        ephemeral: true,
+      });
+    }
   }
 };
