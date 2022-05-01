@@ -25,6 +25,7 @@
     "dotenv": "^8.2.0",
     "download": "^8.0.0",
     "emoji-regex": "^9.0.0",
+    "emoji-unicode": "^2.0.1",
     "es6-promisify": "^6.1.1",
     "esm": "^3.2.25",
     "ffmpeg-static": "^4.4.0",
