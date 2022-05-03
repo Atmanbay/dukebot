@@ -39,7 +39,7 @@
     "lowdb": "^1.0.0",
     "markov-strings": "^2.1.1",
     "minimist": "^1.2.5",
-    "moment": "^2.25.3",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.31",
     "node-emoji": "^1.11.0",
     "node-html-parser": "^1.2.18",
