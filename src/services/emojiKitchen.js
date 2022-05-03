@@ -37,12 +37,10 @@ module.exports = class {
   }
 
   async downloadEmoji(a, b, path) {
-    console.log("downloading emoji");
     let aUnicode = emojiUnicode(a);
     let bUnicode = emojiUnicode(b);
 
     let url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${aUnicode}/u${aUnicode}_u${bUnicode}.png`;
-    // let succeeded = false;
 
     let succeeded = await request
       .head(url)
@@ -76,32 +74,6 @@ module.exports = class {
             );
           });
       });
-    } else {
-      return null;
-    }
-
-    try {
-      await request({ uri: url }).pipe(fs.createWriteStream(path));
-      succeeded = true;
-      console.log("downloaded!");
-    } catch (error) {
-      url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${bUnicode}/u${bUnicode}_u${aUnicode}.png`;
-      succeeded = false;
-    }
-
-    if (!succeeded) {
-      try {
-        await request({ uri: url }).pipe(fs.createWriteStream(path));
-        succeeded = true;
-        console.log("downloaded!");
-      } catch (error) {
-        url = null;
-        succeeded = false;
-      }
-    }
-
-    if (succeeded) {
-      return path;
     } else {
       return null;
     }
