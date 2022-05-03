@@ -38,7 +38,7 @@
     "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "markov-strings": "^2.1.1",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",
     "node-emoji": "^1.11.0",
