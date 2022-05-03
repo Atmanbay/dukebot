@@ -5,7 +5,7 @@ module.exports = class {
 
   handle({ oldMember, newMember }) {
     this.guildService.deleteEmoji(oldMember.nickname);
-    this.guildService.addEmoji(
+    this.guildService.addAviEmoji(
       newMember.user.id,
       newMember.user.avatar,
       newMember.nickname

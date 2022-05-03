@@ -1,8 +1,11 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MessageAttachment } = require("discord.js");
 
 module.exports = class {
   constructor(services) {
     this.emojiKitchenService = services.emojiKitchen;
+    this.guildService = services.guild;
+    this.messageActionService = services.messageAction;
   }
 
   get getSlashCommand() {
@@ -27,14 +30,40 @@ module.exports = class {
     let a = interaction.options.getString("a");
     let b = interaction.options.getString("b");
 
-    let combinedEmoji = await this.emojiKitchenService.getCombinedEmoji(a, b);
-    if (combinedEmoji) {
-      interaction.reply(combinedEmoji);
+    let path = await this.emojiKitchenService.fetchEmoji(a, b);
+    if (path) {
+      let { buttons } = this.messageActionService.createGenericButton({
+        label: "Save",
+        onClick: (int) => {
+          let emojiName = this.emojiKitchenService.getCombinedEmojiName(a, b);
+          this.guildService.addEmoji(path, emojiName);
+
+          int.reply({
+            content: `Emoji saved as \`:${emojiName}:\``,
+            ephemeral: true,
+          });
+        },
+      });
+
+      let buttonRow = this.messageActionService.createMessageActionRow(buttons);
+
+      let attachment = new MessageAttachment(path);
+      interaction.reply({ files: [attachment], components: [buttonRow] });
     } else {
       interaction.reply({
         content: "That emoji combo does not exist",
         ephemeral: true,
       });
     }
+
+    // let combinedEmoji = await this.emojiKitchenService.getCombinedEmoji(a, b);
+    // if (combinedEmoji) {
+    //   interaction.reply(combinedEmoji);
+    // } else {
+    //   interaction.reply({
+    //     content: "That emoji combo does not exist",
+    //     ephemeral: true,
+    //   });
+    // }
   }
 };

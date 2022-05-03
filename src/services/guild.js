@@ -62,7 +62,7 @@ module.exports = class {
     }
   }
 
-  addEmoji(userId, avatarId, name) {
+  addAviEmoji(userId, avatarId, name) {
     let cleanedName = name.replace(/[^A-za-z]/g, "");
     let emoji = this.guild.emojis.cache.find(
       (emoji) => emoji.name === cleanedName
@@ -72,6 +72,10 @@ module.exports = class {
     }
 
     let url = `https://cdn.discordapp.com/avatars/${userId}/${avatarId}.png`;
-    this.guild.emojis.create(url, cleanedName);
+    this.addEmoji(url, cleanedName);
+  }
+
+  addEmoji(path, name) {
+    this.guild.emojis.create(path, name);
   }
 };

@@ -17,6 +17,7 @@ module.exports = class {
       audio: this.getEnvironmentVariable("AUDIO_PATH"),
       database: this.getEnvironmentVariable("DATABASE_PATH"),
       logging: this.getEnvironmentVariable("LOGGING_PATH"),
+      emojiKitchen: this.getEnvironmentVariable("EMOJI_KITCHEN_PATH"),
     };
 
     this.token = this.getEnvironmentVariable("DISCORD_TOKEN");
