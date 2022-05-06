@@ -167,7 +167,7 @@ module.exports = class {
   }
 
   createPaginationButtons({ pages, onPageChange, dropdowns }) {
-    let actions = [];
+    let buttons = [];
     let pagination = {
       currentPage: 0,
       pages: pages,
@@ -204,7 +204,7 @@ module.exports = class {
       onPageChange(interaction, pagination.pages[pagination.currentPage]);
     };
 
-    actions.push(
+    buttons.push(
       this.createButton({
         id: crypto.randomBytes(16).toString("hex"),
         type: ButtonTypes.PAGINATION,
@@ -214,7 +214,7 @@ module.exports = class {
       })
     );
 
-    actions.push(
+    buttons.push(
       this.createButton({
         id: crypto.randomBytes(16).toString("hex"),
         type: ButtonTypes.PAGINATION,
@@ -225,7 +225,7 @@ module.exports = class {
     );
 
     // dropdowns.forEach((dropdown) => {
-    //   actions.push(
+    //   buttons.push(
     //     this.createSelect({
     //       id: crypto.randomBytes(16).toString("hex"),
     //       onSelect: dropdown.onSelect,
@@ -234,7 +234,7 @@ module.exports = class {
     //   );
     // });
 
-    actions.push(
+    buttons.push(
       this.createButton({
         id: crypto.randomBytes(16).toString("hex"),
         type: ButtonTypes.PAGINATION,
@@ -244,7 +244,7 @@ module.exports = class {
       })
     );
 
-    actions.push(
+    buttons.push(
       this.createButton({
         id: crypto.randomBytes(16).toString("hex"),
         type: ButtonTypes.PAGINATION,
@@ -254,7 +254,7 @@ module.exports = class {
       })
     );
 
-    return { actions };
+    return { buttons };
   }
 
   createMessageActionRow(...actions) {

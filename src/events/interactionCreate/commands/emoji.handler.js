@@ -48,22 +48,16 @@ module.exports = class {
       let buttonRow = this.messageActionService.createMessageActionRow(buttons);
 
       let attachment = new MessageAttachment(path);
-      interaction.reply({ files: [attachment], components: [buttonRow] });
+      interaction.reply({
+        content: `${a} + ${b}`,
+        files: [attachment],
+        components: [buttonRow],
+      });
     } else {
       interaction.reply({
         content: "That emoji combo does not exist",
         ephemeral: true,
       });
     }
-
-    // let combinedEmoji = await this.emojiKitchenService.getCombinedEmoji(a, b);
-    // if (combinedEmoji) {
-    //   interaction.reply(combinedEmoji);
-    // } else {
-    //   interaction.reply({
-    //     content: "That emoji combo does not exist",
-    //     ephemeral: true,
-    //   });
-    // }
   }
 };

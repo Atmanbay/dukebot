@@ -37,10 +37,12 @@ module.exports = class {
   }
 
   async downloadEmoji(a, b, path) {
+    console.log("downloading...");
     let aUnicode = emojiUnicode(a);
     let bUnicode = emojiUnicode(b);
 
     let url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${aUnicode}/u${aUnicode}_u${bUnicode}.png`;
+    console.log(`1 URL is ${url}`);
 
     let succeeded = await request
       .head(url)
@@ -48,6 +50,7 @@ module.exports = class {
       .catch(() => false);
     if (!succeeded) {
       url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${bUnicode}/u${bUnicode}_u${aUnicode}.png`;
+      console.log(`2 URL is ${url}`);
       succeeded = await request
         .head(url)
         .then(() => true)
@@ -55,6 +58,7 @@ module.exports = class {
     }
 
     if (succeeded) {
+      console.log(`Succeeded! URL is ${url}`);
       return new Promise((resolve) => {
         request({ uri: url })
           .pipe(fs.createWriteStream(path))
@@ -75,6 +79,7 @@ module.exports = class {
           });
       });
     } else {
+      console.log("Returning null");
       return null;
     }
   }

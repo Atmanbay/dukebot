@@ -123,43 +123,6 @@ module.exports = class {
     let { buttons } = this.messageActionService.createPaginationButtons({
       pages: chunkedClips,
       onPageChange,
-      dropdowns: [
-        {
-          label: "Play",
-          onSelect: (int, selection) => {
-            let channel = int.member.voice.channel;
-            if (!channel) {
-              return;
-            }
-
-            let path = this.fileService.getPath(
-              this.configService.paths.audio,
-              `${selection}.mp3`
-            );
-
-            if (!path || !fs.existsSync(path)) {
-              return;
-            }
-
-            int.reply({ content: `Playing ${clipName}`, ephemeral: true });
-            this.audioService.play(channel, path);
-          },
-        },
-        {
-          label: "Set as Walkup",
-          onSelect: (int, selection) => {
-            this.walkupService.saveWalkup({
-              id: int.member.id,
-              clip: selection,
-            });
-
-            int.reply({
-              content: `Set ${clipName} as walkup`,
-              ephemeral: true,
-            });
-          },
-        },
-      ],
     });
     let buttonRow = this.messageActionService.createMessageActionRow(buttons);
 
@@ -247,11 +210,19 @@ module.exports = class {
     );
 
     if (!path || !fs.existsSync(path)) {
+      interaction.reply({
+        content: `No clip found with name ${clipName}`,
+        ephemeral: true,
+      });
       return;
     }
 
     let channel = audioChannel ?? interaction.member.voice.channel;
     if (!channel) {
+      interaction.reply({
+        content: `Must either be in a voice channel or specify voice channel`,
+        ephemeral: true,
+      });
       return;
     }
 
