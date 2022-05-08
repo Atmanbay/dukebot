@@ -25,32 +25,56 @@ module.exports = class {
     return path;
   }
 
-  getEmojiFilename(a, b) {
-    let aUnicode = emojiUnicode(a);
-    let bUnicode = emojiUnicode(b);
+  getEmojiCode(emoji) {
+    return emojiUnicode(emoji).split(" ");
+  }
 
-    if (parseInt(aUnicode, 16) > parseInt(bUnicode, 16)) {
-      return `u${bUnicode}_u${aUnicode}.png`;
+  getFormattedEmojiCode(emojiCode) {
+    if (emojiCode.length === 1) {
+      return `u${emojiCode[0]}`;
     } else {
-      return `u${aUnicode}_u${bUnicode}.png`;
+      return `u${emojiCode[0]}-u${emojiCode[1]}`;
+    }
+  }
+
+  getEmojiFilename(a, b) {
+    let aUnicode = this.getEmojiCode(a);
+    let bUnicode = this.getEmojiCode(b);
+
+    if (parseInt(aUnicode[0], 16) > parseInt(bUnicode[0], 16)) {
+      return `${this.getFormattedEmojiCode(
+        bUnicode
+      )}_${this.getFormattedEmojiCode(aUnicode)}.png`;
+    } else {
+      return `${this.getFormattedEmojiCode(
+        aUnicode
+      )}_${this.getFormattedEmojiCode(bUnicode)}.png`;
     }
   }
 
   async downloadEmoji(a, b, path) {
-    console.log("downloading...");
-    let aUnicode = emojiUnicode(a);
-    let bUnicode = emojiUnicode(b);
+    let aUnicode = this.getEmojiCode(a);
+    let bUnicode = this.getEmojiCode(b);
 
-    let url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${aUnicode}/u${aUnicode}_u${bUnicode}.png`;
-    console.log(`1 URL is ${url}`);
+    let baseUrl =
+      "https://www.gstatic.com/android/keyboard/emojikitchen/20201001";
+
+    let url = `${baseUrl}/${this.getFormattedEmojiCode(
+      aUnicode
+    )}/${this.getFormattedEmojiCode(aUnicode)}_${this.getFormattedEmojiCode(
+      bUnicode
+    )}.png`;
 
     let succeeded = await request
       .head(url)
       .then(() => true)
       .catch(() => false);
     if (!succeeded) {
-      url = `https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u${bUnicode}/u${bUnicode}_u${aUnicode}.png`;
-      console.log(`2 URL is ${url}`);
+      url = `${baseUrl}/${this.getFormattedEmojiCode(
+        bUnicode
+      )}/${this.getFormattedEmojiCode(bUnicode)}_${this.getFormattedEmojiCode(
+        aUnicode
+      )}.png`;
       succeeded = await request
         .head(url)
         .then(() => true)
@@ -58,7 +82,6 @@ module.exports = class {
     }
 
     if (succeeded) {
-      console.log(`Succeeded! URL is ${url}`);
       return new Promise((resolve) => {
         request({ uri: url })
           .pipe(fs.createWriteStream(path))
@@ -79,7 +102,6 @@ module.exports = class {
           });
       });
     } else {
-      console.log("Returning null");
       return null;
     }
   }
