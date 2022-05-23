@@ -56,32 +56,21 @@ module.exports = class {
     let aUnicode = this.getEmojiCode(a);
     let bUnicode = this.getEmojiCode(b);
 
-    let baseUrl =
-      "https://www.gstatic.com/android/keyboard/emojikitchen/20201001";
+    let url = await this.makeRequest(aUnicode, bUnicode, 20201001);
 
-    let url = `${baseUrl}/${this.getFormattedEmojiCode(
-      aUnicode
-    )}/${this.getFormattedEmojiCode(aUnicode)}_${this.getFormattedEmojiCode(
-      bUnicode
-    )}.png`;
-
-    let succeeded = await request
-      .head(url)
-      .then(() => true)
-      .catch(() => false);
-    if (!succeeded) {
-      url = `${baseUrl}/${this.getFormattedEmojiCode(
-        bUnicode
-      )}/${this.getFormattedEmojiCode(bUnicode)}_${this.getFormattedEmojiCode(
-        aUnicode
-      )}.png`;
-      succeeded = await request
-        .head(url)
-        .then(() => true)
-        .catch(() => false);
+    if (!url) {
+      url = await this.makeRequest(bUnicode, aUnicode, 20201001);
     }
 
-    if (succeeded) {
+    if (!url) {
+      url = await this.makeRequest(aUnicode, bUnicode, 20211115);
+    }
+
+    if (!url) {
+      url = await this.makeRequest(bUnicode, aUnicode, 20211115);
+    }
+
+    if (url) {
       return new Promise((resolve) => {
         request({ uri: url })
           .pipe(fs.createWriteStream(path))
@@ -104,6 +93,21 @@ module.exports = class {
     } else {
       return null;
     }
+  }
+
+  async makeRequest(first, second, number) {
+    let baseUrl = "https://www.gstatic.com/android/keyboard/emojikitchen";
+
+    let url = `${baseUrl}/${number}/${this.getFormattedEmojiCode(
+      first
+    )}/${this.getFormattedEmojiCode(first)}_${this.getFormattedEmojiCode(
+      second
+    )}.png`;
+
+    return request
+      .head(url)
+      .then(() => url)
+      .catch(() => null);
   }
 
   getCombinedEmojiName(a, b) {
