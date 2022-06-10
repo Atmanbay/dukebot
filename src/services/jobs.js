@@ -31,10 +31,10 @@ module.exports = class {
     let jobs = 0;
     jobCount
       .update("jobs", (oldJobs) => {
-        let newJobs = oldJobs + amount;
+        let newJobs = Number(oldJobs) + Number(amount);
         if (newJobs < 0) {
-          jobs = oldJobs;
-          return oldJobs;
+          jobs = 0;
+          return 0;
         }
 
         jobs = newJobs;

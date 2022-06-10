@@ -12,9 +12,11 @@ module.exports = class {
   async handle(messageReaction, user) {
     let authorId = messageReaction.message.author.id;
     let reactorId = user.id;
-    if (authorId === reactorId) {
-      return;
-    }
+    // if (authorId === reactorId) {
+    //   return;
+    // }
+
+    console.log("badjob");
 
     let reactionName = messageReaction.emoji.name;
 
