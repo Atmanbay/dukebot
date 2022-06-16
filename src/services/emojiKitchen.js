@@ -25,6 +25,10 @@ module.exports = class {
     return path;
   }
 
+  getEmoji(emojiName) {
+    return emojiUtil.find(emojiName);
+  }
+
   getEmojiCode(emoji) {
     return emojiUnicode(emoji).split(" ");
   }
