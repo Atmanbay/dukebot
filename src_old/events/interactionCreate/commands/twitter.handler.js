@@ -155,7 +155,6 @@ module.exports = class {
   }
 
   async retweet(interaction) {
-    return;
     let url = interaction.options.getString("URL");
 
     let regex = /^https?:\/\/twitter.com\/(.*?)\/status\/(.*?)$/;
@@ -174,7 +173,6 @@ module.exports = class {
   }
 
   async quotetweet(interaction) {
-    return;
     let url = interaction.options.getString("URL");
     let content = interaction.options.getString("content");
 

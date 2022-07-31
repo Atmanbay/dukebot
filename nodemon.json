@@ -1,8 +1,8 @@
 {
-  "env": {
-    "NODE_ENV": "development"
+  "restartable": "rs",
+  "ignore": [".git", "node_modules/**/node_modules", "lib/**/*"],
+  "execMap": {
+    "ts": "node --loader ts-node/esm"
   },
-  "ignore": [
-    "*.json"
-  ]
+  "ext": "ts,js,json"
 }

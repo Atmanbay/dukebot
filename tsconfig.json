@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "strictNullChecks": false
+  }
+  // "compilerOptions": {
+  // "esModuleInterop": true,
+  // "experimentalDecorators": true,
+  // "module": "node16",
+  // "moduleResolution": "node16"
+  // }
+}
