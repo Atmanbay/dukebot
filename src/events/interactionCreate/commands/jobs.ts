@@ -1,13 +1,12 @@
-import { Command } from "../../../types/discord/command";
+import { Command } from "../../../types/discord/command.js";
 import { GuildMember, Role } from "discord.js";
-import { JobType } from "../../../types/database";
-import { jobs } from "../../../services/job";
-import { buildTable } from "../../../utils";
+import { JobType } from "../../../types/database.js";
+import { jobs } from "../../../services/job.js";
+import { buildTable } from "../../../utils/index.js";
 
 const Jobs: Command = {
   name: "jobs",
   description: "Show the jobs table",
-  type: "CHAT_INPUT",
   options: [
     {
       type: "MENTIONABLE",

@@ -1,11 +1,10 @@
-import { responses } from "../../../services/response";
-import { Command } from "../../../types/discord/command";
-import { getTimestamp } from "../../../utils";
+import { responses } from "../../../services/response.js";
+import { Command } from "../../../types/discord/command.js";
+import emojiRegex from "emoji-regex";
 
 const Response: Command = {
   name: "response",
   description: "Create, update, or delete a trigger/response relationship",
-  type: "CHAT_INPUT",
   options: [
     {
       type: "SUB_COMMAND",
@@ -56,25 +55,53 @@ const Response: Command = {
         .split("|");
       const cooldown = interaction.options.getNumber("cooldown") ?? 1;
 
+      let parsedResponseArray = responseArray.map((response) => {
+        let emojiMatch = emojiRegex().exec(response);
+        if (emojiMatch) {
+          let emoji = emojiMatch[0];
+          return {
+            type: "emoji",
+            value: emoji,
+          } as const;
+        }
+
+        let isCustomEmoji = RegExp("<:(.*?):(.*?)>");
+        let customEmojiMatch = response.match(isCustomEmoji);
+        if (customEmojiMatch) {
+          let customEmojiId = customEmojiMatch[2];
+          return {
+            type: "customEmoji",
+            value: customEmojiId,
+          } as const;
+        }
+
+        if (typeof response === "string") {
+          return {
+            type: "string",
+            value: response,
+          } as const;
+        }
+      });
+
       const response = await responses.get((r) => r.trigger === trigger);
       if (response) {
         await responses.update({
           id: response.id,
           trigger,
-          responses: responseArray,
+          responses: parsedResponseArray,
           cooldown,
-          lastTriggered: getTimestamp(),
+          lastTriggered: interaction.createdTimestamp,
         });
       } else {
         await responses.create({
           trigger,
-          responses: responseArray,
+          responses: parsedResponseArray,
           cooldown,
-          lastTriggered: getTimestamp(),
+          lastTriggered: interaction.createdTimestamp,
         });
       }
 
-      interaction.reply({
+      await interaction.reply({
         content: `Created a response for the trigger ${trigger}`,
         ephemeral: true,
       });

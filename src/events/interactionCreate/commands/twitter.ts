@@ -1,5 +1,5 @@
-import { Command, ButtonExecutor } from "../../../types/discord/command";
-import { buildMessageActionRow } from "../../../services/button";
+import { Command, ButtonExecutor } from "../../../types/discord/command.js";
+import { buildMessageActionRow } from "../../../services/button.js";
 import {
   buildEmbed,
   buildTweetEmbed,
@@ -7,17 +7,17 @@ import {
   reply,
   retweet,
   quoteTweet,
-} from "../../../services/twitter";
-import { messageActions } from "../../../services/messageAction";
+} from "../../../services/twitter.js";
+import { messageActions } from "../../../services/messageAction.js";
 import { ButtonInteraction } from "discord.js";
 import Twit from "twit";
-import { generateId } from "../../../utils";
+import { generateId } from "../../../utils/index.js";
 import {
   TwitterQuoteTweetMessageAction,
   TwitterReplyMessageAction,
   TwitterRetweetMessageAction,
   TwitterTweetMessageAction,
-} from "../../../types/database";
+} from "../../../types/database.js";
 
 const postUrl = async (
   interaction: ButtonInteraction,
@@ -37,7 +37,6 @@ const postUrl = async (
 const Twitter: Command = {
   name: "twitter",
   description: "Returns a greeting",
-  type: "CHAT_INPUT",
   options: [
     {
       type: "SUB_COMMAND",

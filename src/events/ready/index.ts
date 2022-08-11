@@ -1,15 +1,16 @@
-import { Client, ChatInputApplicationCommandData } from "discord.js";
-import { botConfigs } from "../../services/botConfig";
-import { Command } from "../../types/discord/command";
-import { EventListener } from "../../types/discord/eventListener";
-import { getTypeDict } from "../../utils";
+import { Client } from "discord.js";
+import { botConfigs } from "../../services/botConfig.js";
+import { Command } from "../../types/discord/command.js";
+import { EventListener } from "../../types/discord/eventListener.js";
+import { getTypeDict } from "../../utils/index.js";
 import hash from "object-hash";
-import config from "../../utils/config";
+import config from "../../utils/config.js";
 
-const commands = getTypeDict<Command>(
-  `${__dirname}/../interactionCreate/commands/*`
-);
 const ReadyListener: EventListener<"ready"> = async (client: Client) => {
+  const commands = await getTypeDict<Command>(
+    `${process.cwd()}/src/events/interactionCreate/commands/*`
+  );
+
   let oldCommandHash = await botConfigs.get((bc) => bc.key === "commandHash");
   let newCommandHash = hash(
     Object.values(commands).map((command) => {
@@ -21,6 +22,7 @@ const ReadyListener: EventListener<"ready"> = async (client: Client) => {
       };
     })
   );
+
   if (!oldCommandHash) {
     await botConfigs.create({
       key: "commandHash",

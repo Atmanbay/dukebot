@@ -2,8 +2,16 @@ import { MessageButtonStyleResolvable } from "discord.js";
 
 export type Blaze = {
   id?: string;
-  created?: string;
+  created?: number;
   userId: string;
+};
+
+export type SaveButton = {
+  type: "save";
+  id?: string;
+  buttonId: string;
+  label?: string;
+  style?: MessageButtonStyleResolvable;
 };
 
 export type PreviousPageButton = {
@@ -55,6 +63,7 @@ export type CancelButton = {
 };
 
 export type Button =
+  | SaveButton
   | PreviousPageButton
   | NextPageButton
   | SetButton
@@ -62,19 +71,15 @@ export type Button =
   | DisapproveButton
   | CancelButton;
 
-// export type Button = {
-//   type:
-//     | "previousPage"
-//     | "nextPage"
-//     | "set"
-//     | "approve"
-//     | "disapprove"
-//     | "cancel";
-//   id?: string;
-//   buttonId: string;
-//   label?: string;
-//   style?: MessageButtonStyleResolvable;
-// };
+export type EmojiKitchenMessageAction = {
+  command: "emoji";
+  subcommand: "combine";
+  id?: string;
+  interactionId: string;
+  path: string;
+  emojiName: string;
+  buttons: Button[];
+};
 
 export type AudioUploadMessageAction = {
   command: "audio";
@@ -142,6 +147,7 @@ export type TwitterQuoteTweetMessageAction = {
 };
 
 export type MessageAction =
+  | EmojiKitchenMessageAction
   | AudioUploadMessageAction
   | AudioListMessageAction
   | TwitterTweetMessageAction
@@ -156,13 +162,14 @@ export enum JobType {
 
 export type Job = {
   id?: string;
-  created?: string;
+  created?: number;
   userId: string;
   jobType: JobType;
 };
 
 export type Message = {
   id?: string;
+  created?: number;
   userId: string;
   content: string;
 };
@@ -170,9 +177,9 @@ export type Message = {
 export type Response = {
   id?: string;
   trigger: string;
-  responses: string[];
+  responses: { type: "string" | "emoji" | "customEmoji"; value: string }[];
   cooldown?: number;
-  lastTriggered: string;
+  lastTriggered: number;
 };
 
 export type Walkup = {

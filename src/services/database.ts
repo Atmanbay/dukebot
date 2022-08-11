@@ -1,8 +1,7 @@
-import { Low } from "./Low";
-import { JSONFile } from "./JSONFile";
-import { BaseDatabaseObject } from "../types/database";
-import config from "../utils/config";
-import { generateId, getTimestamp } from "../utils";
+import { Low, JSONFile } from "lowdb";
+import { BaseDatabaseObject } from "../types/database.js";
+import config from "../utils/config.js";
+import { generateId, getTimestamp } from "../utils/index.js";
 
 export class DatabaseTable<DBType extends BaseDatabaseObject> {
   tableName: string;

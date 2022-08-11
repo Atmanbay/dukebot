@@ -1,19 +1,14 @@
-import config from "../utils/config";
-
-// const emojiUnicode = require("emoji-unicode");
-// const emojiUtil = require("node-emoji");
-// const fs = require("fs");
-// const request = require("request-promise-native");
-// const im = require("imagemagick");
-
+/// <reference path="../tempTypes/emoji-unicode.d.ts" />
 import emojiUnicode from "emoji-unicode";
-import { find } from "node-emoji";
+import config from "../utils/config.js";
+import ne from "node-emoji";
+const find = ne.find;
 import fs from "fs";
 import request from "request-promise-native";
 import im from "imagemagick";
 
-const fetchEmoji = async (a: string, b: string) => {
-  let fileName = getEmojiFilename(a, b);
+export const getEmojiPath = async (a: string, b: string) => {
+  let fileName = emojiToFilename(a, b);
   let path = `${config.paths.emojiKitchen}/${fileName}`;
 
   if (!fs.existsSync(path)) {
@@ -27,28 +22,28 @@ const fetchEmoji = async (a: string, b: string) => {
   return path;
 };
 
-const getEmoji = (emojiName: string) => {
-  return find(emojiName);
-};
+// const getEmoji = (emojiName: string) => {
+//   return find(emojiName);
+// };
 
-const getEmojiCode = (emoji: string): string[] => {
+const emojiToUnicodeArray = (emoji: string): string[] => {
   return emojiUnicode(emoji).split(" ");
 };
 
-const getFormattedEmojiCode = (emojiCode: string[]) => {
-  return emojiCode.map((ec) => `u${ec}`).join("-");
+const unicodeToGoogleUrl = (emojiUnicode: string[]) => {
+  return emojiUnicode.map((ec) => `u${ec}`).join("-");
 };
 
-const getEmojiFilename = (a: string, b: string) => {
-  let aUnicode = getEmojiCode(a);
-  let bUnicode = getEmojiCode(b);
+const emojiToFilename = (a: string, b: string) => {
+  let aUnicode = emojiToUnicodeArray(a);
+  let bUnicode = emojiToUnicodeArray(b);
 
   if (parseInt(aUnicode[0], 16) > parseInt(bUnicode[0], 16)) {
-    return `${getFormattedEmojiCode(bUnicode)}_${getFormattedEmojiCode(
+    return `${unicodeToGoogleUrl(bUnicode)}_${unicodeToGoogleUrl(
       aUnicode
     )}.png`;
   } else {
-    return `${getFormattedEmojiCode(aUnicode)}_${getFormattedEmojiCode(
+    return `${unicodeToGoogleUrl(aUnicode)}_${unicodeToGoogleUrl(
       bUnicode
     )}.png`;
   }
@@ -59,21 +54,21 @@ const downloadEmoji = async (
   b: string,
   path: string
 ): Promise<string> => {
-  let aUnicode = getEmojiCode(a);
-  let bUnicode = getEmojiCode(b);
+  let aUnicode = emojiToUnicodeArray(a);
+  let bUnicode = emojiToUnicodeArray(b);
 
-  let url = await makeRequest(aUnicode, bUnicode, 20201001);
+  let url = await makeEmojiKitchenRequest(aUnicode, bUnicode, 20201001);
 
   if (!url) {
-    url = await makeRequest(bUnicode, aUnicode, 20201001);
+    url = await makeEmojiKitchenRequest(bUnicode, aUnicode, 20201001);
   }
 
   if (!url) {
-    url = await makeRequest(aUnicode, bUnicode, 20211115);
+    url = await makeEmojiKitchenRequest(aUnicode, bUnicode, 20211115);
   }
 
   if (!url) {
-    url = await makeRequest(bUnicode, aUnicode, 20211115);
+    url = await makeEmojiKitchenRequest(bUnicode, aUnicode, 20211115);
   }
 
   if (url) {
@@ -101,16 +96,18 @@ const downloadEmoji = async (
   }
 };
 
-const makeRequest = async (
-  first: string,
-  second: string,
+const makeEmojiKitchenRequest = async (
+  firstUnicodeArray: string[],
+  secondUnicodeArray: string[],
   number: number
 ): Promise<string> => {
   let baseUrl = "https://www.gstatic.com/android/keyboard/emojikitchen";
 
-  let url = `${baseUrl}/${number}/${getFormattedEmojiCode(
-    first
-  )}/${getFormattedEmojiCode(first)}_${getFormattedEmojiCode(second)}.png`;
+  let url = `${baseUrl}/${number}/${unicodeToGoogleUrl(
+    firstUnicodeArray
+  )}/${unicodeToGoogleUrl(firstUnicodeArray)}_${unicodeToGoogleUrl(
+    secondUnicodeArray
+  )}.png`;
 
   return request
     .head(url)
@@ -118,6 +115,6 @@ const makeRequest = async (
     .catch(() => "");
 };
 
-const getCombinedEmojiName = (a: string, b: string) => {
+export const getCombinedEmojiName = (a: string, b: string) => {
   return `${find(a).key}_${find(b).key}`.substring(0, 32);
 };

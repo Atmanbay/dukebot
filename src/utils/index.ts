@@ -2,14 +2,14 @@ import moment from "moment-timezone";
 import glob from "glob";
 import crypto from "crypto";
 
-export const getTypeDict = <O extends any>(path: string) => {
+export const getTypeDict = async <O extends any>(path: string) => {
   const files = glob.sync(path);
   let regex: RegExp;
   if (path.includes("**")) {
     regex = new RegExp(path.replace("**", "(.*?)"));
   }
 
-  const classes = files.map((file) => {
+  const classesPromises = files.map(async (file) => {
     let fileName: string;
     if (regex) {
       fileName = file.match(regex)[1];
@@ -17,8 +17,11 @@ export const getTypeDict = <O extends any>(path: string) => {
       fileName = file.split("/").pop().replace(".ts", "");
     }
 
-    return [fileName, require(file).default];
+    const imported = await import(file);
+    return [fileName, imported.default];
   });
+
+  const classes = await Promise.all(classesPromises);
 
   return Object.fromEntries(classes) as Record<string, O>;
 };
@@ -28,7 +31,7 @@ export const getFiles = (path: string) => {
 };
 
 export const getTimestamp = () => {
-  return moment().format("YYYY-MM-DD hh:mm a");
+  return moment().valueOf();
 };
 
 export const generateId = () => {

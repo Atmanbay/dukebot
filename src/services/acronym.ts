@@ -1,5 +1,5 @@
-import { messages } from "./message";
-import { filter, sample, some } from "lodash";
+import { messages } from "./message.js";
+import { filter, sample } from "lodash-es";
 
 export const acronymize = async (word: string): Promise<string[]> => {
   let allMessages = await messages.list();
@@ -27,10 +27,6 @@ export const acronymize = async (word: string): Promise<string[]> => {
     let trimmedWord = result.word.match(/\w+/)[0];
     return trimmedWord;
   });
-
-  if (some(response, (r) => !r)) {
-    throw new Error("Acronym could not be built");
-  }
 
   return response;
 };

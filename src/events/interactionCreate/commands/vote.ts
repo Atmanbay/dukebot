@@ -1,9 +1,8 @@
-import { Command } from "../../../types/discord/command";
+import { Command } from "../../../types/discord/command.js";
 
 const Vote: Command = {
   name: "vote",
   description: "Returns a greeting",
-  type: "CHAT_INPUT",
   run: async (interaction) => {
     const content = "I'm alive!";
 

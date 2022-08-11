@@ -1,23 +1,22 @@
-import { Command } from "../../../types/discord/command";
+import { Command } from "../../../types/discord/command.js";
 import { GuildMember, Role } from "discord.js";
-import { blazes } from "../../../services/blaze";
-import { buildTable } from "../../../utils";
+import { blazes } from "../../../services/blaze.js";
+import { buildTable } from "../../../utils/index.js";
 
 const Blazes: Command = {
   name: "blazes",
   description: "Show the blazes table",
-  type: "CHAT_INPUT",
   options: [
     {
       type: "MENTIONABLE",
-      name: "user",
-      description: "User or Role to get the blazes of (defaults to caller)",
+      name: "target",
+      description: "The user/role to look up blazes of (defaults to caller)",
       required: false,
     },
   ],
   run: async (interaction) => {
     const mentionable =
-      interaction.options.getMentionable("user") ?? interaction.member;
+      interaction.options.getMentionable("target") ?? interaction.member;
 
     let guildMembers: GuildMember[] = [];
     if ((mentionable as Role).members) {
@@ -32,14 +31,16 @@ const Blazes: Command = {
         (blaze) => blaze.userId === guildMember.id
       );
 
+      if (guildMemberBlazes.length === 0) {
+        return null;
+      }
+
       total += guildMemberBlazes.length;
-      return [guildMember.nickname, guildMemberBlazes.length] as [
-        string,
-        number
-      ];
+      return [guildMember.nickname, guildMemberBlazes.length] as const;
     });
 
     let guildMemberBlazes = await Promise.all(guildMemberPromises);
+    guildMemberBlazes = guildMemberBlazes.filter((gmb) => gmb);
 
     guildMemberBlazes = guildMemberBlazes.sort((a, b) => {
       return a[1] - b[1];

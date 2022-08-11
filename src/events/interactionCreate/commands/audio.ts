@@ -1,14 +1,14 @@
-import { Command } from "../../../types/discord/command";
-import { play, getClips } from "../../../services/audio";
+import { Command } from "../../../types/discord/command.js";
+import { play, getClips } from "../../../services/audio.js";
 import { GuildMember, VoiceChannel } from "discord.js";
-import config from "../../../utils/config";
+import config from "../../../utils/config.js";
 import { existsSync } from "fs";
 import download from "download";
 import sanitize from "sanitize-filename";
-import { buildMessageActionRow } from "../../../services/button";
-import { walkups } from "../../../services/walkup";
-import { buildTable, generateId } from "../../../utils";
-import { messageActions } from "../../../services/messageAction";
+import { buildMessageActionRow } from "../../../services/button.js";
+import { walkups } from "../../../services/walkup.js";
+import { buildTable, generateId } from "../../../utils/index.js";
+import { messageActions } from "../../../services/messageAction.js";
 
 const getPages = () => {
   const clipNames = getClips();
@@ -49,7 +49,6 @@ const getPageOfClips = (pageNumber: number) => {
 const Alive: Command = {
   name: "audio",
   description: "Play, upload, or list audio clips",
-  type: "CHAT_INPUT",
   options: [
     {
       type: "SUB_COMMAND",

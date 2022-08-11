@@ -1,5 +1,5 @@
 import Twitter, { Params } from "twit";
-import config from "../utils/config";
+import config from "../utils/config.js";
 import { MessageEmbed } from "discord.js";
 import moment from "moment-timezone";
 

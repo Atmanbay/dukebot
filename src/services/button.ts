@@ -1,5 +1,5 @@
 import { MessageButton, MessageActionRow } from "discord.js";
-import { Button } from "../types/database";
+import { Button } from "../types/database.js";
 
 export const buildMessageActionRow = (buttons: Button[]) => {
   const messageButtons: MessageButton[] = [];

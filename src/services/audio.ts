@@ -9,7 +9,7 @@ import {
   NoSubscriberBehavior,
   VoiceConnection,
 } from "@discordjs/voice";
-import config from "../utils/config";
+import config from "../utils/config.js";
 import { VoiceChannel } from "discord.js";
 
 const player = createAudioPlayer({

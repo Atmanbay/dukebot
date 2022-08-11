@@ -3,7 +3,7 @@ import {
   ChatInputApplicationCommandData,
   CommandInteraction,
 } from "discord.js";
-import { Button, MessageAction } from "../database";
+import { Button, MessageAction } from "../database.js";
 
 type RunExecutor = (interaction: CommandInteraction) => Promise<void>;
 export type ButtonExecutor = ({

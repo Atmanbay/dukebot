@@ -1,5 +1,6 @@
-import { acronymize } from "../../../services/acronym";
-import { Command } from "../../../types/discord/command";
+import { acronymize } from "../../../services/acronym.js";
+import { Command } from "../../../types/discord/command.js";
+import { some } from "lodash-es";
 
 const Acronym: Command = {
   name: "acronym",
@@ -8,7 +9,7 @@ const Acronym: Command = {
   options: [
     {
       type: "STRING",
-      name: "acronym",
+      name: "text",
       description: "The word/phrase to turn into an acronym",
       required: true,
     },
@@ -17,10 +18,17 @@ const Acronym: Command = {
     let text = interaction.options.getString("text");
     let acronymizedText = await acronymize(text);
 
+    if (some(acronymizedText, (r) => !r)) {
+      return interaction.reply({
+        content: "Acronym could not be built",
+        ephemeral: true,
+      });
+    }
+
     acronymizedText.unshift("```");
     acronymizedText.push("```");
 
-    interaction.reply({ content: acronymizedText.join("\n") });
+    return interaction.reply({ content: acronymizedText.join("\n") });
   },
 };
 

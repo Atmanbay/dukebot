@@ -1,28 +1,10 @@
 import { Client, Intents } from "discord.js";
-import { getTypeDict } from "./utils";
-import { EventListener } from "./types/discord/eventListener";
-import { setup } from "./services/twitter";
+import { getTypeDict } from "./utils/index.js";
+import { EventListener } from "./types/discord/eventListener.js";
+import { setup } from "./services/twitter.js";
+import config from "./utils/config.js";
 
 const main = async () => {
-  // const services = createContainer();
-  // services.register({
-  //   audio: asClass(AudioService),
-  //   button: asClass(ButtonService),
-  //   twitter: asClass(TwitterService),
-  //   job: asClass(DatabaseService)
-  // })
-
-  // const test = services.cradle.audio;
-  // services.loadModules([`${__dirname}/services/*.ts`], {
-  //   formatName: (name: string) => {
-  //     return `${name[0].toLowerCase()}${name.substring(1)}`;
-  //   },
-  //   resolverOptions: {
-  //     lifetime: Lifetime.SINGLETON,
-  //     register: asClass,
-  //   },
-  // });
-
   setup();
   const client = new Client({
     intents: [
@@ -34,15 +16,15 @@ const main = async () => {
     ],
   });
 
-  const eventListeners = getTypeDict<EventListener<any>>(
-    `${__dirname}/events/**/index.ts`
+  const eventListeners = await getTypeDict<EventListener<any>>(
+    `${process.cwd()}/src/events/**/index.ts`
   );
 
   Object.entries(eventListeners).forEach(([event, listener]) => {
     client.on(event, listener);
   });
 
-  client.login(process.env.DISCORD_TOKEN);
+  client.login(config.token);
 };
 
 main();

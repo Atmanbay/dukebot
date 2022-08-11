@@ -1,15 +1,31 @@
-import { Command } from "../../../types/discord/command";
+import { Command } from "../../../types/discord/command.js";
+import { define } from "../../../services/define.js";
 
 const Define: Command = {
   name: "define",
-  description: "Returns a greeting",
-  type: "CHAT_INPUT",
+  description: "Defines a given word using Urban Dictionary",
+  options: [
+    {
+      type: "STRING",
+      name: "query",
+      description: "The word to define",
+      required: true,
+    },
+  ],
   run: async (interaction) => {
-    const content = "I'm alive!";
+    const query = interaction.options.getString("query");
+    const definition = await define(query);
+
+    let response = [
+      `**${query}**`,
+      "",
+      definition.definition,
+      "",
+      `_${definition.example}_`,
+    ];
 
     await interaction.reply({
-      ephemeral: true,
-      content,
+      content: response.join("\n"),
     });
   },
 };

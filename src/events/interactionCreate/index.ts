@@ -1,11 +1,11 @@
 import { Interaction } from "discord.js";
-import { EventListener } from "../../types/discord/eventListener";
-import { getTypeDict } from "../../utils";
-import { Command } from "../../types/discord/command";
-import { messageActions } from "../../services/messageAction";
+import { EventListener } from "../../types/discord/eventListener.js";
+import { getTypeDict } from "../../utils/index.js";
+import { Command } from "../../types/discord/command.js";
+import { messageActions } from "../../services/messageAction.js";
 
-const commands = getTypeDict<Command>(
-  `${__dirname}/../interactionCreate/commands/*`
+const commands = await getTypeDict<Command>(
+  `${process.cwd()}/src/events/interactionCreate/commands/*`
 );
 
 const InteractionCreateHandler: EventListener<"interactionCreate"> = async (
