@@ -1,14 +1,13 @@
-import { Command } from "../../../types/discord/command.js";
-import { play, getClips } from "../../../services/audio.js";
 import { GuildMember, VoiceChannel } from "discord.js";
-import config from "../../../utils/config.js";
-import { existsSync } from "fs";
 import download from "download";
+import { existsSync } from "fs";
 import sanitize from "sanitize-filename";
+import { getClips, play } from "../../../services/audio.js";
 import { buildMessageActionRow } from "../../../services/button.js";
-import { walkups } from "../../../services/walkup.js";
-import { buildTable, generateId } from "../../../utils/index.js";
-import { messageActions } from "../../../services/messageAction.js";
+import config from "../../../services/config.js";
+import { messageActions, walkups } from "../../../services/database.js";
+import { buildTable, generateId } from "../../../services/general.js";
+import { Command } from "../index.js";
 
 const getPages = () => {
   const clipNames = getClips();
@@ -46,7 +45,7 @@ const getPageOfClips = (pageNumber: number) => {
   return page;
 };
 
-const Alive: Command = {
+const Audio: Command = {
   name: "audio",
   description: "Play, upload, or list audio clips",
   options: [
@@ -139,10 +138,12 @@ const Alive: Command = {
             await download(url, config.paths.audio, options);
 
             const messageAction = await messageActions.create({
-              command: "audio",
-              subcommand: "upload",
               interactionId: interaction.id,
-              clipName: sanitized,
+              data: {
+                command: "audio",
+                subcommand: "upload",
+                clipName: sanitized,
+              },
               buttons: [
                 {
                   type: "set",
@@ -173,11 +174,12 @@ const Alive: Command = {
     },
     list: async (interaction) => {
       const messageAction = await messageActions.create({
-        command: "audio",
-        subcommand: "list",
         interactionId: interaction.id,
-        currentPage: 0,
-        query: "",
+        data: {
+          command: "audio",
+          subcommand: "list",
+          currentPage: 0,
+        },
         buttons: [
           {
             type: "previousPage",
@@ -205,67 +207,57 @@ const Alive: Command = {
   },
   handleButton: {
     set: async ({ interaction, messageAction }) => {
-      if (
-        messageAction.command !== "audio" ||
-        messageAction.subcommand !== "upload"
-      ) {
+      if (messageAction.data.subcommand !== "upload") {
         return;
       }
 
       const author = interaction.member as GuildMember;
-      let walkup = await walkups.get((w) => w.userId === author.id);
+      let walkup = walkups.get((w) => w.userId === author.id);
       if (!walkup) {
         await walkups.create({
           userId: author.id,
-          clip: messageAction.clipName,
+          clip: messageAction.data.clipName,
         });
       } else {
-        walkup.clip = messageAction.clipName;
+        walkup.clip = messageAction.data.clipName;
         await walkups.update(walkup);
       }
 
       await interaction.reply({
-        content: `Walkup set to \`${messageAction.clipName}\`!`,
+        content: `Walkup set to \`${messageAction.data.clipName}\`!`,
         ephemeral: true,
       });
     },
     previousPage: async ({ interaction, messageAction }) => {
-      if (
-        messageAction.command !== "audio" ||
-        messageAction.subcommand !== "list"
-      ) {
+      if (messageAction.data.subcommand !== "list") {
         return;
       }
-
-      if (messageAction.currentPage === 0) {
+      if (messageAction.data.currentPage === 0) {
         await interaction.deferUpdate();
         return;
       }
 
-      messageAction.currentPage--;
+      messageAction.data.currentPage--;
       await interaction.update({
-        content: getPageOfClips(messageAction.currentPage).join("\n"),
+        content: getPageOfClips(messageAction.data.currentPage).join("\n"),
       });
 
       await messageActions.update(messageAction);
     },
     nextPage: async ({ interaction, messageAction }) => {
-      if (
-        messageAction.command !== "audio" ||
-        messageAction.subcommand !== "list"
-      ) {
+      if (messageAction.data.subcommand !== "list") {
         return;
       }
 
-      if (messageAction.currentPage === getPages().length - 1) {
+      if (messageAction.data.currentPage === getPages().length - 1) {
         await interaction.deferUpdate();
         return;
       }
 
-      messageAction.currentPage++;
+      messageAction.data.currentPage++;
 
       await interaction.update({
-        content: getPageOfClips(messageAction.currentPage).join("\n"),
+        content: getPageOfClips(messageAction.data.currentPage).join("\n"),
       });
 
       await messageActions.update(messageAction);
@@ -273,4 +265,4 @@ const Alive: Command = {
   },
 };
 
-export default Alive;
+export default Audio;

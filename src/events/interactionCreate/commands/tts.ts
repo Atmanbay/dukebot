@@ -1,7 +1,7 @@
 import { GuildMember, VoiceChannel } from "discord.js";
 import { play } from "../../../services/audio.js";
 import { getAudioUrl } from "../../../services/tts.js";
-import { Command } from "../../../types/discord/command.js";
+import { Command } from "../index.js";
 
 const Tts: Command = {
   name: "tts",

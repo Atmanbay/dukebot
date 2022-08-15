@@ -1,7 +1,14 @@
-import Twitter, { Params } from "twit";
-import config from "../utils/config.js";
 import { MessageEmbed } from "discord.js";
 import moment from "moment-timezone";
+import Twitter, { Params } from "twit";
+import config from "./config.js";
+
+const client = new Twitter({
+  consumer_key: config.twitter.consumerKey,
+  consumer_secret: config.twitter.consumerSecret,
+  access_token: config.twitter.accessTokenKey,
+  access_token_secret: config.twitter.accessTokenSecret,
+});
 
 export const buildEmbed = ({
   title,
@@ -75,8 +82,6 @@ export const buildTweetEmbed = async (tweetId: string) => {
   return embed;
 };
 
-let client: Twitter;
-
 export const tweet = async (status: string) => {
   let options = {
     status: status,
@@ -106,11 +111,11 @@ export const quoteTweet = async (status: string, targetTweetUrl: string) => {
   return client.post("statuses/update", options);
 };
 
-export const setup = () => {
-  client = new Twitter({
-    consumer_key: config.twitter.consumerKey,
-    consumer_secret: config.twitter.consumerSecret,
-    access_token: config.twitter.accessTokenKey,
-    access_token_secret: config.twitter.accessTokenSecret,
-  });
-};
+// export const setup = () => {
+//   client = new Twitter({
+//     consumer_key: config.twitter.consumerKey,
+//     consumer_secret: config.twitter.consumerSecret,
+//     access_token: config.twitter.accessTokenKey,
+//     access_token_secret: config.twitter.accessTokenSecret,
+//   });
+// };

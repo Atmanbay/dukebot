@@ -1,16 +1,16 @@
-import { readdirSync } from "fs";
 import {
-  joinVoiceChannel,
+  AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
   entersState,
-  AudioPlayerStatus,
-  VoiceConnectionStatus,
+  joinVoiceChannel,
   NoSubscriberBehavior,
   VoiceConnection,
+  VoiceConnectionStatus,
 } from "@discordjs/voice";
-import config from "../utils/config.js";
 import { VoiceChannel } from "discord.js";
+import { readdirSync } from "fs";
+import config from "./config.js";
 
 const player = createAudioPlayer({
   behaviors: { noSubscriber: NoSubscriberBehavior.Play },

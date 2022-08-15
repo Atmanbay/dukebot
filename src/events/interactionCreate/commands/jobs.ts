@@ -1,8 +1,7 @@
-import { Command } from "../../../types/discord/command.js";
 import { GuildMember, Role } from "discord.js";
-import { JobType } from "../../../types/database.js";
-import { jobs } from "../../../services/job.js";
-import { buildTable } from "../../../utils/index.js";
+import { jobs } from "../../../services/database.js";
+import { buildTable } from "../../../services/general.js";
+import { Command } from "../index.js";
 
 const Jobs: Command = {
   name: "jobs",
@@ -37,9 +36,9 @@ const Jobs: Command = {
 
       let diff = guildMemberJobs.reduce((sum, job) => {
         switch (job.jobType) {
-          case JobType.GOOD:
+          case "good":
             return sum + 1;
-          case JobType.BAD:
+          case "bad":
             return sum - 1;
           default:
             // TODO logging

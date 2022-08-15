@@ -1,23 +1,24 @@
-import { Command, ButtonExecutor } from "../../../types/discord/command.js";
+import { ButtonInteraction } from "discord.js";
+import Twit from "twit";
 import { buildMessageActionRow } from "../../../services/button.js";
+// import {
+//   TwitterQuoteTweetMessageAction,
+//   TwitterReplyMessageAction,
+//   TwitterRetweetMessageAction,
+//   TwitterTweetMessageAction,
+// } from "../../../types/database.js";
+import config from "../../../services/config.js";
+import { messageActions } from "../../../services/database.js";
+import { generateId } from "../../../services/general.js";
 import {
   buildEmbed,
   buildTweetEmbed,
-  tweet,
+  quoteTweet,
   reply,
   retweet,
-  quoteTweet,
+  tweet,
 } from "../../../services/twitter.js";
-import { messageActions } from "../../../services/messageAction.js";
-import { ButtonInteraction } from "discord.js";
-import Twit from "twit";
-import { generateId } from "../../../utils/index.js";
-import {
-  TwitterQuoteTweetMessageAction,
-  TwitterReplyMessageAction,
-  TwitterRetweetMessageAction,
-  TwitterTweetMessageAction,
-} from "../../../types/database.js";
+import { Command } from "../index.js";
 
 const postUrl = async (
   interaction: ButtonInteraction,
@@ -107,13 +108,15 @@ const Twitter: Command = {
     tweet: async (interaction) => {
       const content = interaction.options.getString("content");
 
-      const messageAction = (await messageActions.create({
-        command: "twitter",
-        subcommand: "tweet",
+      const messageAction = await messageActions.create({
         interactionId: interaction.id,
-        approvals: [],
-        required: 4,
-        content,
+        data: {
+          command: "twitter",
+          subcommand: "tweet",
+          approvals: [],
+          required: config.approvals.twitter,
+          content,
+        },
         buttons: [
           {
             type: "approve",
@@ -131,13 +134,13 @@ const Twitter: Command = {
             style: "DANGER",
           },
         ],
-      })) as TwitterTweetMessageAction;
+      });
 
       const messageActionRow = buildMessageActionRow(messageAction.buttons);
       const embed = buildEmbed({ title: "Tweet", content });
 
       await interaction.reply({
-        content: `${messageAction.approvals.length} / ${messageAction.required} approvals to trigger`,
+        content: `0 / ${config.approvals.twitter} approvals to trigger`,
         components: [messageActionRow],
         embeds: [embed],
       });
@@ -147,14 +150,16 @@ const Twitter: Command = {
       const tweet = interaction.options.getString("tweet");
       const tweetId = tweet.match(/status\/(.*?)(\?|$)/)[1];
 
-      const messageAction = (await messageActions.create({
-        command: "twitter",
-        subcommand: "reply",
+      const messageAction = await messageActions.create({
         interactionId: interaction.id,
-        approvals: [],
-        required: 4,
-        content,
-        targetTweetId: tweetId,
+        data: {
+          command: "twitter",
+          subcommand: "reply",
+          approvals: [],
+          required: config.approvals.twitter,
+          content,
+          targetTweetId: tweetId,
+        },
         buttons: [
           {
             type: "approve",
@@ -172,7 +177,7 @@ const Twitter: Command = {
             style: "DANGER",
           },
         ],
-      })) as TwitterReplyMessageAction;
+      });
 
       const messageActionRow = buildMessageActionRow(messageAction.buttons);
       const embed = buildEmbed({
@@ -181,7 +186,7 @@ const Twitter: Command = {
       });
       const tweetEmbed = await buildTweetEmbed(tweetId);
       await interaction.reply({
-        content: `${messageAction.approvals.length} / ${messageAction.required} approvals to trigger`,
+        content: `0 / ${config.approvals.twitter} approvals to trigger`,
         components: [messageActionRow],
         embeds: [embed, tweetEmbed],
       });
@@ -190,13 +195,15 @@ const Twitter: Command = {
       const tweet = interaction.options.getString("tweet");
       const tweetId = tweet.match(/status\/(.*?)(\?|$)/)[1];
 
-      const messageAction = (await messageActions.create({
-        command: "twitter",
-        subcommand: "retweet",
+      const messageAction = await messageActions.create({
         interactionId: interaction.id,
-        approvals: [],
-        required: 4,
-        targetTweetId: tweetId,
+        data: {
+          command: "twitter",
+          subcommand: "retweet",
+          approvals: [],
+          required: config.approvals.twitter,
+          targetTweetId: tweetId,
+        },
         buttons: [
           {
             type: "approve",
@@ -214,13 +221,13 @@ const Twitter: Command = {
             style: "DANGER",
           },
         ],
-      })) as TwitterRetweetMessageAction;
+      });
 
       const messageActionRow = buildMessageActionRow(messageAction.buttons);
       const embed = buildEmbed({ title: "Retweet", content: "" });
       const tweetEmbed = await buildTweetEmbed(tweetId);
       await interaction.reply({
-        content: `${messageAction.approvals.length} / ${messageAction.required} approvals to trigger`,
+        content: `0 / ${config.approvals.twitter} approvals to trigger`,
         components: [messageActionRow],
         embeds: [embed, tweetEmbed],
       });
@@ -230,14 +237,16 @@ const Twitter: Command = {
       const tweet = interaction.options.getString("tweet");
       const tweetId = tweet.match(/status\/(.*?)(\?|$)/)[1];
 
-      const messageAction = (await messageActions.create({
-        command: "twitter",
-        subcommand: "quotetweet",
+      const messageAction = await messageActions.create({
         interactionId: interaction.id,
-        approvals: [],
-        required: 4,
-        content,
-        targetTweetUrl: tweet,
+        data: {
+          command: "twitter",
+          subcommand: "quotetweet",
+          approvals: [],
+          required: config.approvals.twitter,
+          content,
+          targetTweetUrl: tweet,
+        },
         buttons: [
           {
             type: "approve",
@@ -255,13 +264,13 @@ const Twitter: Command = {
             style: "DANGER",
           },
         ],
-      })) as TwitterQuoteTweetMessageAction;
+      });
 
       const messageActionRow = buildMessageActionRow(messageAction.buttons);
       const embed = buildEmbed({ title: "Quote Tweet", content });
       const tweetEmbed = await buildTweetEmbed(tweetId);
       await interaction.reply({
-        content: `${messageAction.approvals.length} / ${messageAction.required} approvals to trigger`,
+        content: `0 / ${config.approvals.twitter} approvals to trigger`,
         components: [messageActionRow],
         embeds: [embed, tweetEmbed],
       });
@@ -269,12 +278,12 @@ const Twitter: Command = {
   },
   handleButton: {
     approve: async ({ interaction, messageAction }) => {
-      if (messageAction.command !== "twitter") {
+      if (messageAction.data.command !== "twitter") {
         return;
       }
 
       let userId = interaction.member.user.id;
-      if (messageAction.approvals.includes(userId)) {
+      if (messageAction.data.approvals.includes(userId)) {
         interaction.reply({
           content: "You already approved this action",
           ephemeral: true,
@@ -282,31 +291,31 @@ const Twitter: Command = {
         return;
       }
 
-      messageAction.approvals.push(userId);
-      if (messageAction.approvals.length === messageAction.required) {
+      messageAction.data.approvals.push(userId);
+      if (messageAction.data.approvals.length === messageAction.data.required) {
         let apiResponse: Twit.PromiseResponse;
-        switch (messageAction.subcommand) {
+        switch (messageAction.data.subcommand) {
           case "tweet":
-            apiResponse = await tweet(messageAction.content);
+            apiResponse = await tweet(messageAction.data.content);
             break;
           case "reply":
             apiResponse = await reply(
-              messageAction.content,
-              messageAction.targetTweetId
+              messageAction.data.content,
+              messageAction.data.targetTweetId
             );
             break;
           case "retweet":
-            apiResponse = await retweet(messageAction.targetTweetId);
+            apiResponse = await retweet(messageAction.data.targetTweetId);
             break;
           case "quotetweet":
             apiResponse = await quoteTweet(
-              messageAction.content,
-              messageAction.targetTweetUrl
+              messageAction.data.content,
+              messageAction.data.targetTweetUrl
             );
             break;
         }
 
-        interaction.update({
+        await interaction.update({
           content: "This has been approved",
           components: [],
         });
@@ -317,28 +326,28 @@ const Twitter: Command = {
             screen_name: string;
           };
         };
-        interaction.followUp(
+        await interaction.followUp(
           `https://twitter.com/${responseData.user.screen_name}/status/${responseData.id_str}`
         );
 
         await messageActions.delete(messageAction.id);
       } else {
         interaction.update({
-          content: `${messageAction.approvals.length} / ${messageAction.required} approvals to trigger`,
+          content: `${messageAction.data.approvals.length} / ${messageAction.data.required} approvals to trigger`,
         });
         await messageActions.update(messageAction);
       }
     },
     disapprove: async ({ interaction, messageAction }) => {
-      if (messageAction.command !== "twitter") {
+      if (messageAction.data.command !== "twitter") {
         return;
       }
 
-      messageAction.approvals = messageAction.approvals.filter(
+      messageAction.data.approvals = messageAction.data.approvals.filter(
         (approver) => approver !== interaction.member.user.id
       );
       interaction.update({
-        content: `${messageAction.approvals.length} / ${messageAction.required} approvals to trigger`,
+        content: `${messageAction.data.approvals.length} / ${messageAction.data.required} approvals to trigger`,
       });
       await messageActions.update(messageAction);
     },

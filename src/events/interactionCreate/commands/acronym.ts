@@ -1,6 +1,6 @@
-import { acronymize } from "../../../services/acronym.js";
-import { Command } from "../../../types/discord/command.js";
 import { some } from "lodash-es";
+import { acronymize } from "../../../services/acronym.js";
+import { Command } from "../index.js";
 
 const Acronym: Command = {
   name: "acronym",

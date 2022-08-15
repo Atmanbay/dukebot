@@ -1,9 +1,13 @@
-import moment from "moment-timezone";
-import glob from "glob";
 import crypto from "crypto";
+import glob from "glob";
+import moment from "moment-timezone";
 
-export const getTypeDict = async <O extends any>(path: string) => {
-  const files = glob.sync(path);
+export const getTypeDict = async <O extends any>(
+  path: string,
+  options?: glob.IOptions
+) => {
+  const files = glob.sync(path, options);
+
   let regex: RegExp;
   if (path.includes("**")) {
     regex = new RegExp(path.replace("**", "(.*?)"));

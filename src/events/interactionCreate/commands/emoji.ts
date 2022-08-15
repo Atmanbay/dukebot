@@ -1,9 +1,9 @@
-import { Command } from "../../../types/discord/command.js";
-import { getEmojiPath, getCombinedEmojiName } from "../../../services/emoji.js";
 import { MessageAttachment } from "discord.js";
-import { messageActions } from "../../../services/messageAction.js";
 import { buildMessageActionRow } from "../../../services/button.js";
-import { generateId } from "../../../utils/index.js";
+import { messageActions } from "../../../services/database.js";
+import { getCombinedEmojiName, getEmojiPath } from "../../../services/emoji.js";
+import { generateId } from "../../../services/general.js";
+import { Command } from "../index.js";
 
 const Emoji: Command = {
   name: "emoji",
@@ -29,11 +29,13 @@ const Emoji: Command = {
     let path = await getEmojiPath(first, second);
     if (path) {
       const messageAction = await messageActions.create({
-        command: "emoji",
-        subcommand: "combine",
         interactionId: interaction.id,
-        path,
-        emojiName: getCombinedEmojiName(first, second),
+        data: {
+          command: "emoji",
+          subcommand: "combine",
+          path,
+          emojiName: getCombinedEmojiName(first, second),
+        },
         buttons: [
           {
             type: "save",
@@ -61,17 +63,17 @@ const Emoji: Command = {
   },
   handleButton: {
     save: async ({ interaction, messageAction }) => {
-      if (messageAction.subcommand !== "combine") {
+      if (messageAction.data.subcommand !== "combine") {
         return;
       }
 
       await interaction.guild.emojis.create(
-        messageAction.path,
-        messageAction.emojiName
+        messageAction.data.path,
+        messageAction.data.emojiName
       );
 
       await interaction.reply({
-        content: `Emoji saved as \`:${messageAction.emojiName}:\``,
+        content: `Emoji saved as \`:${messageAction.data.emojiName}:\``,
         ephemeral: true,
       });
     },

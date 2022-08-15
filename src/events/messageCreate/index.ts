@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
-import { EventListener } from "../../types/discord/eventListener.js";
-import { getTypeDict } from "../../utils/index.js";
-import config from "../../utils/config.js";
+import config from "../../services/config.js";
+import { getTypeDict } from "../../services/general.js";
+import { EventListener } from "../index.js";
 
 export interface Trigger {
   execute: (message: Message) => Promise<void>;

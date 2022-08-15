@@ -1,5 +1,5 @@
-import { messages } from "./message.js";
 import { filter, sample } from "lodash-es";
+import { messages } from "./database.js";
 
 export const acronymize = async (word: string): Promise<string[]> => {
   let allMessages = await messages.list();

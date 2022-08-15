@@ -1,10 +1,10 @@
+import { responses } from "../../../services/database.js";
 import { Trigger } from "../index.js";
-import { responses } from "../../../services/response.js";
 
 const Response: Trigger = {
   execute: async (message) => {
     let lowerContent = message.content.toLowerCase();
-    let responders = await responses.list((response) => {
+    let responders = responses.list((response) => {
       try {
         let regex = new RegExp(`\\b${response.trigger.toLowerCase()}\\b`);
         let matches = lowerContent.match(regex);

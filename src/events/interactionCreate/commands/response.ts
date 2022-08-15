@@ -1,6 +1,6 @@
-import { responses } from "../../../services/response.js";
-import { Command } from "../../../types/discord/command.js";
 import emojiRegex from "emoji-regex";
+import { responses } from "../../../services/database.js";
+import { Command } from "../index.js";
 
 const Response: Command = {
   name: "response",
@@ -83,7 +83,7 @@ const Response: Command = {
         }
       });
 
-      const response = await responses.get((r) => r.trigger === trigger);
+      const response = responses.get((r) => r.trigger === trigger);
       if (response) {
         await responses.update({
           id: response.id,
@@ -109,7 +109,7 @@ const Response: Command = {
     delete: async (interaction) => {
       const trigger = interaction.options.getString("trigger");
 
-      const response = await responses.get((r) => r.trigger === trigger);
+      const response = responses.get((r) => r.trigger === trigger);
       if (response) {
         await responses.delete(response.id);
         interaction.reply({

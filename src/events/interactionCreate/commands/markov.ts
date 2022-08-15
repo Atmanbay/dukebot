@@ -1,7 +1,7 @@
 import { GuildMember, Role } from "discord.js";
+import { messages } from "../../../services/database.js";
 import { buildMarkov } from "../../../services/markov.js";
-import { messages } from "../../../services/message.js";
-import { Command } from "../../../types/discord/command.js";
+import { Command } from "../index.js";
 
 const Markov: Command = {
   name: "markov",

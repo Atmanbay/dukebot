@@ -1,7 +1,7 @@
-import { Command } from "../../../types/discord/command.js";
 import { GuildMember, Role } from "discord.js";
-import { blazes } from "../../../services/blaze.js";
-import { buildTable } from "../../../utils/index.js";
+import { blazes } from "../../../services/database.js";
+import { buildTable } from "../../../services/general.js";
+import { Command } from "../index.js";
 
 const Blazes: Command = {
   name: "blazes",

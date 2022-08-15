@@ -1,11 +1,11 @@
-/// <reference path="../tempTypes/emoji-unicode.d.ts" />
+/// <reference path="../types/emoji-unicode.d.ts" />
 import emojiUnicode from "emoji-unicode";
-import config from "../utils/config.js";
-import ne from "node-emoji";
-const find = ne.find;
 import fs from "fs";
-import request from "request-promise-native";
 import im from "imagemagick";
+import ne from "node-emoji";
+import request from "request-promise-native";
+import config from "./config.js";
+const find = ne.find;
 
 export const getEmojiPath = async (a: string, b: string) => {
   let fileName = emojiToFilename(a, b);
@@ -22,9 +22,9 @@ export const getEmojiPath = async (a: string, b: string) => {
   return path;
 };
 
-// const getEmoji = (emojiName: string) => {
-//   return find(emojiName);
-// };
+export const getEmojiByName = (emojiName: string) => {
+  return find(emojiName);
+};
 
 const emojiToUnicodeArray = (emoji: string): string[] => {
   return emojiUnicode(emoji).split(" ");

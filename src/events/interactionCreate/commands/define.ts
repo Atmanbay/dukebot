@@ -1,5 +1,5 @@
-import { Command } from "../../../types/discord/command.js";
 import { define } from "../../../services/define.js";
+import { Command } from "../index.js";
 
 const Define: Command = {
   name: "define",

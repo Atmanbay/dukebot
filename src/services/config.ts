@@ -24,12 +24,15 @@ const config = {
     admin: getEnvVar("ROLES_ADMIN"),
     twitter: getEnvVar("ROLES_TWITTER"),
   },
+  approvals: {
+    twitter: Number(getEnvVar("APPROVALS_REQUIRED_TWITTER")),
+  },
   twitter: {
     consumerKey: getEnvVar("TWITTER_CONSUMER_KEY"),
     consumerSecret: getEnvVar("TWITTER_CONSUMER_SECRET"),
     accessTokenKey: getEnvVar("TWITTER_ACCESS_TOKEN_KEY"),
     accessTokenSecret: getEnvVar("TWITTER_ACCESS_TOKEN_SECRET"),
   },
-};
+} as const;
 
 export default config;

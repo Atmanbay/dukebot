@@ -1,8 +1,4 @@
-import { Blaze } from "../types/database.js";
-import { DatabaseTable } from "./database.js";
 import moment from "moment-timezone";
-
-export const blazes = new DatabaseTable<Blaze>("blazes");
 
 export const isValidBlazeIt = (messageContent: string, timestamp: number) => {
   if (!messageContent.toLowerCase().includes("blaze it")) {

@@ -1,74 +1,101 @@
-import { Low, JSONFile } from "lowdb";
-import { BaseDatabaseObject } from "../types/database.js";
-import config from "../utils/config.js";
-import { generateId, getTimestamp } from "../utils/index.js";
+import { JSONFile, Low } from "lowdb";
+import {
+  BaseDatabaseObject,
+  Blaze,
+  BotConfig,
+  Job,
+  Message,
+  MessageAction,
+  Response,
+  Walkup,
+} from "../models/models.js";
+import config from "./config.js";
+import { generateId, getTimestamp } from "./general.js";
 
-export class DatabaseTable<DBType extends BaseDatabaseObject> {
+class DatabaseTable<DBType extends BaseDatabaseObject> {
   tableName: string;
   dbPath: string;
-  #database: Low<DBType[]>;
+  #db: Low<DBType[]>;
 
   constructor(tableName: string) {
     this.tableName = tableName;
     this.dbPath = config.paths.database;
   }
 
-  #getDb = async () => {
-    if (!this.#database) {
-      const adapter = new JSONFile<DBType[]>(
-        `${this.dbPath}/${this.tableName}.json`
-      );
-      const db = new Low(adapter);
-      await db.read();
-      this.#database = db;
-    }
-
-    return this.#database;
+  build = async () => {
+    const adapter = new JSONFile<DBType[]>(
+      `${this.dbPath}/${this.tableName}.json`
+    );
+    const db = new Low(adapter);
+    await db.read();
+    this.#db = db;
   };
 
   create = async (object: DBType): Promise<DBType> => {
-    const db = await this.#getDb();
-
     const fullObject = {
       ...object,
       id: generateId(),
       created: getTimestamp(),
     } as DBType;
 
-    db.data.push(fullObject);
-    await db.write();
+    this.#db.data.push(fullObject);
+    await this.#db.write();
     return fullObject;
   };
 
-  get = async (
+  get = (
     predicate?: (value: DBType, index: number, obj: DBType[]) => boolean
-  ): Promise<DBType | null> => {
-    const db = await this.#getDb();
-    return db.data.find(predicate);
+  ): DBType | null => {
+    return this.#db.data.find(predicate);
   };
 
-  list = async (
+  list = (
     predicate?: (value: DBType, index: number, obj: DBType[]) => boolean
-  ): Promise<DBType[]> => {
-    const db = await this.#getDb();
+  ): DBType[] => {
     if (!predicate) {
-      return db.data;
+      return this.#db.data;
     }
-    return db.data.filter(predicate);
+    return this.#db.data.filter(predicate);
   };
 
   update = async (object: DBType): Promise<void> => {
-    const db = await this.#getDb();
     const id = object.id;
-    const index = db.data.findIndex((value) => value.id === id);
-    db.data.splice(index, 1, object);
-    return db.write();
+    const index = this.#db.data.findIndex((value) => value.id === id);
+    this.#db.data.splice(index, 1, object);
+    return this.#db.write();
   };
 
   delete = async (id: string): Promise<void> => {
-    const db = await this.#getDb();
-    const index = db.data.findIndex((value) => value.id === id);
-    db.data.splice(index, 1);
-    return db.write();
+    const index = this.#db.data.findIndex((value) => value.id === id);
+    this.#db.data.splice(index, 1);
+    return this.#db.write();
   };
 }
+
+const buildDatabaseTable = async <DBType extends BaseDatabaseObject>(
+  tableName: string
+) => {
+  const dbTable = new DatabaseTable<DBType>(tableName);
+  await dbTable.build();
+  return dbTable;
+};
+
+export const blazes = await buildDatabaseTable<Blaze>("blazes");
+export const botConfigs = await buildDatabaseTable<BotConfig>("botConfigs");
+export const jobs = await buildDatabaseTable<Job>("jobs");
+export const messages = await buildDatabaseTable<Message>("messages");
+export const messageActions = await buildDatabaseTable<MessageAction>(
+  "messageActions"
+);
+export const responses = await buildDatabaseTable<Response>("responses");
+export const walkups = await buildDatabaseTable<Walkup>("walkups");
+
+// export const {
+//   blazes: await buildDatabaseTable<Blaze>("blazes"),
+//   botConfigs: await buildDatabaseTable<BotConfig>("botConfigs"),
+//   jobs: await buildDatabaseTable<Job>("jobs"),
+//   messages: await buildDatabaseTable<Message>("messages"),
+//   messageActions: await buildDatabaseTable<MessageAction>("messageActions"),
+//   responses: await buildDatabaseTable<Response>("responses"),
+//   walkups: await buildDatabaseTable<Walkup>("walkups"),
+// };

@@ -1,6 +1,6 @@
-import request from "request-promise-native";
-import { parse } from "node-html-parser";
 import { sample } from "lodash-es";
+import { parse } from "node-html-parser";
+import request from "request-promise-native";
 
 const decodings: {
   [key: string]: string;

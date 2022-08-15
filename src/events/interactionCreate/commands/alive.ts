@@ -1,4 +1,4 @@
-import { Command } from "../../../types/discord/command.js";
+import { Command } from "../index.js";
 
 const Alive: Command = {
   name: "alive",

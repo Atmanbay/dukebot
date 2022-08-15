@@ -1,5 +1,6 @@
+import { isValidBlazeIt } from "../../../services/blaze.js";
+import { blazes } from "../../../services/database.js";
 import { Trigger } from "../index.js";
-import { isValidBlazeIt, blazes } from "../../../services/blaze.js";
 
 const Blaze: Trigger = {
   execute: async (message) => {
@@ -8,7 +9,7 @@ const Blaze: Trigger = {
     }
 
     const guildMember = message.member;
-    let blaze = await blazes.get(
+    let blaze = blazes.get(
       (blaze) =>
         blaze.userId === guildMember.user.id &&
         blaze.created === message.createdTimestamp
