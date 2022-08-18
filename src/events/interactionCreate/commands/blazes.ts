@@ -1,6 +1,6 @@
 import { GuildMember, Role } from "discord.js";
-import { blazes } from "../../../services/database.js";
-import { buildTable } from "../../../services/general.js";
+import { blazes } from "../../../database/database.js";
+import { buildTable } from "../../../utils/general.js";
 import { Command } from "../index.js";
 
 const Blazes: Command = {

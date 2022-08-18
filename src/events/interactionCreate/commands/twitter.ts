@@ -1,41 +1,111 @@
-import { ButtonInteraction } from "discord.js";
-import Twit from "twit";
-import { buildMessageActionRow } from "../../../services/button.js";
-// import {
-//   TwitterQuoteTweetMessageAction,
-//   TwitterReplyMessageAction,
-//   TwitterRetweetMessageAction,
-//   TwitterTweetMessageAction,
-// } from "../../../types/database.js";
-import config from "../../../services/config.js";
-import { messageActions } from "../../../services/database.js";
-import { generateId } from "../../../services/general.js";
+import { MessageEmbed } from "discord.js";
+import moment from "moment-timezone";
+import Twitter, { Params, PromiseResponse } from "twit";
+import { messageActions } from "../../../database/database.js";
+import config from "../../../utils/config.js";
 import {
   buildEmbed,
-  buildTweetEmbed,
-  quoteTweet,
-  reply,
-  retweet,
-  tweet,
-} from "../../../services/twitter.js";
+  buildMessageActionRow,
+  generateId,
+} from "../../../utils/general.js";
 import { Command } from "../index.js";
 
-const postUrl = async (
-  interaction: ButtonInteraction,
-  apiResponse: Twit.PromiseResponse
-) => {
-  const data = apiResponse.data as {
-    id_str: string;
-    user: {
-      screen_name: string;
-    };
+const client = new Twitter({
+  consumer_key: config.twitter.consumerKey,
+  consumer_secret: config.twitter.consumerSecret,
+  access_token: config.twitter.accessTokenKey,
+  access_token_secret: config.twitter.accessTokenSecret,
+});
+
+const tweet = async (status: string) => {
+  let options = {
+    status: status,
   };
-  interaction.reply(
-    `https://twitter.com/${data.user.screen_name}/status/${data.id_str}`
-  );
+
+  return client.post("statuses/update", options);
 };
 
-const Twitter: Command = {
+const reply = async (status: string, targetTweetId: string) => {
+  let options = {
+    status: status,
+    in_reply_to_status_id: targetTweetId,
+  };
+
+  return client.post("statuses/update", options);
+};
+
+const retweet = async (tweetId: string) => {
+  return client.post(`statuses/retweet/${tweetId}`, {});
+};
+
+const quoteTweet = async (status: string, targetTweetUrl: string) => {
+  let options = {
+    status: `${status} ${targetTweetUrl}`,
+  };
+
+  return client.post("statuses/update", options);
+};
+
+export const buildTweetEmbed = async (tweetId: string) => {
+  const params: Params = {
+    tweet_mode: "extended",
+  };
+  const tweet = await client.get(`statuses/show/${tweetId}`, params);
+  if (tweet.resp.statusCode !== 200) {
+    return null;
+  }
+
+  const data = tweet.data as {
+    user: {
+      name: string;
+      screen_name: string;
+      profile_image_url: string;
+    };
+    full_text: string;
+    favorite_count: number;
+    retweet_count: number;
+    created_at: string;
+    entities: {
+      media: {
+        media_url: string;
+      }[];
+    };
+  };
+
+  let embed = {
+    author: {
+      name: `${data.user.name} (@${data.user.screen_name})`,
+      iconURL: data.user.profile_image_url,
+      url: `https://twitter.com/${data.user.screen_name}/status/${tweetId}`,
+    },
+    description: data.full_text,
+    fields: [
+      {
+        name: "Likes",
+        value: data.favorite_count.toString(),
+        inline: true,
+      },
+      {
+        name: "Retweets",
+        value: data.retweet_count.toString(),
+        inline: true,
+      },
+    ],
+    footer: {
+      text: moment(data.created_at, "ddd MMM DD HH:mm:ss ZZ YYYY").format(
+        "MM/DD/YYYY HH:mma"
+      ),
+    },
+  } as MessageEmbed;
+
+  if (data.entities.media && data.entities.media.length > 0) {
+    embed.image = { url: data.entities.media[0].media_url };
+  }
+
+  return embed;
+};
+
+const TwitterCommand: Command = {
   name: "twitter",
   description: "Returns a greeting",
   options: [
@@ -293,7 +363,7 @@ const Twitter: Command = {
 
       messageAction.data.approvals.push(userId);
       if (messageAction.data.approvals.length === messageAction.data.required) {
-        let apiResponse: Twit.PromiseResponse;
+        let apiResponse: PromiseResponse;
         switch (messageAction.data.subcommand) {
           case "tweet":
             apiResponse = await tweet(messageAction.data.content);
@@ -361,4 +431,4 @@ const Twitter: Command = {
   },
 };
 
-export default Twitter;
+export default TwitterCommand;

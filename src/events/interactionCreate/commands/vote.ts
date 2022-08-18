@@ -1,3 +1,8 @@
+import { Message } from "discord.js";
+import ne from "node-emoji";
+import { Command } from "../index.js";
+const find = ne.find;
+
 const EMOJIS = [
   "zero",
   "one",
@@ -11,9 +16,9 @@ const EMOJIS = [
   "nine",
 ];
 
-import { Message } from "discord.js";
-import { getEmojiByName } from "../../../services/emoji.js";
-import { Command } from "../index.js";
+const getEmojiByName = (emojiName: string) => {
+  return find(emojiName);
+};
 
 const Vote: Command = {
   name: "vote",

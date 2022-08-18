@@ -1,5 +1,5 @@
 import { ClientEvents } from "discord.js";
-import { getTypeDict } from "../services/general.js";
+import { getTypeDict } from "../utils/general.js";
 
 export type EventListener<K extends keyof ClientEvents> = (
   ...args: ClientEvents[K]

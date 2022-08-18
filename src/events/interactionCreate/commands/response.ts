@@ -1,5 +1,5 @@
 import emojiRegex from "emoji-regex";
-import { responses } from "../../../services/database.js";
+import { responses } from "../../../database/database.js";
 import { Command } from "../index.js";
 
 const Response: Command = {

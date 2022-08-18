@@ -1,6 +1,6 @@
 import { GuildMember, VoiceChannel } from "discord.js";
-import { play } from "../../../services/audio.js";
-import { getAudioUrl } from "../../../services/tts.js";
+import googleTTS from "google-tts-api";
+import { play } from "../../../utils/audio.js";
 import { Command } from "../index.js";
 
 const Tts: Command = {
@@ -36,7 +36,7 @@ const Tts: Command = {
   ],
   run: async (interaction) => {
     const text = interaction.options.getString("text");
-    const lang = interaction.options.getString("language") ?? "en";
+    const lang = interaction.options.getString("language") ?? "en-US";
     const slow = interaction.options.getBoolean("slow") ?? false;
 
     let channel = interaction.options.getChannel("channel") as VoiceChannel;
@@ -53,7 +53,10 @@ const Tts: Command = {
       return;
     }
 
-    let url = getAudioUrl({ text, lang, slow });
+    let url = googleTTS.getAudioUrl(text, {
+      lang,
+      slow,
+    });
 
     await interaction.reply({
       content: `Playing TTS'ed text in ${channel.name}`,

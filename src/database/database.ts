@@ -1,4 +1,7 @@
+import fs from "fs";
 import { JSONFile, Low } from "lowdb";
+import config from "../utils/config.js";
+import { generateId, getTimestamp } from "../utils/general.js";
 import {
   BaseDatabaseObject,
   Blaze,
@@ -8,24 +11,23 @@ import {
   MessageAction,
   Response,
   Walkup,
-} from "../models/models.js";
-import config from "./config.js";
-import { generateId, getTimestamp } from "./general.js";
+} from "./models.js";
 
 class DatabaseTable<DBType extends BaseDatabaseObject> {
   tableName: string;
-  dbPath: string;
   #db: Low<DBType[]>;
 
   constructor(tableName: string) {
     this.tableName = tableName;
-    this.dbPath = config.paths.database;
   }
 
   build = async () => {
-    const adapter = new JSONFile<DBType[]>(
-      `${this.dbPath}/${this.tableName}.json`
-    );
+    let path = `${config.paths.database}/${this.tableName}.json`;
+    if (!fs.existsSync(path)) {
+      fs.writeFileSync(path, "[]");
+    }
+
+    const adapter = new JSONFile<DBType[]>(path);
     const db = new Low(adapter);
     await db.read();
     this.#db = db;
@@ -39,6 +41,7 @@ class DatabaseTable<DBType extends BaseDatabaseObject> {
     } as DBType;
 
     this.#db.data.push(fullObject);
+
     await this.#db.write();
     return fullObject;
   };
@@ -89,13 +92,3 @@ export const messageActions = await buildDatabaseTable<MessageAction>(
 );
 export const responses = await buildDatabaseTable<Response>("responses");
 export const walkups = await buildDatabaseTable<Walkup>("walkups");
-
-// export const {
-//   blazes: await buildDatabaseTable<Blaze>("blazes"),
-//   botConfigs: await buildDatabaseTable<BotConfig>("botConfigs"),
-//   jobs: await buildDatabaseTable<Job>("jobs"),
-//   messages: await buildDatabaseTable<Message>("messages"),
-//   messageActions: await buildDatabaseTable<MessageAction>("messageActions"),
-//   responses: await buildDatabaseTable<Response>("responses"),
-//   walkups: await buildDatabaseTable<Walkup>("walkups"),
-// };

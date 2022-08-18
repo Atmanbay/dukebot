@@ -9,14 +9,12 @@ import {
   VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { VoiceChannel } from "discord.js";
-import { readdirSync } from "fs";
-import config from "./config.js";
 
 const player = createAudioPlayer({
   behaviors: { noSubscriber: NoSubscriberBehavior.Play },
 });
 
-export const disconnect = async (connection: VoiceConnection) => {
+const disconnect = async (connection: VoiceConnection) => {
   if (
     connection &&
     connection.state.status !== VoiceConnectionStatus.Destroyed
@@ -43,14 +41,4 @@ export const play = async (channel: VoiceChannel, path: string) => {
   });
 
   await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
-};
-
-export const getClips = () => {
-  let files: string[] = [];
-  readdirSync(config.paths.audio).forEach((file) => {
-    files.push(file.replace(".mp3", ""));
-  });
-
-  files.sort();
-  return files;
 };

@@ -1,6 +1,6 @@
 import { Client, Intents } from "discord.js";
 import { eventListeners } from "./events/index.js";
-import config from "./services/config.js";
+import config from "./utils/config.js";
 
 const client = new Client({
   intents: [
@@ -9,6 +9,7 @@ const client = new Client({
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
   ],
 });
 

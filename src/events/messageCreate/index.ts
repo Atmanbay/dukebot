@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
-import config from "../../services/config.js";
-import { getTypeDict } from "../../services/general.js";
+import config from "../../utils/config.js";
+import { getTypeDict } from "../../utils/general.js";
+import { logError } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
 
 export interface Trigger {
@@ -14,14 +15,18 @@ const triggers = await getTypeDict<Trigger>(
 const MessageCreateHandler: EventListener<"messageCreate"> = async (
   message: Message
 ) => {
-  if (config.serverId !== message.guildId) {
-    return;
-  }
+  try {
+    if (config.serverId !== message.guild.id) {
+      return;
+    }
 
-  let promises = Object.values(triggers).map((trigger) =>
-    trigger.execute(message)
-  );
-  await Promise.all(promises);
+    let promises = Object.values(triggers).map((trigger) =>
+      trigger.execute(message)
+    );
+    await Promise.all(promises);
+  } catch (error) {
+    logError(error);
+  }
 };
 
 export default MessageCreateHandler;

@@ -1,13 +1,68 @@
+import {
+  AudioPlayerStatus,
+  createAudioPlayer,
+  createAudioResource,
+  entersState,
+  joinVoiceChannel,
+  NoSubscriberBehavior,
+  VoiceConnection,
+  VoiceConnectionStatus,
+} from "@discordjs/voice";
 import { GuildMember, VoiceChannel } from "discord.js";
 import download from "download";
-import { existsSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import sanitize from "sanitize-filename";
-import { getClips, play } from "../../../services/audio.js";
-import { buildMessageActionRow } from "../../../services/button.js";
-import config from "../../../services/config.js";
-import { messageActions, walkups } from "../../../services/database.js";
-import { buildTable, generateId } from "../../../services/general.js";
+import { messageActions, walkups } from "../../../database/database.js";
+import config from "../../../utils/config.js";
+import {
+  buildMessageActionRow,
+  buildTable,
+  generateId,
+} from "../../../utils/general.js";
 import { Command } from "../index.js";
+
+const player = createAudioPlayer({
+  behaviors: { noSubscriber: NoSubscriberBehavior.Play },
+});
+
+const disconnect = async (connection: VoiceConnection) => {
+  if (
+    connection &&
+    connection.state.status !== VoiceConnectionStatus.Destroyed
+  ) {
+    connection.destroy();
+  }
+};
+
+const play = async (channel: VoiceChannel, path: string) => {
+  let connection = joinVoiceChannel({
+    channelId: channel.id,
+    guildId: channel.guild.id,
+    adapterCreator: channel.guild.voiceAdapterCreator,
+    debug: true,
+    selfDeaf: false,
+  });
+
+  connection.on(VoiceConnectionStatus.Ready, () => {
+    let resource = createAudioResource(path);
+    player.play(resource);
+    player.on(AudioPlayerStatus.Idle, () => disconnect(connection));
+    player.on("error", () => disconnect(connection));
+    connection.subscribe(player);
+  });
+
+  await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
+};
+
+const getClips = () => {
+  let files: string[] = [];
+  readdirSync(config.paths.audio).forEach((file) => {
+    files.push(file.replace(".mp3", ""));
+  });
+
+  files.sort();
+  return files;
+};
 
 const getPages = () => {
   const clipNames = getClips();
@@ -23,26 +78,26 @@ const getPages = () => {
 
 const getPageOfClips = (pageNumber: number) => {
   let pages = getPages();
-  let firstPage = [...pages[pageNumber]];
+  let page = [...pages[pageNumber]];
   let buffer = 5;
-  let columnWidth = Math.max(...firstPage.map((c) => c.length)) + buffer;
-  let halfway = Math.ceil(firstPage.length / 2);
-  let leftColumn = firstPage.splice(0, halfway);
+  let columnWidth = Math.max(...page.map((c) => c.length)) + buffer;
+  let halfway = Math.ceil(page.length / 2);
+  let leftColumn = page.splice(0, halfway);
 
   let rows: [string, string][] = [];
   for (let i = 0; i < halfway; i++) {
-    let row: [string, string] = [leftColumn.shift(), firstPage.shift()];
+    let row: [string, string] = [leftColumn.shift(), page.shift()];
     rows.push(row);
   }
 
-  let page = buildTable({
+  let table = buildTable({
     leftColumnWidth: columnWidth,
     rightColumnWidth: columnWidth,
     rows: rows,
   });
-  page.unshift("```");
-  page.push("```");
-  return page;
+  table.unshift("```");
+  table.push("```");
+  return table;
 };
 
 const Audio: Command = {
@@ -85,6 +140,31 @@ const Audio: Command = {
       type: "SUB_COMMAND",
       name: "list",
       description: "Lists all audio clips alphabetized by name",
+    },
+    {
+      type: "SUB_COMMAND_GROUP",
+      name: "walkup",
+      description: "Set or clear your walkup",
+      options: [
+        {
+          type: "SUB_COMMAND",
+          name: "set",
+          description: "Set your walkup",
+          options: [
+            {
+              type: "STRING",
+              name: "name",
+              description: "Name of clip to set as your walkup",
+              required: true,
+            },
+          ],
+        },
+        {
+          type: "SUB_COMMAND",
+          name: "clear",
+          description: "Clear your walkup",
+        },
+      ],
     },
   ],
   run: {
@@ -201,6 +281,40 @@ const Audio: Command = {
       await interaction.reply({
         content: getPageOfClips(0).join("\n"),
         components: [messageActionRow],
+        ephemeral: true,
+      });
+    },
+    set: async (interaction) => {
+      let clipName = interaction.options.getString("name");
+
+      let walkup = walkups.get(
+        (walkup) => walkup.userId === interaction.member.user.id
+      );
+      if (walkup) {
+        walkup.clip = clipName;
+        await walkups.update(walkup);
+      } else {
+        await walkups.create({
+          userId: interaction.member.user.id,
+          clip: clipName,
+        });
+      }
+
+      await interaction.reply({
+        content: `Walkup set to \`${clipName}\`!`,
+        ephemeral: true,
+      });
+    },
+    clear: async (interaction) => {
+      let walkup = walkups.get(
+        (walkup) => walkup.userId === interaction.member.user.id
+      );
+      if (walkup) {
+        await walkups.delete(walkup.id);
+      }
+
+      await interaction.reply({
+        content: `Walkup cleared!`,
         ephemeral: true,
       });
     },

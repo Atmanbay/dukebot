@@ -1,4 +1,8 @@
-import { define } from "../../../services/define.js";
+/// <reference path="../../../types/decode-html.d.ts" />
+import decode from "decode-html";
+import { sample } from "lodash-es";
+import { parse } from "node-html-parser";
+import request from "request-promise-native";
 import { Command } from "../index.js";
 
 const Define: Command = {
@@ -14,14 +18,29 @@ const Define: Command = {
   ],
   run: async (interaction) => {
     const query = interaction.options.getString("query");
-    const definition = await define(query);
+
+    let escapedWord = encodeURI(query);
+    let url = `https://www.urbandictionary.com/define.php?term=${escapedWord}`;
+
+    let htmlString = await request(url);
+    let root = parse(htmlString);
+
+    let definitions = root.querySelectorAll(".definition");
+    if (definitions.length === 0) {
+      return null;
+    }
+
+    let randomDefinition = sample(definitions);
+
+    let definition = randomDefinition.querySelector("div.meaning");
+    let example = randomDefinition.querySelector("div.example");
 
     let response = [
       `**${query}**`,
       "",
-      definition.definition,
+      decode(definition.structuredText),
       "",
-      `_${definition.example}_`,
+      `_${decode(example.structuredText)}_`,
     ];
 
     await interaction.reply({

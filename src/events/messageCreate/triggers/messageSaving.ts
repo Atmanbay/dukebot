@@ -1,4 +1,4 @@
-import { messages } from "../../../services/database.js";
+import { messages } from "../../../database/database.js";
 import { Trigger } from "../index.js";
 
 const MessageSaving: Trigger = {

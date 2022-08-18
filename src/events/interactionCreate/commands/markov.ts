@@ -1,9 +1,39 @@
 import { GuildMember, Role } from "discord.js";
-import { messages } from "../../../services/database.js";
-import { buildMarkov } from "../../../services/markov.js";
+import Markov, { MarkovGenerateOptions } from "markov-strings";
+import { messages } from "../../../database/database.js";
 import { Command } from "../index.js";
 
-const Markov: Command = {
+export const buildMarkov = ({
+  messages,
+  stateSize,
+  maxTries,
+  variance,
+}: {
+  messages: string[];
+  stateSize: number;
+  maxTries: number;
+  variance: number;
+}) => {
+  let markov = new Markov(messages, { stateSize });
+  markov.buildCorpus();
+
+  let options: MarkovGenerateOptions = {
+    maxTries: maxTries,
+    prng: Math.random,
+    filter: (result) => {
+      return (
+        result.refs.length > variance &&
+        result.score > 1 &&
+        result.string.length <= 2000
+      );
+    },
+  };
+
+  let result = markov.generate(options);
+  return result.string;
+};
+
+const MarkovCommand: Command = {
   name: "markov",
   description: "Generate a markov for the specified user/role",
   options: [
@@ -51,4 +81,4 @@ const Markov: Command = {
   },
 };
 
-export default Markov;
+export default MarkovCommand;

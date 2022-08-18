@@ -1,4 +1,4 @@
-import { responses } from "../../../services/database.js";
+import { responses } from "../../../database/database.js";
 import { Trigger } from "../index.js";
 
 const Response: Trigger = {

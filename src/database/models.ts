@@ -11,6 +11,8 @@ export type Job = {
   id?: string;
   created?: number;
   userId: string;
+  messageId?: string;
+  granterUserId?: string;
   jobType: "good" | "bad";
 };
 

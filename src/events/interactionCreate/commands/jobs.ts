@@ -1,6 +1,6 @@
 import { GuildMember, Role } from "discord.js";
-import { jobs } from "../../../services/database.js";
-import { buildTable } from "../../../services/general.js";
+import { jobs } from "../../../database/database.js";
+import { buildTable } from "../../../utils/general.js";
 import { Command } from "../index.js";
 
 const Jobs: Command = {
