@@ -1,7 +1,7 @@
 import fs from "fs";
 import { JSONFile, Low } from "lowdb";
 import config from "../utils/config.js";
-import { generateId, getTimestamp } from "../utils/general.js";
+import { generateId } from "../utils/general.js";
 import {
   BaseDatabaseObject,
   Blaze,
@@ -33,11 +33,10 @@ class DatabaseTable<DBType extends BaseDatabaseObject> {
     this.#db = db;
   };
 
-  create = async (object: DBType): Promise<DBType> => {
+  create = async (object: Omit<DBType, "id">): Promise<DBType> => {
     const fullObject = {
       ...object,
       id: generateId(),
-      created: getTimestamp(),
     } as DBType;
 
     this.#db.data.push(fullObject);

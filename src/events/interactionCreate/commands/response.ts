@@ -27,7 +27,7 @@ const Response: Command = {
         {
           type: "NUMBER",
           name: "cooldown",
-          description: "Trigger cooldown in minutes (defaults to 1 minute)",
+          description: "Trigger cooldown in minutes (defaults to 30 minutes)",
           required: false,
         },
       ],
@@ -53,7 +53,7 @@ const Response: Command = {
       const responseArray = interaction.options
         .getString("responses")
         .split("|");
-      const cooldown = interaction.options.getNumber("cooldown") ?? 1;
+      const cooldown = interaction.options.getNumber("cooldown");
 
       let parsedResponseArray = responseArray.map((response) => {
         let emojiMatch = emojiRegex().exec(response);
@@ -85,19 +85,18 @@ const Response: Command = {
 
       const response = responses.get((r) => r.trigger === trigger);
       if (response) {
-        await responses.update({
-          id: response.id,
-          trigger,
-          responses: parsedResponseArray,
-          cooldown,
-          lastTriggered: interaction.createdTimestamp,
-        });
+        response.trigger = trigger;
+        response.responses = parsedResponseArray;
+        if (cooldown) {
+          response.cooldown = cooldown;
+        }
+
+        await responses.update(response);
       } else {
         await responses.create({
           trigger,
           responses: parsedResponseArray,
-          cooldown,
-          lastTriggered: interaction.createdTimestamp,
+          cooldown: cooldown ?? 30,
         });
       }
 

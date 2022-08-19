@@ -1,11 +1,21 @@
+import moment from "moment-timezone";
 import { responses } from "../../../database/database.js";
 import { Trigger } from "../index.js";
 
 const Response: Trigger = {
   execute: async (message) => {
     let lowerContent = message.content.toLowerCase();
+    let triggerTime = moment().valueOf();
     let responders = responses.list((response) => {
       try {
+        if (response.lastTriggered) {
+          let earliestTriggerTime =
+            response.lastTriggered + response.cooldown * 60000;
+          if (triggerTime <= earliestTriggerTime) {
+            return;
+          }
+        }
+
         let regex = new RegExp(`\\b${response.trigger.toLowerCase()}\\b`);
         let matches = lowerContent.match(regex);
         if (matches) {
@@ -27,6 +37,9 @@ const Response: Trigger = {
           return message.react(response.value);
         }
       });
+
+      responder.lastTriggered = triggerTime;
+      responses.update(responder);
 
       return responsePromises;
     });

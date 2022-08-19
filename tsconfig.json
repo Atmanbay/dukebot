@@ -5,10 +5,4 @@
     "noImplicitAny": false,
     "module": "ES2022"
   }
-  // "compilerOptions": {
-  // "esModuleInterop": true,
-  // "experimentalDecorators": true,
-  // "module": "node16",
-  // "moduleResolution": "node16"
-  // }
 }

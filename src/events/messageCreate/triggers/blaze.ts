@@ -3,18 +3,12 @@ import moment from "moment-timezone";
 import { blazes } from "../../../database/database.js";
 import { Trigger } from "../index.js";
 
-export const isValidBlazeIt = (messageContent: string, timestamp: number) => {
+export const isValidBlazeIt = (messageContent: string, time: moment.Moment) => {
   if (!messageContent.toLowerCase().includes("blaze it")) {
     return false;
   }
 
-  let currentTime = moment.utc(timestamp).tz("America/New_York");
-  if (
-    !(
-      currentTime.minute() === 20 &&
-      (currentTime.hour() === 4 || currentTime.hour() === 16)
-    )
-  ) {
+  if (!(time.minute() === 20 && (time.hour() === 4 || time.hour() === 16))) {
     return false;
   }
 
@@ -23,21 +17,26 @@ export const isValidBlazeIt = (messageContent: string, timestamp: number) => {
 
 const Blaze: Trigger = {
   execute: async (message) => {
-    if (!isValidBlazeIt(message.content, message.createdTimestamp)) {
+    let currentTime = moment
+      .utc(message.createdTimestamp)
+      .tz("America/New_York");
+    if (!isValidBlazeIt(message.content, currentTime)) {
       return;
     }
 
+    currentTime = currentTime.set("s", 0);
+    currentTime = currentTime.set("ms", 0);
     const guildMember = message.member;
     let blaze = blazes.get(
       (blaze) =>
         blaze.userId === guildMember.user.id &&
-        blaze.created === message.createdTimestamp
+        blaze.created === currentTime.valueOf()
     );
 
     if (!blaze) {
       await blazes.create({
         userId: guildMember.user.id,
-        created: message.createdTimestamp,
+        created: currentTime.valueOf(),
       });
 
       await message.react("🔥");
