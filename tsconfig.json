@@ -1,8 +1,20 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
+  "exclude": ["**/node_modules/**/*"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "module": "ES2022"
+    "skipLibCheck": true,
+    "module": "esnext",
+    "outDir": "dist",
+    "lib": ["esnext"],
+    "target": "esnext",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "types": [],
+    "strictPropertyInitialization": false
   }
 }

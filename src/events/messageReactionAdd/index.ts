@@ -5,17 +5,19 @@ import {
   PartialUser,
   User,
 } from "discord.js";
-import { getTypeDict } from "../../utils/general.js";
 import { logError } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
+import Downvote from "./handlers/downvote.js";
+import Upvote from "./handlers/upvote.js";
 
 export interface Handler {
   execute: (message: Message, user: User) => Promise<void>;
 }
 
-const handlers = await getTypeDict<Handler>(
-  `${process.cwd()}/src/events/messageReactionAdd/handlers/*`
-);
+const handlers = {
+  upvote: Upvote,
+  downvote: Downvote,
+};
 
 const MessageReactionAddHandler: EventListener<"messageReactionAdd"> = async (
   messageReaction: MessageReaction | PartialMessageReaction,

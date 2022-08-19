@@ -8,9 +8,20 @@ import { Button } from "../../database/button.js";
 import { messageActions } from "../../database/database.js";
 import { MessageAction } from "../../database/models.js";
 import config from "../../utils/config.js";
-import { getTypeDict } from "../../utils/general.js";
 import { logError } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
+import Acronym from "./commands/acronym.js";
+import Alive from "./commands/alive.js";
+import Audio from "./commands/audio.js";
+import Blazes from "./commands/blazes.js";
+import Define from "./commands/define.js";
+import Emoji from "./commands/emoji.js";
+import Jobs from "./commands/jobs.js";
+import MarkovCommand from "./commands/markov.js";
+import Response from "./commands/response.js";
+import Tts from "./commands/tts.js";
+import TwitterCommand from "./commands/twitter.js";
+import Vote from "./commands/vote.js";
 
 type RunExecutor = (interaction: CommandInteraction) => Promise<void>;
 type ButtonExecutor = ({
@@ -28,9 +39,20 @@ export interface Command extends ChatInputApplicationCommandData {
   };
 }
 
-const commands = await getTypeDict<Command>(
-  `${process.cwd()}/src/events/interactionCreate/commands/*`
-);
+export const commands = {
+  acronym: Acronym,
+  alive: Alive,
+  audio: Audio,
+  blazes: Blazes,
+  define: Define,
+  emoji: Emoji,
+  jobs: Jobs,
+  markkov: MarkovCommand,
+  response: Response,
+  tts: Tts,
+  twitter: TwitterCommand,
+  vote: Vote,
+};
 
 const InteractionCreateHandler: EventListener<"interactionCreate"> = async (
   interaction: Interaction

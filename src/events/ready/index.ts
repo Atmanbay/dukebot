@@ -1,17 +1,13 @@
-import { ChatInputApplicationCommandData, Client } from "discord.js";
+import { Client } from "discord.js";
 import hash from "object-hash";
 import { botConfigs } from "../../database/database.js";
 import config from "../../utils/config.js";
-import { getTypeDict } from "../../utils/general.js";
 import { logError, logInfo } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
+import { commands } from "../interactionCreate/index.js";
 
-const ReadyListener: EventListener<"ready"> = async (client: Client) => {
+const ReadyHandler: EventListener<"ready"> = async (client: Client) => {
   try {
-    const commands = await getTypeDict<ChatInputApplicationCommandData>(
-      `${process.cwd()}/src/events/interactionCreate/commands/*`
-    );
-
     let oldCommandHash = botConfigs.get((bc) => bc.key === "commandHash");
     let newCommandHash = hash(
       Object.values(commands).map((command) => {
@@ -54,4 +50,4 @@ const ReadyListener: EventListener<"ready"> = async (client: Client) => {
   }
 };
 
-export default ReadyListener;
+export default ReadyHandler;

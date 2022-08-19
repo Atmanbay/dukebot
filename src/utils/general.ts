@@ -24,34 +24,6 @@ export const buildMessageActionRow = (buttons: Button[]) => {
   return new MessageActionRow().addComponents(messageButtons);
 };
 
-export const getTypeDict = async <O extends any>(
-  path: string,
-  options?: glob.IOptions
-) => {
-  const files = glob.sync(path, options);
-
-  let regex: RegExp;
-  if (path.includes("**")) {
-    regex = new RegExp(path.replace("**", "(.*?)"));
-  }
-
-  const classesPromises = files.map(async (file) => {
-    let fileName: string;
-    if (regex) {
-      fileName = file.match(regex)[1];
-    } else {
-      fileName = file.split("/").pop().replace(".ts", "");
-    }
-
-    const imported = await import(file);
-    return [fileName, imported.default];
-  });
-
-  const classes = await Promise.all(classesPromises);
-
-  return Object.fromEntries(classes) as Record<string, O>;
-};
-
 export const getFiles = (path: string) => {
   return glob.sync(path);
 };

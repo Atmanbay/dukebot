@@ -1,16 +1,16 @@
 import { Message } from "discord.js";
 import config from "../../utils/config.js";
-import { getTypeDict } from "../../utils/general.js";
 import { logError } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
+import Blaze from "./triggers/blaze.js";
+import MessageSaving from "./triggers/messageSaving.js";
+import Response from "./triggers/response.js";
 
 export interface Trigger {
   execute: (message: Message) => Promise<void>;
 }
 
-const triggers = await getTypeDict<Trigger>(
-  `${process.cwd()}/src/events/messageCreate/triggers/*`
-);
+const triggers = [Blaze, MessageSaving, Response];
 
 const MessageCreateHandler: EventListener<"messageCreate"> = async (
   message: Message
@@ -20,9 +20,7 @@ const MessageCreateHandler: EventListener<"messageCreate"> = async (
       return;
     }
 
-    let promises = Object.values(triggers).map((trigger) =>
-      trigger.execute(message)
-    );
+    let promises = triggers.map((trigger) => trigger.execute(message));
     await Promise.all(promises);
   } catch (error) {
     logError(error);
