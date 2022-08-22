@@ -33,6 +33,9 @@ const config = {
     accessTokenKey: getEnvVar("TWITTER_ACCESS_TOKEN_KEY"),
     accessTokenSecret: getEnvVar("TWITTER_ACCESS_TOKEN_SECRET"),
   },
+  openAI: {
+    apiKey: getEnvVar("OPENAI_API_KEY"),
+  },
 } as const;
 
 export default config;
