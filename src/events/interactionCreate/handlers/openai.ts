@@ -16,6 +16,7 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
       type: "STRING",
       name: "prompt",
       description: "The prompt to send to OpenAI",
+      required: true,
     },
   ],
   handle: async (interaction) => {
