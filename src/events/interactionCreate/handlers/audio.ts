@@ -19,7 +19,7 @@ import {
   buildTable,
   generateId,
 } from "../../../utils/general.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
 const player = createAudioPlayer({
   behaviors: { noSubscriber: NoSubscriberBehavior.Play },
@@ -100,7 +100,7 @@ const getPageOfClips = (pageNumber: number) => {
   return table;
 };
 
-const Audio: Command = {
+const AudioInteractionCreateHandler: InteractionCreateHandler = {
   name: "audio",
   description: "Play, upload, or list audio clips",
   options: [
@@ -167,7 +167,7 @@ const Audio: Command = {
       ],
     },
   ],
-  run: {
+  handle: {
     play: async (interaction) => {
       const clipName = interaction.options.getString("name");
       let channel = interaction.options.getChannel("channel") as VoiceChannel;
@@ -188,6 +188,7 @@ const Audio: Command = {
 
       await interaction.reply({
         content: `Playing \`${clipName}\` in \`${channel.name}\``,
+        ephemeral: true,
       });
 
       await play(channel, path);
@@ -379,4 +380,4 @@ const Audio: Command = {
   },
 };
 
-export default Audio;
+export default AudioInteractionCreateHandler;

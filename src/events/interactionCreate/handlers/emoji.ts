@@ -8,7 +8,7 @@ import request from "request-promise-native";
 import { messageActions } from "../../../database/database.js";
 import config from "../../../utils/config.js";
 import { buildMessageActionRow, generateId } from "../../../utils/general.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 const find = ne.find;
 
 const getEmojiPath = async (a: string, b: string) => {
@@ -119,7 +119,7 @@ export const getCombinedEmojiName = (a: string, b: string) => {
   return `${find(a).key}_${find(b).key}`.substring(0, 32);
 };
 
-const Emoji: Command = {
+const EmojiInteractionCreateHandler: InteractionCreateHandler = {
   name: "emoji",
   description: "Combines two emojis using Google's Emoji Kitchen",
   options: [
@@ -136,7 +136,7 @@ const Emoji: Command = {
       required: true,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     const first = interaction.options.getString("first");
     const second = interaction.options.getString("second");
 
@@ -194,4 +194,4 @@ const Emoji: Command = {
   },
 };
 
-export default Emoji;
+export default EmojiInteractionCreateHandler;

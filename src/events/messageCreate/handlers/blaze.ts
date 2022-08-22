@@ -1,7 +1,7 @@
 // import { isValidBlazeIt } from "../../../services/blaze.js";
 import moment from "moment-timezone";
 import { blazes } from "../../../database/database.js";
-import { Trigger } from "../index.js";
+import { MessageCreateHandler } from "../index.js";
 
 export const isValidBlazeIt = (messageContent: string, time: moment.Moment) => {
   if (!messageContent.toLowerCase().includes("blaze it")) {
@@ -15,7 +15,7 @@ export const isValidBlazeIt = (messageContent: string, time: moment.Moment) => {
   return true;
 };
 
-const Blaze: Trigger = {
+const BlazeMessageCreateHandler: MessageCreateHandler = {
   execute: async (message) => {
     let currentTime = moment
       .utc(message.createdTimestamp)
@@ -44,4 +44,4 @@ const Blaze: Trigger = {
   },
 };
 
-export default Blaze;
+export default BlazeMessageCreateHandler;

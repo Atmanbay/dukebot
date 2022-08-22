@@ -1,7 +1,7 @@
 import { jobs } from "../../../database/database.js";
-import { Handler } from "../index.js";
+import { MessageReactionRemoveHandler } from "../index.js";
 
-const Downvote: Handler = {
+const DownvoteMessageReactionRemoveHandler: MessageReactionRemoveHandler = {
   execute: async (message, user) => {
     let jobToDelete = jobs.get(
       (job) =>
@@ -17,4 +17,4 @@ const Downvote: Handler = {
   },
 };
 
-export default Downvote;
+export default DownvoteMessageReactionRemoveHandler;

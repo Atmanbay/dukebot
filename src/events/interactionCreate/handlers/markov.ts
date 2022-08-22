@@ -1,7 +1,7 @@
 import { GuildMember, Role } from "discord.js";
 import Markov, { MarkovGenerateOptions } from "markov-strings";
 import { messages } from "../../../database/database.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
 export const buildMarkov = ({
   messages,
@@ -33,7 +33,7 @@ export const buildMarkov = ({
   return result.string;
 };
 
-const MarkovCommand: Command = {
+const MarkovInteractionCreateHandler: InteractionCreateHandler = {
   name: "markov",
   description: "Generate a markov for the specified user/role",
   options: [
@@ -44,7 +44,7 @@ const MarkovCommand: Command = {
         "The user/role to use as the basis for the markov (defaults to caller)",
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     let target = interaction.options.getMentionable("target");
     let guildMembers: GuildMember[] = [];
     if (!target) {
@@ -81,4 +81,4 @@ const MarkovCommand: Command = {
   },
 };
 
-export default MarkovCommand;
+export default MarkovInteractionCreateHandler;

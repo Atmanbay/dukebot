@@ -1,7 +1,7 @@
 import { messages } from "../../../database/database.js";
-import { Trigger } from "../index.js";
+import { MessageCreateHandler } from "../index.js";
 
-const MessageSaving: Trigger = {
+const MessageSavingMessageCreateHandler: MessageCreateHandler = {
   execute: async (message) => {
     await messages.create({
       userId: message.member.user.id,
@@ -22,4 +22,4 @@ const MessageSaving: Trigger = {
   },
 };
 
-export default MessageSaving;
+export default MessageSavingMessageCreateHandler;

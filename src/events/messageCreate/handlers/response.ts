@@ -1,8 +1,8 @@
 import moment from "moment-timezone";
 import { responses } from "../../../database/database.js";
-import { Trigger } from "../index.js";
+import { MessageCreateHandler } from "../index.js";
 
-const Response: Trigger = {
+const ResponseMessageCreateHandler: MessageCreateHandler = {
   execute: async (message) => {
     let lowerContent = message.content.toLowerCase();
     let triggerTime = moment().valueOf();
@@ -48,4 +48,4 @@ const Response: Trigger = {
   },
 };
 
-export default Response;
+export default ResponseMessageCreateHandler;

@@ -1,22 +1,23 @@
 import { GuildMember, Role } from "discord.js";
 import { jobs } from "../../../database/database.js";
 import { buildTable } from "../../../utils/general.js";
-import { Command } from "../index.js";
+import { logInfo } from "../../../utils/logger.js";
+import { InteractionCreateHandler } from "../index.js";
 
-const Jobs: Command = {
+const JobsInteractionCreateHandler: InteractionCreateHandler = {
   name: "jobs",
   description: "Show the jobs table",
   options: [
     {
       type: "MENTIONABLE",
-      name: "user",
+      name: "target",
       description: "User or Role to get the jobs of (defaults to caller)",
       required: false,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     const mentionable =
-      interaction.options.getMentionable("user") ?? interaction.member;
+      interaction.options.getMentionable("target") ?? interaction.member;
 
     let guildMembers: GuildMember[] = [];
     if ((mentionable as Role).members) {
@@ -26,9 +27,7 @@ const Jobs: Command = {
     }
 
     let guildMemberPromises = guildMembers.map(async (guildMember) => {
-      let guildMemberJobs = await jobs.list(
-        (job) => job.userId === guildMember.id
-      );
+      let guildMemberJobs = jobs.list((job) => job.userId === guildMember.id);
 
       if (guildMemberJobs.length === 0) {
         return null;
@@ -41,7 +40,7 @@ const Jobs: Command = {
           case "bad":
             return sum - 1;
           default:
-            // TODO logging
+            logInfo(`No logic to handle jobs of type ${job.jobType}`);
             return sum;
         }
       }, 0);
@@ -50,16 +49,11 @@ const Jobs: Command = {
     });
 
     let guildMemberJobs = await Promise.all(guildMemberPromises);
-    guildMemberJobs = guildMemberJobs.sort((a, b) => {
-      return a[1] - b[1];
-    });
-
-    if (guildMembers.length > 1) {
-      let total = guildMemberJobs.reduce((sum, job) => {
-        return sum + job[1];
-      }, 0);
-      guildMemberJobs.push(["TOTAL", total]);
-    }
+    guildMemberJobs = guildMemberJobs
+      .filter((gmj) => gmj)
+      .sort((a, b) => {
+        return b[1] - a[1];
+      });
 
     let table = buildTable({
       leftColumnWidth: 20,
@@ -73,4 +67,4 @@ const Jobs: Command = {
   },
 };
 
-export default Jobs;
+export default JobsInteractionCreateHandler;

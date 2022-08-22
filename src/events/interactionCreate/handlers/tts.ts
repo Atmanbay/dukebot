@@ -1,9 +1,9 @@
 import { GuildMember, VoiceChannel } from "discord.js";
 import googleTTS from "google-tts-api";
 import { play } from "../../../utils/audio.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
-const Tts: Command = {
+const TTSInteractionCreateHandler: InteractionCreateHandler = {
   name: "tts",
   description: "Interact with the Google TTS API",
   options: [
@@ -34,7 +34,7 @@ const Tts: Command = {
       required: false,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     const text = interaction.options.getString("text");
     const lang = interaction.options.getString("language") ?? "en-US";
     const slow = interaction.options.getBoolean("slow") ?? false;
@@ -67,4 +67,4 @@ const Tts: Command = {
   },
 };
 
-export default Tts;
+export default TTSInteractionCreateHandler;

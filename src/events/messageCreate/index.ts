@@ -2,17 +2,21 @@ import { Message } from "discord.js";
 import config from "../../utils/config.js";
 import { logError } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
-import Blaze from "./triggers/blaze.js";
-import MessageSaving from "./triggers/messageSaving.js";
-import Response from "./triggers/response.js";
+import BlazeMessageCreateHandler from "./handlers/blaze.js";
+import MessageSavingMessageCreateHandler from "./handlers/messageSaving.js";
+import ResponseMessageCreateHandler from "./handlers/response.js";
 
-export interface Trigger {
+export interface MessageCreateHandler {
   execute: (message: Message) => Promise<void>;
 }
 
-const triggers = [Blaze, MessageSaving, Response];
+const handlers = [
+  BlazeMessageCreateHandler,
+  MessageSavingMessageCreateHandler,
+  ResponseMessageCreateHandler,
+];
 
-const MessageCreateHandler: EventListener<"messageCreate"> = async (
+const MessageCreateEventHandler: EventListener<"messageCreate"> = async (
   message: Message
 ) => {
   try {
@@ -20,11 +24,11 @@ const MessageCreateHandler: EventListener<"messageCreate"> = async (
       return;
     }
 
-    let promises = triggers.map((trigger) => trigger.execute(message));
+    let promises = handlers.map((trigger) => trigger.execute(message));
     await Promise.all(promises);
   } catch (error) {
     logError(error);
   }
 };
 
-export default MessageCreateHandler;
+export default MessageCreateEventHandler;

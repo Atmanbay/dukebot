@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import ne from "node-emoji";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 const find = ne.find;
 
 const EMOJIS = [
@@ -20,7 +20,7 @@ const getEmojiByName = (emojiName: string) => {
   return find(emojiName);
 };
 
-const Vote: Command = {
+const VoteInteractionCreateHandler: InteractionCreateHandler = {
   name: "vote",
   description: "Returns a greeting",
   options: [
@@ -37,7 +37,7 @@ const Vote: Command = {
       required: true,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     let description = interaction.options.getString("description");
     let choices = interaction.options.getString("choices").split("|");
 
@@ -65,4 +65,4 @@ const Vote: Command = {
   },
 };
 
-export default Vote;
+export default VoteInteractionCreateHandler;

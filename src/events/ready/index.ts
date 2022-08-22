@@ -4,13 +4,13 @@ import { botConfigs } from "../../database/database.js";
 import config from "../../utils/config.js";
 import { logError, logInfo } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
-import { commands } from "../interactionCreate/index.js";
+import { handlers } from "../interactionCreate/index.js";
 
-const ReadyHandler: EventListener<"ready"> = async (client: Client) => {
+const ReadyEventHandler: EventListener<"ready"> = async (client: Client) => {
   try {
     let oldCommandHash = botConfigs.get((bc) => bc.key === "commandHash");
     let newCommandHash = hash(
-      Object.values(commands).map((command) => {
+      Object.values(handlers).map((command) => {
         return {
           name: command.name,
           description: command.description,
@@ -27,14 +27,14 @@ const ReadyHandler: EventListener<"ready"> = async (client: Client) => {
       });
 
       await client.application.commands.set(
-        Object.values(commands),
+        Object.values(handlers),
         config.serverId
       );
 
       logInfo("Bot started with brand new commands");
     } else if (oldCommandHash.value !== newCommandHash) {
       await client.application.commands.set(
-        Object.values(commands),
+        Object.values(handlers),
         config.serverId
       );
 
@@ -50,4 +50,4 @@ const ReadyHandler: EventListener<"ready"> = async (client: Client) => {
   }
 };
 
-export default ReadyHandler;
+export default ReadyEventHandler;

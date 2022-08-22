@@ -1,8 +1,8 @@
 import emojiRegex from "emoji-regex";
 import { responses } from "../../../database/database.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
-const Response: Command = {
+const ResponseInteractionCreateHandler: InteractionCreateHandler = {
   name: "response",
   description: "Create, update, or delete a trigger/response relationship",
   options: [
@@ -47,7 +47,7 @@ const Response: Command = {
       ],
     },
   ],
-  run: {
+  handle: {
     create: async (interaction) => {
       const trigger = interaction.options.getString("trigger");
       const responseArray = interaction.options
@@ -125,4 +125,4 @@ const Response: Command = {
   },
 };
 
-export default Response;
+export default ResponseInteractionCreateHandler;

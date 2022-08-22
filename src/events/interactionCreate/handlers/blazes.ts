@@ -1,9 +1,9 @@
 import { GuildMember, Role } from "discord.js";
 import { blazes } from "../../../database/database.js";
 import { buildTable } from "../../../utils/general.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
-const Blazes: Command = {
+const BlazesInteractionCreateHandler: InteractionCreateHandler = {
   name: "blazes",
   description: "Show the blazes table",
   options: [
@@ -14,7 +14,7 @@ const Blazes: Command = {
       required: false,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     const mentionable =
       interaction.options.getMentionable("target") ?? interaction.member;
 
@@ -25,9 +25,8 @@ const Blazes: Command = {
       guildMembers = [mentionable as GuildMember];
     }
 
-    let total = 0;
     let guildMemberPromises = guildMembers.map(async (guildMember) => {
-      let guildMemberBlazes = await blazes.list(
+      let guildMemberBlazes = blazes.list(
         (blaze) => blaze.userId === guildMember.id
       );
 
@@ -35,20 +34,15 @@ const Blazes: Command = {
         return null;
       }
 
-      total += guildMemberBlazes.length;
       return [guildMember.nickname, guildMemberBlazes.length] as const;
     });
 
     let guildMemberBlazes = await Promise.all(guildMemberPromises);
-    guildMemberBlazes = guildMemberBlazes.filter((gmb) => gmb);
-
-    guildMemberBlazes = guildMemberBlazes.sort((a, b) => {
-      return a[1] - b[1];
-    });
-
-    if (guildMembers.length > 1) {
-      guildMemberBlazes.push(["TOTAL", total]);
-    }
+    guildMemberBlazes = guildMemberBlazes
+      .filter((gmj) => gmj)
+      .sort((a, b) => {
+        return b[1] - a[1];
+      });
 
     let table = buildTable({
       leftColumnWidth: 20,
@@ -62,4 +56,4 @@ const Blazes: Command = {
   },
 };
 
-export default Blazes;
+export default BlazesInteractionCreateHandler;

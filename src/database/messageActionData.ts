@@ -20,6 +20,7 @@ export type AudioListMessageActionData = {
 export type TwitterTweetMessageActionData = {
   command: "twitter";
   subcommand: "tweet";
+  calledUserId: string;
   approvals: string[];
   required: number;
   content: string;
@@ -28,6 +29,7 @@ export type TwitterTweetMessageActionData = {
 export type TwitterReplyMessageActionData = {
   command: "twitter";
   subcommand: "reply";
+  calledUserId: string;
   approvals: string[];
   required: number;
   content: string;
@@ -37,6 +39,7 @@ export type TwitterReplyMessageActionData = {
 export type TwitterRetweetMessageActionData = {
   command: "twitter";
   subcommand: "retweet";
+  calledUserId: string;
   approvals: string[];
   required: number;
   targetTweetId: string;
@@ -45,6 +48,7 @@ export type TwitterRetweetMessageActionData = {
 export type TwitterQuoteTweetMessageActionData = {
   command: "twitter";
   subcommand: "quotetweet";
+  calledUserId: string;
   approvals: string[];
   required: number;
   content: string;

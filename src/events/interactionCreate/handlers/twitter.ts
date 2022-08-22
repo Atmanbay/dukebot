@@ -8,7 +8,7 @@ import {
   buildMessageActionRow,
   generateId,
 } from "../../../utils/general.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
 const client = new Twitter({
   consumer_key: config.twitter.consumerKey,
@@ -105,7 +105,7 @@ export const buildTweetEmbed = async (tweetId: string) => {
   return embed;
 };
 
-const TwitterCommand: Command = {
+const TwitterInteractionCreateHandler: InteractionCreateHandler = {
   name: "twitter",
   description: "Returns a greeting",
   options: [
@@ -174,7 +174,7 @@ const TwitterCommand: Command = {
       ],
     },
   ],
-  run: {
+  handle: {
     tweet: async (interaction) => {
       const content = interaction.options.getString("content");
 
@@ -183,6 +183,7 @@ const TwitterCommand: Command = {
         data: {
           command: "twitter",
           subcommand: "tweet",
+          calledUserId: interaction.member.user.id,
           approvals: [],
           required: config.approvals.twitter,
           content,
@@ -225,6 +226,7 @@ const TwitterCommand: Command = {
         data: {
           command: "twitter",
           subcommand: "reply",
+          calledUserId: interaction.member.user.id,
           approvals: [],
           required: config.approvals.twitter,
           content,
@@ -270,6 +272,7 @@ const TwitterCommand: Command = {
         data: {
           command: "twitter",
           subcommand: "retweet",
+          calledUserId: interaction.member.user.id,
           approvals: [],
           required: config.approvals.twitter,
           targetTweetId: tweetId,
@@ -312,6 +315,7 @@ const TwitterCommand: Command = {
         data: {
           command: "twitter",
           subcommand: "quotetweet",
+          calledUserId: interaction.member.user.id,
           approvals: [],
           required: config.approvals.twitter,
           content,
@@ -422,7 +426,19 @@ const TwitterCommand: Command = {
       await messageActions.update(messageAction);
     },
     cancel: async ({ interaction, messageAction }) => {
-      interaction.update({
+      if (messageAction.data.command !== "twitter") {
+        return;
+      }
+
+      if (interaction.member.user.id !== messageAction.data.calledUserId) {
+        await interaction.reply({
+          content: "You must be the original caller to cancel",
+          ephemeral: true,
+        });
+        return;
+      }
+
+      await interaction.update({
         content: "This has been canceled",
         components: [],
       });
@@ -431,4 +447,4 @@ const TwitterCommand: Command = {
   },
 };
 
-export default TwitterCommand;
+export default TwitterInteractionCreateHandler;

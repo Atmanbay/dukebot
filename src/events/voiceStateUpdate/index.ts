@@ -6,7 +6,7 @@ import config from "../../utils/config.js";
 import { logError, logInfo } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
 
-const VoiceStateUpdateHandler: EventListener<"voiceStateUpdate"> = async (
+const VoiceStateUpdateEventHandler: EventListener<"voiceStateUpdate"> = async (
   oldState: VoiceState,
   newState: VoiceState
 ) => {
@@ -49,4 +49,4 @@ const VoiceStateUpdateHandler: EventListener<"voiceStateUpdate"> = async (
   }
 };
 
-export default VoiceStateUpdateHandler;
+export default VoiceStateUpdateEventHandler;

@@ -1,6 +1,6 @@
 import { filter, sample, some } from "lodash-es";
 import { messages } from "../../../database/database.js";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
 export const acronymize = async (word: string): Promise<string[]> => {
   let allMessages = messages.list();
@@ -32,7 +32,7 @@ export const acronymize = async (word: string): Promise<string[]> => {
   return response;
 };
 
-const Acronym: Command = {
+const AcronymInteractionCreateHandler: InteractionCreateHandler = {
   name: "acronym",
   description:
     "Turns the given text into an acronym and tells you what each letter means",
@@ -44,7 +44,7 @@ const Acronym: Command = {
       required: true,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     let text = interaction.options.getString("text");
     let acronymizedText = await acronymize(text);
 
@@ -62,4 +62,4 @@ const Acronym: Command = {
   },
 };
 
-export default Acronym;
+export default AcronymInteractionCreateHandler;

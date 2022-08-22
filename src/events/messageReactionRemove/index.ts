@@ -7,19 +7,19 @@ import {
 } from "discord.js";
 import { logError } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
-import Downvote from "./handlers/downvote.js";
-import Upvote from "./handlers/upvote.js";
+import DownvoteMessageReactionRemoveHandler from "./handlers/downvote.js";
+import UpvoteMessageReactionRemoveHandler from "./handlers/upvote.js";
 
-export interface Handler {
+export interface MessageReactionRemoveHandler {
   execute: (message: Message, user: User) => Promise<void>;
 }
 
 const handlers = {
-  upvote: Upvote,
-  downvote: Downvote,
+  upvote: UpvoteMessageReactionRemoveHandler,
+  downvote: DownvoteMessageReactionRemoveHandler,
 };
 
-const MessageReactionRemoveHandler: EventListener<
+const MessageReactionRemoveEventHandler: EventListener<
   "messageReactionRemove"
 > = async (
   messageReaction: MessageReaction | PartialMessageReaction,
@@ -35,4 +35,4 @@ const MessageReactionRemoveHandler: EventListener<
   }
 };
 
-export default MessageReactionRemoveHandler;
+export default MessageReactionRemoveEventHandler;

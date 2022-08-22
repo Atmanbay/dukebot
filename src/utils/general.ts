@@ -2,7 +2,13 @@ import crypto from "crypto";
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import glob from "glob";
 import moment from "moment-timezone";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 import { Button } from "../database/button.js";
+
+export const __dirname = (path: string) => {
+  return dirname(fileURLToPath(path));
+};
 
 export const buildMessageActionRow = (buttons: Button[]) => {
   const messageButtons: MessageButton[] = [];

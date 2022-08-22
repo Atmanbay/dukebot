@@ -1,7 +1,7 @@
 import { jobs } from "../../../database/database.js";
-import { Handler } from "../index.js";
+import { MessageReactionAddHandler } from "../index.js";
 
-const Downvote: Handler = {
+const DownvoteMessageReactionAddHandler: MessageReactionAddHandler = {
   execute: async (message, user) => {
     await jobs.create({
       jobType: "bad",
@@ -12,4 +12,4 @@ const Downvote: Handler = {
   },
 };
 
-export default Downvote;
+export default DownvoteMessageReactionAddHandler;

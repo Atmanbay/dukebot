@@ -3,9 +3,9 @@ import decode from "decode-html";
 import { sample } from "lodash-es";
 import { parse } from "node-html-parser";
 import request from "request-promise-native";
-import { Command } from "../index.js";
+import { InteractionCreateHandler } from "../index.js";
 
-const Define: Command = {
+const DefineInteractionCreateHandler: InteractionCreateHandler = {
   name: "define",
   description: "Defines a given word using Urban Dictionary",
   options: [
@@ -16,7 +16,7 @@ const Define: Command = {
       required: true,
     },
   ],
-  run: async (interaction) => {
+  handle: async (interaction) => {
     const query = interaction.options.getString("query");
 
     let escapedWord = encodeURI(query);
@@ -49,4 +49,4 @@ const Define: Command = {
   },
 };
 
-export default Define;
+export default DefineInteractionCreateHandler;
