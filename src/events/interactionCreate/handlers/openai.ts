@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import config from "../../../utils/config.js";
+import { logError } from "../../../utils/logger.js";
 import { InteractionCreateHandler } from "../index.js";
 
 const openai = new OpenAIApi(
@@ -20,22 +21,31 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
     },
   ],
   handle: async (interaction) => {
-    const prompt = interaction.options.getString("prompt");
+    try {
+      await interaction.deferReply();
+      const prompt = interaction.options.getString("prompt");
 
-    const response = await openai.createCompletion({
-      model: "text-curie-001",
-      prompt: prompt,
-      temperature: 0,
-      max_tokens: 255,
-      top_p: 1,
-      n: 1,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
-    });
+      const response = await openai.createCompletion({
+        model: "text-curie-001",
+        prompt: prompt,
+        temperature: 0,
+        max_tokens: 255,
+        top_p: 1,
+        n: 1,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0,
+      });
 
-    await interaction.reply({
-      content: `${prompt}${response.data.choices[0].text}`,
-    });
+      await interaction.editReply({
+        content: `${prompt}${response.data.choices[0].text}`,
+      });
+    } catch (error) {
+      logError(error);
+      await interaction.reply({
+        content: "An error occurred when running this command",
+        ephemeral: true,
+      });
+    }
   },
 };
 
