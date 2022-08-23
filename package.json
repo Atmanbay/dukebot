@@ -42,7 +42,7 @@
     "libsodium-wrappers": "^0.7.9",
     "lodash-es": "^4.17.21",
     "lowdb": "^3.0.0",
-    "markov-strings": "^2.1.1",
+    "markov-strings": "^3.0.1",
     "minimist": "^1.2.5",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",

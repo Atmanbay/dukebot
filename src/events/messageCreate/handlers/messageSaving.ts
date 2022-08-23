@@ -3,6 +3,10 @@ import { MessageCreateHandler } from "../index.js";
 
 const MessageSavingMessageCreateHandler: MessageCreateHandler = {
   execute: async (message) => {
+    if (message.content.split(" ").length < 3) {
+      return;
+    }
+
     await messages.create({
       userId: message.member.user.id,
       content: message.content,

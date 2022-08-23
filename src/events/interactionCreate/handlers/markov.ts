@@ -1,6 +1,7 @@
 import { GuildMember, Role } from "discord.js";
 import Markov, { MarkovGenerateOptions } from "markov-strings";
 import { messages } from "../../../database/database.js";
+import { logError } from "../../../utils/logger.js";
 import { InteractionCreateHandler } from "../index.js";
 
 export const buildMarkov = ({
@@ -14,10 +15,11 @@ export const buildMarkov = ({
   maxTries: number;
   variance: number;
 }) => {
-  let markov = new Markov(messages, { stateSize });
-  markov.buildCorpus();
+  // TODO: Why do I have to do this
+  let markov = new Markov["default"]({ stateSize });
+  markov.addData(messages);
 
-  let options: MarkovGenerateOptions = {
+  let result = markov.generate({
     maxTries: maxTries,
     prng: Math.random,
     filter: (result) => {
@@ -27,10 +29,9 @@ export const buildMarkov = ({
         result.string.length <= 2000
       );
     },
-  };
+  } as MarkovGenerateOptions);
 
-  let result = markov.generate(options);
-  return result.string;
+  return result.string as string;
 };
 
 const MarkovInteractionCreateHandler: InteractionCreateHandler = {
@@ -71,9 +72,10 @@ const MarkovInteractionCreateHandler: InteractionCreateHandler = {
         variance: 1,
       });
 
-      return interaction.reply(markov);
+      await interaction.reply(markov);
     } catch (error) {
-      return interaction.reply({
+      logError(error);
+      await interaction.reply({
         content: "Unable to build markov",
         ephemeral: true,
       });
