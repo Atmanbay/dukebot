@@ -27,6 +27,47 @@ type OpenTriviaDBResponse = {
   results: OpenTriviaDBQuestion[];
 };
 
+const CATEGORIES = [
+  { name: "Any", value: "any" },
+  { name: "General Knowledge", value: "9" },
+  { name: "Entertainment: Books", value: "10" },
+  { name: "Entertainment: Film", value: "11" },
+  { name: "Entertainment: Music", value: "12" },
+  { name: "Entertainment: Musicals & Theatres", value: "13" },
+  { name: "Entertainment: Television", value: "14" },
+  { name: "Entertainment: Video Games", value: "15" },
+  { name: "Entertainment: Board Games", value: "16" },
+  { name: "Science & Nature", value: "17" },
+  { name: "Science: Computers", value: "18" },
+  { name: "Science: Mathematics", value: "19" },
+  { name: "Mythology", value: "20" },
+  { name: "Sports", value: "21" },
+  { name: "Geography", value: "22" },
+  { name: "History", value: "23" },
+  { name: "Politics", value: "24" },
+  { name: "Art", value: "25" },
+  { name: "Celebrities", value: "26" },
+  { name: "Animals", value: "27" },
+  { name: "Vehicles", value: "28" },
+  { name: "Entertainment: Comics", value: "29" },
+  { name: "Science: Gadgets", value: "30" },
+  { name: "Entertainment: Japanese Anime & Manga", value: "31" },
+  { name: "Entertainment: Cartoon & Animations", value: "32" },
+];
+
+const DIFFICULTIES = [
+  { name: "Any", value: "any" },
+  { name: "Easy", value: "easy" },
+  { name: "Medium", value: "medium" },
+  { name: "Hard", value: "hard" },
+];
+
+const TYPES = [
+  { name: "Any", value: "any" },
+  { name: "Multiple Choice", value: "multiple" },
+  { name: "True / False", value: "boolean" },
+];
+
 const handleAnswer = async ({
   answerIndex,
   interaction,
@@ -119,7 +160,7 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         {
           type: "NUMBER",
           name: "amount",
-          description: "How many questions to ask (defaults to 25)",
+          description: "How many questions to ask (defaults to 10)",
           required: false,
         },
         {
@@ -128,62 +169,27 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
           description:
             "The category that the questions will come from (defaults to Any)",
           required: false,
-          choices: [
-            { name: "Any", value: "any" },
-            { name: "General Knowledge", value: "9" },
-            { name: "Entertainment: Books", value: "10" },
-            { name: "Entertainment: Film", value: "11" },
-            { name: "Entertainment: Music", value: "12" },
-            { name: "Entertainment: Musicals & Theatres", value: "13" },
-            { name: "Entertainment: Television", value: "14" },
-            { name: "Entertainment: Video Games", value: "15" },
-            { name: "Entertainment: Board Games", value: "16" },
-            { name: "Science & Nature", value: "17" },
-            { name: "Science: Computers", value: "18" },
-            { name: "Science: Mathematics", value: "19" },
-            { name: "Mythology", value: "20" },
-            { name: "Sports", value: "21" },
-            { name: "Geography", value: "22" },
-            { name: "History", value: "23" },
-            { name: "Politics", value: "24" },
-            { name: "Art", value: "25" },
-            { name: "Celebrities", value: "26" },
-            { name: "Animals", value: "27" },
-            { name: "Vehicles", value: "28" },
-            { name: "Entertainment: Comics", value: "29" },
-            { name: "Science: Gadgets", value: "30" },
-            { name: "Entertainment: Japanese Anime & Manga", value: "31" },
-            { name: "Entertainment: Cartoon & Animations", value: "32" },
-          ],
+          choices: CATEGORIES,
         },
         {
           type: "STRING",
           name: "difficulty",
           description: "The difficulty of the questions (defaults to Any)",
           required: false,
-          choices: [
-            { name: "Any", value: "any" },
-            { name: "Easy", value: "easy" },
-            { name: "Medium", value: "medium" },
-            { name: "Hard", value: "hard" },
-          ],
+          choices: DIFFICULTIES,
         },
         {
           type: "STRING",
           name: "type",
           description: "The type of questions (defaults to Any)",
           required: false,
-          choices: [
-            { name: "Any", value: "any" },
-            { name: "Multiple Choice", value: "multiple" },
-            { name: "True / False", value: "boolean" },
-          ],
+          choices: TYPES,
         },
         {
           type: "NUMBER",
           name: "timer",
           description:
-            "How long each question stays open for (defaults to 10 seconds)",
+            "How long each question stays open for (defaults to 15 seconds)",
           required: false,
         },
       ],
@@ -217,11 +223,11 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         return;
       }
 
-      const amount = interaction.options.getNumber("amount") ?? 25;
+      const amount = interaction.options.getNumber("amount") ?? 10;
       const category = interaction.options.getString("category") ?? "any";
       const difficulty = interaction.options.getString("difficulty") ?? "any";
       const type = interaction.options.getString("type") ?? "any";
-      const timer = interaction.options.getNumber("timer") ?? 10;
+      const timer = interaction.options.getNumber("timer") ?? 15;
 
       let query = `amount=${amount}`;
 
@@ -287,9 +293,9 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         "",
         "```",
         `${amount} questions`,
-        `${category[0].toUpperCase() + category.substring(1)} category`,
-        `${type[0].toUpperCase() + type.substring(1)} type`,
-        `${difficulty[0].toUpperCase() + difficulty.substring(1)} difficulty`,
+        `${CATEGORIES.find((c) => c.value === category).name} category`,
+        `${TYPES.find((c) => c.value === type).name} type`,
+        `${DIFFICULTIES.find((c) => c.value === difficulty).name} difficulty`,
         "```",
       ];
 
