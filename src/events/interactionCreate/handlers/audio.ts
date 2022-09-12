@@ -13,6 +13,7 @@ import download from "download";
 import { existsSync, readdirSync } from "fs";
 import sanitize from "sanitize-filename";
 import { messageActions, walkups } from "../../../database/database.js";
+import { Button } from "../../../database/models.js";
 import config from "../../../utils/config.js";
 import {
   buildMessageActionRow,
@@ -218,31 +219,32 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
             };
             await download(url, config.paths.audio, options);
 
-            const messageAction = await messageActions.create({
-              interactionId: interaction.id,
-              data: {
-                command: "audio",
-                subcommand: "upload",
-                clipName: sanitized,
+            const buttons: Button[] = [
+              {
+                type: "set",
+                label: "Set as Walkup",
+                buttonId: generateId(),
+                style: "PRIMARY",
               },
-              buttons: [
-                {
-                  type: "set",
-                  label: "Set as Walkup",
-                  buttonId: generateId(),
-                  style: "PRIMARY",
-                },
-              ],
-            });
+            ];
 
-            const messageActionRow = buildMessageActionRow(
-              messageAction.buttons
-            );
+            const messageActionRow = buildMessageActionRow(buttons);
 
             await interaction.reply({
               content: `Successfully uploaded ${rawFileName}`,
               components: [messageActionRow],
               ephemeral: true,
+            });
+
+            let message = await interaction.fetchReply();
+            await messageActions.create({
+              messageId: message.id,
+              data: {
+                command: "audio",
+                subcommand: "upload",
+                clipName: sanitized,
+              },
+              buttons,
             });
           } else {
             await interaction.reply({
@@ -254,35 +256,38 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
         });
     },
     list: async (interaction) => {
-      const messageAction = await messageActions.create({
-        interactionId: interaction.id,
-        data: {
-          command: "audio",
-          subcommand: "list",
-          currentPage: 0,
+      const buttons: Button[] = [
+        {
+          type: "previousPage",
+          label: "<<",
+          buttonId: generateId(),
+          style: "SECONDARY",
         },
-        buttons: [
-          {
-            type: "previousPage",
-            label: "<<",
-            buttonId: generateId(),
-            style: "SECONDARY",
-          },
-          {
-            type: "nextPage",
-            label: ">>",
-            buttonId: generateId(),
-            style: "SECONDARY",
-          },
-        ],
-      });
+        {
+          type: "nextPage",
+          label: ">>",
+          buttonId: generateId(),
+          style: "SECONDARY",
+        },
+      ];
 
-      const messageActionRow = buildMessageActionRow(messageAction.buttons);
+      const messageActionRow = buildMessageActionRow(buttons);
 
       await interaction.reply({
         content: getPageOfClips(0).join("\n"),
         components: [messageActionRow],
         ephemeral: true,
+      });
+
+      let message = await interaction.fetchReply();
+      await messageActions.create({
+        messageId: message.id,
+        data: {
+          command: "audio",
+          subcommand: "list",
+          currentPage: 0,
+        },
+        buttons,
       });
     },
     set: async (interaction) => {

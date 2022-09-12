@@ -4,7 +4,7 @@ import glob from "glob";
 import moment from "moment-timezone";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { Button } from "../database/button.js";
+import { Button } from "../database/models.js";
 
 export const __dirname = (path: string) => {
   return dirname(fileURLToPath(path));
@@ -24,6 +24,15 @@ export const buildMessageActionRow = (buttons: Button[]) => {
       .setCustomId(button.buttonId)
       .setLabel(label)
       .setStyle(button.style);
+
+    if (button.emoji) {
+      messageButton.setEmoji(button.emoji);
+    }
+
+    if (button.disabled) {
+      messageButton.setDisabled(button.disabled);
+    }
+
     messageButtons.push(messageButton);
   });
 
@@ -80,12 +89,23 @@ export const buildTable = ({
 export const buildEmbed = ({
   title,
   content,
+  image,
 }: {
   title: string;
-  content: string;
+  content?: string;
+  image?: string;
 }) => {
-  return {
+  const embed = {
     title: title,
-    description: content,
   } as MessageEmbed;
+
+  if (content) {
+    embed.description = content;
+  }
+
+  if (image) {
+    embed.image = { url: image, height: 0, width: 0 };
+  }
+
+  return embed;
 };

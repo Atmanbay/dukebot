@@ -1,4 +1,7 @@
-import { Button } from "./button";
+import {
+  EmojiIdentifierResolvable,
+  MessageButtonStyleResolvable,
+} from "discord.js";
 import { MessageActionData } from "./messageActionData";
 
 export type Blaze = {
@@ -26,11 +29,21 @@ export type Message = {
   content: string;
 };
 
+export type Button = {
+  type: string;
+  id?: string;
+  buttonId: string;
+  label?: string;
+  emoji?: EmojiIdentifierResolvable;
+  disabled?: boolean;
+  style?: MessageButtonStyleResolvable;
+};
+
 export type MessageAction = {
   id: string;
   created?: number;
 
-  interactionId: string;
+  messageId: string;
   data: MessageActionData;
   buttons: Button[];
 };
@@ -61,6 +74,33 @@ export type BotConfig = {
   value: string;
 };
 
+export type TriviaQuestionResponse = {
+  userId: string;
+  answerIndex: number;
+  score: number;
+};
+
+export type TriviaQuestion = {
+  id: string;
+  created?: number;
+
+  category: string;
+  type: "boolean" | "multiple";
+  difficulty: string;
+  question: string;
+  correctAnswer: string;
+  incorrectAnswers: string[];
+  responses: TriviaQuestionResponse[];
+};
+
+export type TriviaSession = {
+  id: string;
+  created?: number;
+
+  millisecondsPerQuestion: number;
+  questions: TriviaQuestion[];
+};
+
 export type BaseDatabaseObject =
   | Blaze
   | Job
@@ -68,4 +108,5 @@ export type BaseDatabaseObject =
   | Response
   | Walkup
   | MessageAction
-  | BotConfig;
+  | BotConfig
+  | TriviaSession;

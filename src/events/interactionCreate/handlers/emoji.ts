@@ -1,13 +1,15 @@
+import axios from "axios";
 import { MessageAttachment } from "discord.js";
 /// <reference path="../types/emoji-unicode.d.ts" />
 import emojiUnicode from "emoji-unicode";
 import fs from "fs";
 import im from "imagemagick";
 import ne from "node-emoji";
-import request from "request-promise-native";
 import { messageActions } from "../../../database/database.js";
+import { Button } from "../../../database/models.js";
 import config from "../../../utils/config.js";
 import { buildMessageActionRow, generateId } from "../../../utils/general.js";
+import { logError } from "../../../utils/logger.js";
 import { InteractionCreateHandler } from "../index.js";
 const find = ne.find;
 
@@ -73,9 +75,8 @@ const downloadEmoji = async (
 
   if (url) {
     return new Promise((resolve) => {
-      request({ uri: url })
-        .pipe(fs.createWriteStream(path))
-        .on("close", () => {
+      axios({ url: url, responseType: "stream" }).then((response) =>
+        response.data.pipe(fs.createWriteStream(path)).on("close", () => {
           im.resize(
             {
               srcPath: path,
@@ -84,12 +85,13 @@ const downloadEmoji = async (
             },
             (err) => {
               if (err) {
-                console.log(err);
+                logError(err);
               }
               resolve(path);
             }
           );
-        });
+        })
+      );
     });
   } else {
     return null;
@@ -109,10 +111,12 @@ const makeEmojiKitchenRequest = async (
     secondUnicodeArray
   )}.png`;
 
-  return request
-    .head(url)
-    .then(() => url)
-    .catch(() => "");
+  const response = await axios({ method: "head", url: url });
+  if (response.status === 200) {
+    return url;
+  } else {
+    return null;
+  }
 };
 
 export const getCombinedEmojiName = (a: string, b: string) => {
@@ -142,31 +146,34 @@ const EmojiInteractionCreateHandler: InteractionCreateHandler = {
 
     let path = await getEmojiPath(first, second);
     if (path) {
-      const messageAction = await messageActions.create({
-        interactionId: interaction.id,
-        data: {
-          command: "emoji",
-          subcommand: "combine",
-          path,
-          emojiName: getCombinedEmojiName(first, second),
+      const buttons: Button[] = [
+        {
+          type: "save",
+          label: "Save",
+          buttonId: generateId(),
+          style: "PRIMARY",
         },
-        buttons: [
-          {
-            type: "save",
-            label: "Save",
-            buttonId: generateId(),
-            style: "PRIMARY",
-          },
-        ],
-      });
+      ];
 
-      const messageActionRow = buildMessageActionRow(messageAction.buttons);
+      const messageActionRow = buildMessageActionRow(buttons);
 
       let attachment = new MessageAttachment(path);
       await interaction.reply({
         content: `${first} + ${second}`,
         files: [attachment],
         components: [messageActionRow],
+      });
+
+      let message = await interaction.fetchReply();
+      await messageActions.create({
+        messageId: message.id,
+        data: {
+          command: "emoji",
+          subcommand: "combine",
+          path,
+          emojiName: getCombinedEmojiName(first, second),
+        },
+        buttons,
       });
     } else {
       await interaction.reply({

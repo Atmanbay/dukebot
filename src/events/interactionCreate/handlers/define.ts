@@ -1,8 +1,8 @@
 /// <reference path="../../../types/decode-html.d.ts" />
+import axios from "axios";
 import decode from "decode-html";
 import { sample } from "lodash-es";
 import { parse } from "node-html-parser";
-import request from "request-promise-native";
 import { InteractionCreateHandler } from "../index.js";
 
 const DefineInteractionCreateHandler: InteractionCreateHandler = {
@@ -22,8 +22,16 @@ const DefineInteractionCreateHandler: InteractionCreateHandler = {
     let escapedWord = encodeURI(query);
     let url = `https://www.urbandictionary.com/define.php?term=${escapedWord}`;
 
-    let htmlString = await request(url);
-    let root = parse(htmlString);
+    const response = await axios(url);
+    if (response.status !== 200) {
+      await interaction.reply({
+        content:
+          "An HTTP error occurred when trying to fetch your definition. . Please try again later.",
+        ephemeral: true,
+      });
+      return;
+    }
+    let root = parse(response.data);
 
     let definitions = root.querySelectorAll(".definition");
     if (definitions.length === 0) {
@@ -35,7 +43,7 @@ const DefineInteractionCreateHandler: InteractionCreateHandler = {
     let definition = randomDefinition.querySelector("div.meaning");
     let example = randomDefinition.querySelector("div.example");
 
-    let response = [
+    let message = [
       `**${query}**`,
       "",
       decode(definition.structuredText),
@@ -44,7 +52,7 @@ const DefineInteractionCreateHandler: InteractionCreateHandler = {
     ];
 
     await interaction.reply({
-      content: response.join("\n"),
+      content: message.join("\n"),
     });
   },
 };

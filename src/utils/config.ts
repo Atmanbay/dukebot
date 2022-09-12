@@ -27,6 +27,9 @@ const config = {
   approvals: {
     twitter: Number(getEnvVar("APPROVALS_REQUIRED_TWITTER")),
   },
+  trivia: {
+    maxPoints: Number(getEnvVar("TRIVIA_MAX_POINTS_PER_QUESTION")),
+  },
   twitter: {
     consumerKey: getEnvVar("TWITTER_CONSUMER_KEY"),
     consumerSecret: getEnvVar("TWITTER_CONSUMER_SECRET"),

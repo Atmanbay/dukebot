@@ -20,39 +20,59 @@ export type AudioListMessageActionData = {
 export type TwitterTweetMessageActionData = {
   command: "twitter";
   subcommand: "tweet";
-  calledUserId: string;
+  callerUserId: string;
   approvals: string[];
   required: number;
-  content: string;
+  content?: string;
+  imageUrl?: string;
 };
 
 export type TwitterReplyMessageActionData = {
   command: "twitter";
   subcommand: "reply";
-  calledUserId: string;
+  callerUserId: string;
   approvals: string[];
   required: number;
-  content: string;
+  content?: string;
   targetTweetId: string;
+  imageUrl?: string;
 };
 
 export type TwitterRetweetMessageActionData = {
   command: "twitter";
   subcommand: "retweet";
-  calledUserId: string;
+  callerUserId: string;
   approvals: string[];
   required: number;
   targetTweetId: string;
+  imageUrl?: string;
 };
 
 export type TwitterQuoteTweetMessageActionData = {
   command: "twitter";
   subcommand: "quotetweet";
-  calledUserId: string;
+  callerUserId: string;
   approvals: string[];
   required: number;
-  content: string;
-  targetTweetUrl: string;
+  content?: string;
+  targetTweetId: string;
+  imageUrl?: string;
+};
+
+export type TriviaAdvanceMessageActionData = {
+  command: "trivia";
+  subcommand: "advance";
+  triviaSessionId: string;
+  questionIndex: number;
+};
+
+export type TriviaQuestionMessageActionData = {
+  command: "trivia";
+  subcommand: "question";
+  triviaSessionId: string;
+  questionIndex: number;
+  answerIndex: number;
+  expireTimestamp: number;
 };
 
 export type MessageActionData =
@@ -62,4 +82,6 @@ export type MessageActionData =
   | TwitterTweetMessageActionData
   | TwitterReplyMessageActionData
   | TwitterRetweetMessageActionData
-  | TwitterQuoteTweetMessageActionData;
+  | TwitterQuoteTweetMessageActionData
+  | TriviaAdvanceMessageActionData
+  | TriviaQuestionMessageActionData;

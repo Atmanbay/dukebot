@@ -10,6 +10,7 @@ import {
   Message,
   MessageAction,
   Response,
+  TriviaSession,
   Walkup,
 } from "./models.js";
 
@@ -91,3 +92,6 @@ export const messageActions = await buildDatabaseTable<MessageAction>(
 );
 export const responses = await buildDatabaseTable<Response>("responses");
 export const walkups = await buildDatabaseTable<Walkup>("walkups");
+export const triviaSessions = await buildDatabaseTable<TriviaSession>(
+  "triviaSessions"
+);

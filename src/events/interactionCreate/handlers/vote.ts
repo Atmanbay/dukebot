@@ -22,7 +22,7 @@ const getEmojiByName = (emojiName: string) => {
 
 const VoteInteractionCreateHandler: InteractionCreateHandler = {
   name: "vote",
-  description: "Returns a greeting",
+  description: "Create a vote",
   options: [
     {
       type: "STRING",

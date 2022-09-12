@@ -5,7 +5,6 @@ import {
   Interaction,
 } from "discord.js";
 import fs from "fs";
-import { Button } from "../../database/button.js";
 import { messageActions } from "../../database/database.js";
 import { MessageAction } from "../../database/models.js";
 import config from "../../utils/config.js";
@@ -25,9 +24,7 @@ type ButtonExecutor = ({
 export interface InteractionCreateHandler
   extends ChatInputApplicationCommandData {
   handle: RunExecutor | Record<string, RunExecutor>;
-  handleButton?: {
-    [Key in Button["type"]]?: ButtonExecutor;
-  };
+  handleButton?: Record<string, ButtonExecutor>;
 }
 
 const handlerFolder = `${__dirname(import.meta.url)}/handlers`;
@@ -50,14 +47,15 @@ const InteractionCreateEventHandler: EventListener<
     }
 
     if (interaction.isButton()) {
-      let interactionId = interaction.message.interaction.id;
+      let messageId = interaction.message.id;
       const messageAction = messageActions.get(
-        (ma) => ma.interactionId === interactionId
+        (ma) => ma.messageId === messageId
       );
 
       const button = messageAction.buttons.find(
         (b) => b.buttonId === interaction.customId
       );
+
       const command = handlers[messageAction.data.command];
       if (command.handleButton) {
         await command.handleButton[button.type]({
