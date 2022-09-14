@@ -259,6 +259,15 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         return;
       }
 
+      if (data.response_code !== 0 || data.results.length === 0) {
+        await interaction.reply({
+          content:
+            "Couldn't fetch questions. Please try a different category, difficulty, or type.",
+          ephemeral: true,
+        });
+        return;
+      }
+
       const triviaSession = await triviaSessions.create({
         questions: data.results.map((apiQuestion) => {
           return {
