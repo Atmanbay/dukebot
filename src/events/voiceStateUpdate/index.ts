@@ -20,6 +20,11 @@ const VoiceStateUpdateEventHandler: EventListener<"voiceStateUpdate"> = async (
       return;
     }
 
+    // if going from voice channel to voice channel then don't play
+    if (oldState.channelId && newState.channelId) {
+      return;
+    }
+
     // channelIds will equal each other if user just deafened/muted self
     if (oldState.channelId === newState.channelId) {
       return;
