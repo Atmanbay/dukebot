@@ -164,9 +164,8 @@ const EmojiInteractionCreateHandler: InteractionCreateHandler = {
         components: [messageActionRow],
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "emoji",
           subcommand: "combine",

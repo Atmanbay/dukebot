@@ -43,7 +43,8 @@ export type MessageAction = {
   id: string;
   created?: number;
 
-  messageId: string;
+  interactionId?: string;
+  messageId?: string; // We need this to handle ButtonInteractions that are tied to a reply of a ButtonInteraction
   data: MessageActionData;
   buttons: Button[];
 };

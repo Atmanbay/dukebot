@@ -302,6 +302,7 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         "",
         "```",
         `${amount} questions`,
+        `${timer} seconds per question`,
         `${CATEGORIES.find((c) => c.value === category).name} category`,
         `${TYPES.find((c) => c.value === type).name} type`,
         `${DIFFICULTIES.find((c) => c.value === difficulty).name} difficulty`,
@@ -313,9 +314,8 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         components: [messageActionRow],
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "trivia",
           subcommand: "advance",

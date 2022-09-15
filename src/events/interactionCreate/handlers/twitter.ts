@@ -232,9 +232,8 @@ const TwitterInteractionCreateHandler: InteractionCreateHandler = {
         embeds: [embed],
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "twitter",
           subcommand: "tweet",
@@ -293,9 +292,8 @@ const TwitterInteractionCreateHandler: InteractionCreateHandler = {
         embeds: [embed, tweetEmbed],
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "twitter",
           subcommand: "reply",
@@ -341,9 +339,8 @@ const TwitterInteractionCreateHandler: InteractionCreateHandler = {
         embeds: [embed, tweetEmbed],
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "twitter",
           subcommand: "retweet",
@@ -398,9 +395,8 @@ const TwitterInteractionCreateHandler: InteractionCreateHandler = {
         embeds: [embed, tweetEmbed],
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "twitter",
           subcommand: "quotetweet",

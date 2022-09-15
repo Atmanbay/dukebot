@@ -236,9 +236,8 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
               ephemeral: true,
             });
 
-            let message = await interaction.fetchReply();
             await messageActions.create({
-              messageId: message.id,
+              interactionId: interaction.id,
               data: {
                 command: "audio",
                 subcommand: "upload",
@@ -258,13 +257,25 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
     list: async (interaction) => {
       const buttons: Button[] = [
         {
-          type: "previousPage",
+          type: "firstPage",
           label: "<<",
           buttonId: generateId(),
           style: "SECONDARY",
         },
         {
+          type: "previousPage",
+          label: "<",
+          buttonId: generateId(),
+          style: "SECONDARY",
+        },
+        {
           type: "nextPage",
+          label: ">",
+          buttonId: generateId(),
+          style: "SECONDARY",
+        },
+        {
+          type: "lastPage",
           label: ">>",
           buttonId: generateId(),
           style: "SECONDARY",
@@ -279,9 +290,8 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
         ephemeral: true,
       });
 
-      let message = await interaction.fetchReply();
       await messageActions.create({
-        messageId: message.id,
+        interactionId: interaction.id,
         data: {
           command: "audio",
           subcommand: "list",
@@ -348,6 +358,19 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
         ephemeral: true,
       });
     },
+    firstPage: async ({ interaction, messageAction }) => {
+      if (messageAction.data.subcommand !== "list") {
+        return;
+      }
+
+      messageAction.data.currentPage = 0;
+
+      await interaction.update({
+        content: getPageOfClips(messageAction.data.currentPage).join("\n"),
+      });
+
+      await messageActions.update(messageAction);
+    },
     previousPage: async ({ interaction, messageAction }) => {
       if (messageAction.data.subcommand !== "list") {
         return;
@@ -375,6 +398,19 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
       }
 
       messageAction.data.currentPage++;
+
+      await interaction.update({
+        content: getPageOfClips(messageAction.data.currentPage).join("\n"),
+      });
+
+      await messageActions.update(messageAction);
+    },
+    lastPage: async ({ interaction, messageAction }) => {
+      if (messageAction.data.subcommand !== "list") {
+        return;
+      }
+
+      messageAction.data.currentPage = getPages().length - 1;
 
       await interaction.update({
         content: getPageOfClips(messageAction.data.currentPage).join("\n"),

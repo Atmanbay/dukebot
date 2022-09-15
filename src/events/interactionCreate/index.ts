@@ -3,6 +3,7 @@ import {
   ChatInputApplicationCommandData,
   CommandInteraction,
   Interaction,
+  Message,
 } from "discord.js";
 import fs from "fs";
 import { messageActions } from "../../database/database.js";
@@ -47,10 +48,24 @@ const InteractionCreateEventHandler: EventListener<
     }
 
     if (interaction.isButton()) {
-      let messageId = interaction.message.id;
-      const messageAction = messageActions.get(
-        (ma) => ma.messageId === messageId
-      );
+      let messageAction: MessageAction;
+      if (interaction.message.interaction) {
+        messageAction = messageActions.get(
+          (ma) => ma.interactionId === interaction.message.interaction.id
+        );
+      } else if ((interaction.message as Message).reference) {
+        messageAction = messageActions.get(
+          (ma) => ma.messageId === interaction.message.id // this might not look correct but it is!
+        );
+      }
+
+      if (!messageAction) {
+        await interaction.reply({
+          content: "Something went wrong when handling this button",
+          ephemeral: true,
+        });
+        return;
+      }
 
       const button = messageAction.buttons.find(
         (b) => b.buttonId === interaction.customId
