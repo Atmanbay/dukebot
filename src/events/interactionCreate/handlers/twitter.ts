@@ -419,7 +419,7 @@ const TwitterInteractionCreateHandler: InteractionCreateHandler = {
 
       let userId = interaction.member.user.id;
       if (messageAction.data.approvals.includes(userId)) {
-        interaction.reply({
+        await interaction.reply({
           content: "You already approved this action",
           ephemeral: true,
         });
@@ -465,10 +465,17 @@ const TwitterInteractionCreateHandler: InteractionCreateHandler = {
             break;
         }
 
-        await interaction.editReply({
-          content: "This has been approved",
-          components: [],
-        });
+        if (payload.media_ids) {
+          await interaction.editReply({
+            content: "This has been approved",
+            components: [],
+          });
+        } else {
+          await interaction.update({
+            content: "This has been approved",
+            components: [],
+          });
+        }
 
         await interaction.followUp(
           `https://twitter.com/${apiResponse.user.screen_name}/status/${apiResponse.id_str}`
