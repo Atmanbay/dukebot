@@ -85,9 +85,6 @@ export type TriviaQuestion = {
   id: string;
   created?: number;
 
-  category: string;
-  type: "boolean" | "multiple";
-  difficulty: string;
   question: string;
   correctAnswer: string;
   incorrectAnswers: string[];

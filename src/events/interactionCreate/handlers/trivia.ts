@@ -13,46 +13,27 @@ import {
 } from "../../../utils/general.js";
 import { InteractionCreateHandler } from "../index.js";
 
-type OpenTriviaDBQuestion = {
-  category: string;
-  type: "boolean" | "multiple";
-  difficulty: string;
+type TheTriviaAPIQuestion = {
+  id: string;
   question: string;
-  correct_answer: string;
-  incorrect_answers: string[];
+  correctAnswer: string;
+  incorrectAnswers: string[];
 };
 
-type OpenTriviaDBResponse = {
-  response_code: number;
-  results: OpenTriviaDBQuestion[];
-};
+type TheTriviaAPIResponse = TheTriviaAPIQuestion[];
 
 const CATEGORIES = [
   { name: "Any", value: "any" },
-  { name: "General Knowledge", value: "9" },
-  { name: "Entertainment: Books", value: "10" },
-  { name: "Entertainment: Film", value: "11" },
-  { name: "Entertainment: Music", value: "12" },
-  { name: "Entertainment: Musicals & Theatres", value: "13" },
-  { name: "Entertainment: Television", value: "14" },
-  { name: "Entertainment: Video Games", value: "15" },
-  { name: "Entertainment: Board Games", value: "16" },
-  { name: "Science & Nature", value: "17" },
-  { name: "Science: Computers", value: "18" },
-  { name: "Science: Mathematics", value: "19" },
-  { name: "Mythology", value: "20" },
-  { name: "Sports", value: "21" },
-  { name: "Geography", value: "22" },
-  { name: "History", value: "23" },
-  { name: "Politics", value: "24" },
-  { name: "Art", value: "25" },
-  { name: "Celebrities", value: "26" },
-  { name: "Animals", value: "27" },
-  { name: "Vehicles", value: "28" },
-  { name: "Entertainment: Comics", value: "29" },
-  { name: "Science: Gadgets", value: "30" },
-  { name: "Entertainment: Japanese Anime & Manga", value: "31" },
-  { name: "Entertainment: Cartoon & Animations", value: "32" },
+  { name: "Arts & Literature", value: "arts_and_literature" },
+  { name: "Film & TV", value: "film_and_tv" },
+  { name: "Food & Drink", value: "food_and_drink" },
+  { name: "General Knowledge", value: "general_knowledge" },
+  { name: "Geography", value: "geography" },
+  { name: "History", value: "history" },
+  { name: "Music", value: "music" },
+  { name: "Science", value: "science" },
+  { name: "Society & Culture", value: "society_and_culture" },
+  { name: "Sport & Leisure", value: "sport_and_leisure" },
 ];
 
 const DIFFICULTIES = [
@@ -60,12 +41,6 @@ const DIFFICULTIES = [
   { name: "Easy", value: "easy" },
   { name: "Medium", value: "medium" },
   { name: "Hard", value: "hard" },
-];
-
-const TYPES = [
-  { name: "Any", value: "any" },
-  { name: "Multiple Choice", value: "multiple" },
-  { name: "True / False", value: "boolean" },
 ];
 
 const handleAnswer = async ({
@@ -159,7 +134,7 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
       options: [
         {
           type: "NUMBER",
-          name: "amount",
+          name: "limit",
           description: "How many questions to ask (defaults to 10)",
           required: false,
         },
@@ -177,13 +152,6 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
           description: "The difficulty of the questions (defaults to Any)",
           required: false,
           choices: DIFFICULTIES,
-        },
-        {
-          type: "STRING",
-          name: "type",
-          description: "The type of questions (defaults to Any)",
-          required: false,
-          choices: TYPES,
         },
         {
           type: "NUMBER",
@@ -223,13 +191,12 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         return;
       }
 
-      const amount = interaction.options.getNumber("amount") ?? 10;
+      const limit = interaction.options.getNumber("limit") ?? 10;
       const category = interaction.options.getString("category") ?? "any";
       const difficulty = interaction.options.getString("difficulty") ?? "any";
-      const type = interaction.options.getString("type") ?? "any";
       const timer = interaction.options.getNumber("timer") ?? 15;
 
-      let query = `amount=${amount}`;
+      let query = `limit=${limit}&region=US`;
 
       if (category && category !== "any") {
         query += `&category=${category}`;
@@ -239,12 +206,8 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         query += `&difficulty=${difficulty}`;
       }
 
-      if (type && type !== "any") {
-        query += `&type=${type}`;
-      }
-
-      const url = `https://opentdb.com/api.php?${query}`;
-      const { data, status } = await axios.get<OpenTriviaDBResponse>(url, {
+      const url = `https://the-trivia-api.com/api/questions?${query}`;
+      const { data, status } = await axios.get<TheTriviaAPIResponse>(url, {
         headers: {
           Accept: "application/json",
         },
@@ -259,25 +222,15 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         return;
       }
 
-      if (data.response_code !== 0 || data.results.length === 0) {
-        await interaction.reply({
-          content:
-            "Couldn't fetch questions. Please try a different category, difficulty, or type.",
-          ephemeral: true,
-        });
-        return;
-      }
+      console.log({ data, status });
 
       const triviaSession = await triviaSessions.create({
-        questions: data.results.map((apiQuestion) => {
+        questions: data.map((apiQuestion) => {
           return {
-            id: generateId(),
-            category: apiQuestion.category,
-            type: apiQuestion.type,
-            difficulty: apiQuestion.difficulty,
+            id: apiQuestion.id,
             question: decode(apiQuestion.question),
-            correctAnswer: decode(apiQuestion.correct_answer),
-            incorrectAnswers: apiQuestion.incorrect_answers.map((answer) =>
+            correctAnswer: decode(apiQuestion.correctAnswer),
+            incorrectAnswers: apiQuestion.incorrectAnswers.map((answer) =>
               decode(answer)
             ),
             responses: [],
@@ -301,10 +254,9 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         "Trivia session created! Click `Start` to begin",
         "",
         "```",
-        `${amount} questions`,
+        `${data.length} questions`,
         `${timer} seconds per question`,
         `${CATEGORIES.find((c) => c.value === category).name} category`,
-        `${TYPES.find((c) => c.value === type).name} type`,
         `${DIFFICULTIES.find((c) => c.value === difficulty).name} difficulty`,
         "```",
       ];
@@ -341,15 +293,10 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
 
       const question = session.questions[data.questionIndex];
 
-      let choices: string[] = [];
-      if (question.type === "boolean") {
-        choices = ["True", "False"];
-      } else {
-        choices = shuffle([
-          question.correctAnswer,
-          ...question.incorrectAnswers,
-        ]);
-      }
+      let choices = shuffle([
+        question.correctAnswer,
+        ...question.incorrectAnswers,
+      ]);
 
       const choiceEmojis = ["🇦", "🇧", "🇨", "🇩"]; // regional indicator emojis
 
@@ -412,6 +359,7 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
 
           return buildMessageActionRow([button]);
         });
+
         await interaction.editReply({
           content: reply.slice(0, -1).join("\n"),
           components: newComponents,
@@ -466,6 +414,10 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
             })
         );
 
+        let correctAnswerMessage = `**Correct answer**\n\`\`\`(${String.fromCharCode(
+          97 + answerIndex
+        ).toUpperCase()}) ${question.correctAnswer}\`\`\``;
+
         let table = buildTable({
           rows,
           leftColumnWidth: longestNickname + 3,
@@ -477,7 +429,12 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
 
         if (session.questions.length === data.questionIndex + 1) {
           await interaction.followUp({
-            content: [`**Final Scores**`, ``, ...table].join("\n"),
+            content: [
+              correctAnswerMessage,
+              ``,
+              `**Final Scores**`,
+              ...table,
+            ].join("\n"),
           });
 
           await triviaSessions.delete(session.id);
@@ -496,8 +453,9 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         let messageActionRow = buildMessageActionRow(newButtons);
 
         let newReply = [
+          correctAnswerMessage,
+          "",
           `**Scores after Question #${data.questionIndex + 1}**`,
-          ``,
           ...table,
         ];
 
