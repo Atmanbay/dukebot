@@ -199,7 +199,7 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
       let query = `limit=${limit}&region=US`;
 
       if (category && category !== "any") {
-        query += `&category=${category}`;
+        query += `&categories=${category}`;
       }
 
       if (difficulty && difficulty !== "any") {
@@ -221,8 +221,6 @@ const TriviaInteractionCreateHandler: InteractionCreateHandler = {
         });
         return;
       }
-
-      console.log({ data, status });
 
       const triviaSession = await triviaSessions.create({
         questions: data.map((apiQuestion) => {
