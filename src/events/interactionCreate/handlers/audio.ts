@@ -1,19 +1,10 @@
-import {
-  AudioPlayerStatus,
-  createAudioPlayer,
-  createAudioResource,
-  entersState,
-  joinVoiceChannel,
-  NoSubscriberBehavior,
-  VoiceConnection,
-  VoiceConnectionStatus,
-} from "@discordjs/voice";
 import { GuildMember, VoiceChannel } from "discord.js";
 import download from "download";
 import { existsSync, readdirSync } from "fs";
 import sanitize from "sanitize-filename";
 import { messageActions, walkups } from "../../../database/database.js";
 import { Button } from "../../../database/models.js";
+import { play } from "../../../utils/audio.js";
 import config from "../../../utils/config.js";
 import {
   buildMessageActionRow,
@@ -21,39 +12,6 @@ import {
   generateId,
 } from "../../../utils/general.js";
 import { InteractionCreateHandler } from "../index.js";
-
-const player = createAudioPlayer({
-  behaviors: { noSubscriber: NoSubscriberBehavior.Play },
-});
-
-const disconnect = async (connection: VoiceConnection) => {
-  if (
-    connection &&
-    connection.state.status !== VoiceConnectionStatus.Destroyed
-  ) {
-    connection.destroy();
-  }
-};
-
-const play = async (channel: VoiceChannel, path: string) => {
-  let connection = joinVoiceChannel({
-    channelId: channel.id,
-    guildId: channel.guild.id,
-    adapterCreator: channel.guild.voiceAdapterCreator,
-    debug: true,
-    selfDeaf: false,
-  });
-
-  connection.on(VoiceConnectionStatus.Ready, () => {
-    let resource = createAudioResource(path);
-    player.play(resource);
-    player.on(AudioPlayerStatus.Idle, () => disconnect(connection));
-    player.on("error", () => disconnect(connection));
-    connection.subscribe(player);
-  });
-
-  await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
-};
 
 const getClips = () => {
   let files: string[] = [];
@@ -135,6 +93,12 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
           description: "Name to give clip",
           required: true,
         },
+        {
+          type: "ATTACHMENT",
+          name: "clip",
+          description: "The .mp3 file to upload",
+          required: true,
+        },
       ],
     },
     {
@@ -195,64 +159,44 @@ const AudioInteractionCreateHandler: InteractionCreateHandler = {
       await play(channel, path);
     },
     upload: async (interaction) => {
-      await interaction.channel.messages
-        .fetch({ limit: 25 })
-        .then(async (messages) => {
-          let author = interaction.member as GuildMember;
-          let fromUser = messages.find(
-            (message) =>
-              message.author.id == author.id &&
-              message.attachments &&
-              message.attachments.size == 1
-          );
+      const name = interaction.options.getString("name");
+      const clip = interaction.options.getAttachment("clip");
 
-          if (fromUser) {
-            let url = fromUser.attachments.first().url;
-            let rawFileName = interaction.options.getString("name");
-            if (!rawFileName) {
-              rawFileName = fromUser.attachments.first().name;
-            }
+      let url = clip.url;
+      let sanitizedName = sanitize(name);
 
-            let sanitized = sanitize(rawFileName);
-            let options = {
-              filename: `${sanitized}.mp3`,
-            };
-            await download(url, config.paths.audio, options);
+      let options = {
+        filename: `${sanitizedName}.mp3`,
+      };
 
-            const buttons: Button[] = [
-              {
-                type: "set",
-                label: "Set as Walkup",
-                buttonId: generateId(),
-                style: "PRIMARY",
-              },
-            ];
+      await download(url, config.paths.audio, options);
 
-            const messageActionRow = buildMessageActionRow(buttons);
+      const buttons: Button[] = [
+        {
+          type: "set",
+          label: "Set as Walkup",
+          buttonId: generateId(),
+          style: "PRIMARY",
+        },
+      ];
 
-            await interaction.reply({
-              content: `Successfully uploaded ${rawFileName}`,
-              components: [messageActionRow],
-              ephemeral: true,
-            });
+      const messageActionRow = buildMessageActionRow(buttons);
 
-            await messageActions.create({
-              interactionId: interaction.id,
-              data: {
-                command: "audio",
-                subcommand: "upload",
-                clipName: sanitized,
-              },
-              buttons,
-            });
-          } else {
-            await interaction.reply({
-              content:
-                "Please upload an audio file and then call this command (if uploaded 25+ messages ago you need to re-upload)",
-              ephemeral: true,
-            });
-          }
-        });
+      await interaction.reply({
+        content: `Successfully uploaded ${sanitizedName}`,
+        components: [messageActionRow],
+        ephemeral: true,
+      });
+
+      await messageActions.create({
+        interactionId: interaction.id,
+        data: {
+          command: "audio",
+          subcommand: "upload",
+          clipName: sanitizedName,
+        },
+        buttons,
+      });
     },
     list: async (interaction) => {
       const buttons: Button[] = [

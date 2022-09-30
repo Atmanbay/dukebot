@@ -2,6 +2,7 @@ import {
   AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
+  DiscordGatewayAdapterCreator,
   entersState,
   joinVoiceChannel,
   NoSubscriberBehavior,
@@ -27,7 +28,8 @@ export const play = async (channel: VoiceChannel, path: string) => {
   let connection = joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
-    adapterCreator: channel.guild.voiceAdapterCreator,
+    adapterCreator: channel.guild
+      .voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator, // annoying workaround for now
     debug: true,
     selfDeaf: false,
   });
