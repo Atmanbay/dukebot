@@ -51,7 +51,7 @@ const retweet = async (
   tweetId: string,
   payload?: Partial<SendTweetV1Params>
 ) => {
-  return client.post(`statuses/retweet/${tweetId}`, payload);
+  return client.post(`statuses/retweet/${tweetId}.json`, payload);
 };
 
 const quoteTweet = async (
