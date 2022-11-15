@@ -230,6 +230,7 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
           return buffer;
         });
         await interaction.editReply({
+          content: prompt,
           files: await Promise.all(attachmentPromises),
         });
       } catch (error) {
