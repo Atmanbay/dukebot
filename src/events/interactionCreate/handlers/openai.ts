@@ -113,7 +113,7 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
               type: "NUMBER",
               name: "count",
               description:
-                "How many images to generate (1-10 inclusive, defaults to 2)",
+                "How many images to generate (1-10 inclusive, defaults to 1)",
               minValue: 1,
               maxValue: 10,
               required: false,
@@ -213,7 +213,7 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
         await interaction.deferReply();
 
         const prompt = interaction.options.getString("prompt");
-        const count = interaction.options.getNumber("count") ?? 2;
+        const count = interaction.options.getNumber("count") ?? 1;
         const size = interaction.options.getString("size") ?? "_256x256";
 
         const response = await openai.createImage({
