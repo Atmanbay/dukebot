@@ -11,6 +11,13 @@ import config from "../../../utils/config.js";
 import { logError } from "../../../utils/logger.js";
 import { InteractionCreateHandler } from "../index.js";
 
+const getBufferFromUrl = async (url: string) => {
+  const response = await axios.get(url, {
+    responseType: "arraybuffer",
+  });
+  return Buffer.from(response.data, "utf-8");
+};
+
 const openai = new OpenAIApi(
   new Configuration({
     apiKey: config.openAI.apiKey,
@@ -41,31 +48,6 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
           maxValue: 1.0,
           required: false,
         } as ApplicationCommandNumericOptionData,
-        // {
-        //   type: "NUMBER",
-        //   name: "maxTokens",
-        //   description:
-        //     "The maximum tokens to use, where 1 token is roughly 4 characters (defaults to 300)",
-        //   minValue: 1,
-        //   maxValue: 1000,
-        //   required: false,
-        // } as ApplicationCommandNumericOptionData,
-        // {
-        //   type: "STRING",
-        //   name: "model",
-        //   description: "The model to use (default is Curie)",
-        //   choices: [
-        //     {
-        //       name: "Curie",
-        //       value: "text-curie-001",
-        //     },
-        //     {
-        //       name: "Davinci",
-        //       value: "text-davinci-002",
-        //     },
-        //   ],
-        //   required: false,
-        // },
       ],
     },
     {
@@ -107,6 +89,106 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
               type: "STRING",
               name: "prompt",
               description: "What you want the image to be",
+              required: true,
+            },
+            {
+              type: "NUMBER",
+              name: "count",
+              description:
+                "How many images to generate (1-10 inclusive, defaults to 1)",
+              minValue: 1,
+              maxValue: 10,
+              required: false,
+            } as ApplicationCommandNumericOptionData,
+            {
+              type: "STRING",
+              name: "size",
+              description:
+                "The size of the generated image (default is 1024x1024)",
+              choices: [
+                {
+                  name: "256x256",
+                  value: "_256x256",
+                },
+                {
+                  name: "512x512",
+                  value: "_512x512",
+                },
+                {
+                  name: "1024x1024",
+                  value: "_1024x1024",
+                },
+              ],
+              required: false,
+            },
+          ],
+        },
+        {
+          type: "SUB_COMMAND",
+          name: "edit",
+          description: "Edit a given image with OpenAI's DALL-E model",
+          options: [
+            {
+              type: "ATTACHMENT",
+              name: "image",
+              description: "The image to edit",
+              required: true,
+            },
+            {
+              type: "ATTACHMENT",
+              name: "mask",
+              description:
+                "The masked version of the image, where the area to edit is transparent",
+              required: true,
+            },
+            {
+              type: "STRING",
+              name: "prompt",
+              description: "What you want the image to be",
+              required: true,
+            },
+            {
+              type: "NUMBER",
+              name: "count",
+              description:
+                "How many images to generate (1-10 inclusive, defaults to 1)",
+              minValue: 1,
+              maxValue: 10,
+              required: false,
+            } as ApplicationCommandNumericOptionData,
+            {
+              type: "STRING",
+              name: "size",
+              description:
+                "The size of the generated image (default is 1024x1024)",
+              choices: [
+                {
+                  name: "256x256",
+                  value: "_256x256",
+                },
+                {
+                  name: "512x512",
+                  value: "_512x512",
+                },
+                {
+                  name: "1024x1024",
+                  value: "_1024x1024",
+                },
+              ],
+              required: false,
+            },
+          ],
+        },
+        {
+          type: "SUB_COMMAND",
+          name: "variation",
+          description:
+            "Generate a random variation of a given image with OpenAI's DALL-E model",
+          options: [
+            {
+              type: "ATTACHMENT",
+              name: "image",
+              description: "The image to edit",
               required: true,
             },
             {
@@ -222,13 +304,9 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
           size: CreateImageRequestSizeEnum[size],
         });
 
-        let attachmentPromises = response.data.data.map(async (i) => {
-          const response = await axios.get(i.url, {
-            responseType: "arraybuffer",
-          });
-          const buffer = Buffer.from(response.data, "utf-8");
-          return buffer;
-        });
+        let attachmentPromises = response.data.data.map((i) =>
+          getBufferFromUrl(i.url)
+        );
         await interaction.editReply({
           content: prompt,
           files: await Promise.all(attachmentPromises),
@@ -240,8 +318,86 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
         });
       }
     },
-    // edit: async (interaction) => {},
-    // variation: async (interaction) => {},
+    edit: async (interaction) => {
+      try {
+        await interaction.deferReply();
+
+        const image = interaction.options.getAttachment("image");
+        const mask = interaction.options.getAttachment("mask");
+        const prompt = interaction.options.getString("prompt");
+        const count = interaction.options.getNumber("count") ?? 1;
+        const size = interaction.options.getString("size") ?? "_256x256";
+
+        const imageStream = await axios.get(image.url, {
+          responseType: "stream",
+        });
+        const maskStream = await axios.get(mask.url, {
+          responseType: "stream",
+        });
+
+        const response = await openai.createImageEdit(
+          imageStream.data,
+          maskStream.data,
+          prompt,
+          count,
+          CreateImageRequestSizeEnum[size]
+        );
+
+        let attachmentPromises = response.data.data.map(async (i) => {
+          const response = await axios.get(i.url, {
+            responseType: "arraybuffer",
+          });
+          const buffer = Buffer.from(response.data, "utf-8");
+          return buffer;
+        });
+
+        await interaction.editReply({
+          content: prompt,
+          files: await Promise.all(attachmentPromises),
+        });
+      } catch (error) {
+        logError(error);
+        await interaction.editReply({
+          content: "An error occurred when running this command",
+        });
+      }
+    },
+    variation: async (interaction) => {
+      try {
+        await interaction.deferReply();
+
+        const image = interaction.options.getAttachment("image");
+        const count = interaction.options.getNumber("count") ?? 1;
+        const size = interaction.options.getString("size") ?? "_256x256";
+
+        const imageStream = await axios.get(image.url, {
+          responseType: "stream",
+        });
+
+        const response = await openai.createImageVariation(
+          imageStream.data,
+          count,
+          CreateImageRequestSizeEnum[size]
+        );
+
+        let attachmentPromises = response.data.data.map(async (i) => {
+          const response = await axios.get(i.url, {
+            responseType: "arraybuffer",
+          });
+          const buffer = Buffer.from(response.data, "utf-8");
+          return buffer;
+        });
+
+        await interaction.editReply({
+          files: await Promise.all(attachmentPromises),
+        });
+      } catch (error) {
+        logError(error);
+        await interaction.editReply({
+          content: "An error occurred when running this command",
+        });
+      }
+    },
   },
 };
 
