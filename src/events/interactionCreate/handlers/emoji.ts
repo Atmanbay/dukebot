@@ -4,14 +4,16 @@ import { MessageAttachment } from "discord.js";
 import emojiUnicode from "emoji-unicode";
 import fs from "fs";
 import im from "imagemagick";
-import ne from "node-emoji";
+import { createRequire } from "module";
 import { messageActions } from "../../../database/database.js";
 import { Button } from "../../../database/models.js";
 import config from "../../../utils/config.js";
 import { buildMessageActionRow, generateId } from "../../../utils/general.js";
 import { logError } from "../../../utils/logger.js";
 import { InteractionCreateHandler } from "../index.js";
-const find = ne.find;
+
+const require = createRequire(import.meta.url);
+const emojidata = require("unicode-emoji-json");
 
 const getEmojiPath = async (a: string, b: string) => {
   let fileName = emojiToFilename(a, b);
@@ -59,18 +61,16 @@ const downloadEmoji = async (
   let aUnicode = emojiToUnicodeArray(a);
   let bUnicode = emojiToUnicodeArray(b);
 
-  let url = await makeEmojiKitchenRequest(aUnicode, bUnicode, 20201001);
-
-  if (!url) {
-    url = await makeEmojiKitchenRequest(bUnicode, aUnicode, 20201001);
-  }
-
-  if (!url) {
-    url = await makeEmojiKitchenRequest(aUnicode, bUnicode, 20211115);
-  }
-
-  if (!url) {
-    url = await makeEmojiKitchenRequest(bUnicode, aUnicode, 20211115);
+  let url = "";
+  let dates = [20201001, 20211115, 20220406];
+  for (let i = 0; i < dates.length; i++) {
+    let date = dates[i];
+    url =
+      (await makeEmojiKitchenRequest(bUnicode, aUnicode, date)) ??
+      (await makeEmojiKitchenRequest(aUnicode, bUnicode, date));
+    if (url) {
+      break;
+    }
   }
 
   if (url) {
@@ -81,7 +81,7 @@ const downloadEmoji = async (
             {
               srcPath: path,
               dstPath: path,
-              width: 64,
+              width: 128,
             },
             (err) => {
               if (err) {
@@ -103,24 +103,28 @@ const makeEmojiKitchenRequest = async (
   secondUnicodeArray: string[],
   number: number
 ): Promise<string> => {
-  let baseUrl = "https://www.gstatic.com/android/keyboard/emojikitchen";
+  try {
+    let baseUrl = "https://www.gstatic.com/android/keyboard/emojikitchen";
 
-  let url = `${baseUrl}/${number}/${unicodeToGoogleUrl(
-    firstUnicodeArray
-  )}/${unicodeToGoogleUrl(firstUnicodeArray)}_${unicodeToGoogleUrl(
-    secondUnicodeArray
-  )}.png`;
+    let url = `${baseUrl}/${number}/${unicodeToGoogleUrl(
+      firstUnicodeArray
+    )}/${unicodeToGoogleUrl(firstUnicodeArray)}_${unicodeToGoogleUrl(
+      secondUnicodeArray
+    )}.png`;
 
-  const response = await axios({ method: "head", url: url });
-  if (response.status === 200) {
-    return url;
-  } else {
+    const response = await axios({ method: "head", url: url });
+    if (response.status === 200) {
+      return url;
+    } else {
+      return null;
+    }
+  } catch (error) {
     return null;
   }
 };
 
 export const getCombinedEmojiName = (a: string, b: string) => {
-  return `${find(a).key}_${find(b).key}`.substring(0, 32);
+  return `${emojidata[a].slug}_${emojidata[b].slug}`.substring(0, 32);
 };
 
 const EmojiInteractionCreateHandler: InteractionCreateHandler = {

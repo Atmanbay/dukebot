@@ -40,6 +40,16 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
           required: true,
         },
         {
+          type: "STRING",
+          name: "model",
+          description: "The model to use (defaults to text-curie-001)",
+          choices: [
+            { name: "text-curie-001", value: "text-curie-001" },
+            { name: "text-davinci-003", value: "text-davinci-003" },
+          ],
+          required: false,
+        },
+        {
           type: "NUMBER",
           name: "temperature",
           description:
@@ -236,6 +246,8 @@ const OpenAIInteractionCreateHandler: InteractionCreateHandler = {
         const maxTokens = interaction.options.getNumber("maxTokens") ?? 300;
         const model =
           interaction.options.getString("model") ?? "text-curie-001";
+
+        console.log(model);
 
         let request: CreateCompletionRequest = {
           model: model,
