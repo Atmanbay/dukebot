@@ -3,10 +3,12 @@ import { JSONFile, Low } from "lowdb";
 import config from "../utils/config.js";
 import { generateId } from "../utils/general.js";
 import {
+  Balance,
   BaseDatabaseObject,
   Blaze,
   BotConfig,
   Job,
+  Line,
   Message,
   MessageAction,
   Response,
@@ -95,3 +97,5 @@ export const walkups = await buildDatabaseTable<Walkup>("walkups");
 export const triviaSessions = await buildDatabaseTable<TriviaSession>(
   "triviaSessions"
 );
+export const balances = await buildDatabaseTable<Balance>("balances");
+export const lines = await buildDatabaseTable<Line>("lines");

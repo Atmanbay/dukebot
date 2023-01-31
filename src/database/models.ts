@@ -1,7 +1,4 @@
-import {
-  EmojiIdentifierResolvable,
-  MessageButtonStyleResolvable,
-} from "discord.js";
+import { ButtonStyle, EmojiIdentifierResolvable } from "discord.js";
 import { MessageActionData } from "./messageActionData";
 
 export type Blaze = {
@@ -36,16 +33,16 @@ export type Button = {
   label?: string;
   emoji?: EmojiIdentifierResolvable;
   disabled?: boolean;
-  style?: MessageButtonStyleResolvable;
+  style?: ButtonStyle;
 };
 
-export type MessageAction = {
+export type MessageAction<D extends MessageActionData> = {
   id: string;
   created?: number;
 
   interactionId?: string;
-  messageId?: string; // We need this to handle ButtonInteractions that are tied to a reply of a ButtonInteraction
-  data: MessageActionData;
+  messageId?: string; // We need this to handle ButtonInteractions that are tied to a reply to a ButtonInteraction
+  data: D;
   buttons: Button[];
 };
 
@@ -99,6 +96,31 @@ export type TriviaSession = {
   questions: TriviaQuestion[];
 };
 
+export type Balance = {
+  id: string;
+  created?: number;
+
+  userId: string;
+  balance: number;
+};
+
+export type Line = {
+  id: string;
+  created?: number;
+
+  description: string;
+  creatorUserId: string;
+  choices: {
+    description: string;
+    odds: number;
+  }[];
+  locked: boolean;
+  bets: {
+    userId: string;
+    amount: number;
+  }[];
+};
+
 export type BaseDatabaseObject =
   | Blaze
   | Job
@@ -107,4 +129,6 @@ export type BaseDatabaseObject =
   | Walkup
   | MessageAction
   | BotConfig
-  | TriviaSession;
+  | TriviaSession
+  | Balance
+  | Line;
