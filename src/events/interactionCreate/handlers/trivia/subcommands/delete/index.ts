@@ -3,7 +3,7 @@ import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { triviaSessions } from "../../../../../database/database";
+import { triviaSessions } from "../../../../../../database/database.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

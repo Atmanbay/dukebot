@@ -4,24 +4,31 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { messageActions } from "../../../../../database/database";
-import { Button } from "../../../../../database/models";
-import config from "../../../../../utils/config";
+import { messageActions } from "../../../../../../database/database.js";
+import { Button } from "../../../../../../database/models.js";
+import config from "../../../../../../utils/config.js";
 import {
   buildEmbed,
   buildMessageActionRow,
   generateId,
-} from "../../../../../utils/general";
+} from "../../../../../../utils/general.js";
+import { buildTweetEmbed } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
-  name: "tweet",
-  description: "Tweet something",
+  name: "reply",
+  description: "Reply to a tweet",
   options: [
     {
       type: ApplicationCommandOptionType.String,
+      name: "tweet",
+      description: "The URL of the tweet to reply to",
+      required: true,
+    },
+    {
+      type: ApplicationCommandOptionType.String,
       name: "content",
-      description: "The content of the tweet",
+      description: "The content of the reply",
       required: false,
     },
     {
@@ -35,6 +42,8 @@ export const data: ApplicationCommandOptionData = {
 
 export const handler = async (interaction: ChatInputCommandInteraction) => {
   const content = interaction.options.getString("content");
+  const tweet = interaction.options.getString("tweet");
+  const tweetId = tweet.match(/status\/(.*?)(\?|$)/)[1];
   const image = interaction.options.getString("image");
 
   if (!content && !image) {
@@ -65,23 +74,28 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
   ];
 
   const messageActionRow = buildMessageActionRow(buttons);
-  const embed = buildEmbed({ title: "Tweet", content, image });
-
+  const embed = buildEmbed({
+    title: "Reply",
+    content,
+    image,
+  });
+  const tweetEmbed = await buildTweetEmbed(tweetId);
   await interaction.reply({
     content: `0 / ${config.approvals.twitter} approvals to trigger`,
     components: [messageActionRow],
-    embeds: [embed],
+    embeds: [embed, tweetEmbed],
   });
 
   await messageActions.create({
     interactionId: interaction.id,
+    command: "twitter",
+    subcommand: "reply",
     data: {
-      command: "twitter",
-      subcommand: "tweet",
       callerUserId: interaction.member.user.id,
       approvals: [],
       required: config.approvals.twitter,
       content,
+      targetTweetId: tweetId,
       imageUrl: image,
     },
     buttons,

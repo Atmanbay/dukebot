@@ -3,7 +3,7 @@ import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { walkups } from "../../../../../../database/database";
+import { walkups } from "../../../../../../database/database.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

@@ -5,7 +5,7 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 import { CreateImageRequestSizeEnum } from "openai";
-import { logError } from "../../../../../../utils/logger";
+import { logError } from "../../../../../../utils/logger.js";
 import { openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {

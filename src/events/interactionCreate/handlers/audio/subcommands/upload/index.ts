@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
+  ButtonStyle,
   ChatInputCommandInteraction,
 } from "discord.js";
 import download from "download";
@@ -51,7 +52,7 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
       type: "set",
       label: "Set as Walkup",
       buttonId: generateId(),
-      style: "PRIMARY",
+      style: ButtonStyle.Primary,
     },
   ];
 
@@ -65,9 +66,9 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
 
   await messageActions.create({
     interactionId: interaction.id,
+    command: "audio",
+    subcommand: "upload",
     data: {
-      command: "audio",
-      subcommand: "upload",
       clipName: sanitizedName,
     },
     buttons,

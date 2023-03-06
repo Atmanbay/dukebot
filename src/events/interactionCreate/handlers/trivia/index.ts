@@ -1,8 +1,7 @@
 import { ButtonInteraction, ChatInputApplicationCommandData } from "discord.js";
-import { triviaSessions } from "../../../../database/database";
-import { TriviaQuestionMessageActionData } from "../../../../database/messageActionData";
-import { MessageAction } from "../../../../database/models";
-import config from "../../../../utils/config";
+import { triviaSessions } from "../../../../database/database.js";
+import { TriviaQuestionMessageAction } from "../../../../database/models.js";
+import config from "../../../../utils/config.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "trivia",
@@ -16,7 +15,7 @@ export const handleAnswer = async ({
 }: {
   answerIndex: number;
   interaction: ButtonInteraction;
-  messageAction: MessageAction<TriviaQuestionMessageActionData>;
+  messageAction: TriviaQuestionMessageAction;
 }) => {
   let timestampCreated = interaction.createdTimestamp;
 

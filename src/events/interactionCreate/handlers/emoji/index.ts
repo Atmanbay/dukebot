@@ -1,7 +1,8 @@
 import axios from "axios";
-import decode from "decode-html";
 import {
   ApplicationCommandOptionType,
+  AttachmentBuilder,
+  ButtonStyle,
   ChatInputApplicationCommandData,
   ChatInputCommandInteraction,
 } from "discord.js";
@@ -9,17 +10,21 @@ import {
 import emojiUnicode from "emoji-unicode";
 import fs from "fs";
 import im from "imagemagick";
-import { sample } from "lodash-es";
 import { createRequire } from "module";
-import parse from "node-html-parser";
-import config from "../../../../utils/config";
-import { logError } from "../../../../utils/logger";
+import { messageActions } from "../../../../database/database.js";
+import { Button } from "../../../../database/models.js";
+import config from "../../../../utils/config.js";
+import {
+  buildMessageActionRow,
+  generateId,
+} from "../../../../utils/general.js";
+import { logError } from "../../../../utils/logger.js";
 
 const require = createRequire(import.meta.url);
 const emojidata = require("unicode-emoji-json");
 
 export const data: ChatInputApplicationCommandData = {
-  name: "Emoji",
+  name: "emoji",
   description: "Combines two emojis using Google's Emoji Kitchen",
   options: [
     {
@@ -150,41 +155,43 @@ export const getCombinedEmojiName = (a: string, b: string) => {
 };
 
 export const handler = async (interaction: ChatInputCommandInteraction) => {
-  const query = interaction.options.getString("query");
+  const first = interaction.options.getString("first");
+  const second = interaction.options.getString("second");
 
-  let escapedWord = encodeURI(query);
-  let url = `https://www.urbandictionary.com/define.php?term=${escapedWord}`;
+  let path = await getEmojiPath(first, second);
+  if (path) {
+    const buttons: Button[] = [
+      {
+        type: "save",
+        label: "Save",
+        buttonId: generateId(),
+        style: ButtonStyle.Primary,
+      },
+    ];
 
-  const response = await axios(url);
-  if (response.status !== 200) {
+    const messageActionRow = buildMessageActionRow(buttons);
+
+    let attachment = new AttachmentBuilder(path);
     await interaction.reply({
-      content:
-        "An HTTP error occurred when trying to fetch your definition. . Please try again later.",
+      content: `${first} + ${second}`,
+      files: [attachment],
+      components: [messageActionRow],
+    });
+
+    await messageActions.create({
+      interactionId: interaction.id,
+      command: "emoji",
+      subcommand: "combine",
+      data: {
+        path,
+        emojiName: getCombinedEmojiName(first, second),
+      },
+      buttons,
+    });
+  } else {
+    await interaction.reply({
+      content: "That emoji combo does not exist",
       ephemeral: true,
     });
-    return;
   }
-  let root = parse(response.data);
-
-  let definitions = root.querySelectorAll(".definition");
-  if (definitions.length === 0) {
-    return null;
-  }
-
-  let randomDefinition = sample(definitions);
-
-  let definition = randomDefinition.querySelector("div.meaning");
-  let example = randomDefinition.querySelector("div.example");
-
-  let message = [
-    `**${query}**`,
-    "",
-    decode(definition.structuredText),
-    "",
-    `_${decode(example.structuredText)}_`,
-  ];
-
-  await interaction.reply({
-    content: message.join("\n"),
-  });
 };

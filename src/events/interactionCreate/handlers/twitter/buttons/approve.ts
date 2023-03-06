@@ -3,12 +3,11 @@ import { ButtonInteraction } from "discord.js";
 import { SendTweetV1Params, TweetV1 } from "twitter-api-v2";
 import { messageActions } from "../../../../../database/database.js";
 import {
-  TwitterQuoteTweetMessageActionData,
-  TwitterReplyMessageActionData,
-  TwitterRetweetMessageActionData,
-  TwitterTweetMessageActionData,
-} from "../../../../../database/messageActionData";
-import { MessageAction } from "../../../../../database/models";
+  TwitterQuoteTweetMessageAction,
+  TwitterReplyMessageAction,
+  TwitterRetweetMessageAction,
+  TwitterTweetMessageAction,
+} from "../../../../../database/models.js";
 import { client } from "../index.js";
 
 const getImageId = async (imageUrl: string) => {
@@ -54,12 +53,11 @@ const quoteTweet = async (
 
 export const handler = async (
   interaction: ButtonInteraction,
-  messageAction: MessageAction<
-    | TwitterTweetMessageActionData
-    | TwitterReplyMessageActionData
-    | TwitterRetweetMessageActionData
-    | TwitterQuoteTweetMessageActionData
-  >
+  messageAction:
+    | TwitterTweetMessageAction
+    | TwitterReplyMessageAction
+    | TwitterRetweetMessageAction
+    | TwitterQuoteTweetMessageAction
 ) => {
   let userId = interaction.member.user.id;
   if (messageAction.data.approvals.includes(userId)) {
@@ -80,7 +78,7 @@ export const handler = async (
     }
 
     let apiResponse: TweetV1;
-    switch (messageAction.data.subcommand) {
+    switch (messageAction.subcommand) {
       case "tweet":
         apiResponse = await tweet(messageAction.data.content ?? "", payload);
         break;

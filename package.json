@@ -37,7 +37,7 @@
     "ffmpeg-static": "^4.4.0",
     "finnhub": "^1.2.1",
     "fs": "^0.0.1-security",
-    "glob": "^7.2.3",
+    "glob": "^9.2.1",
     "google-tts-api": "^2.0.2",
     "html-entities": "^2.3.3",
     "imagemagick": "^0.1.3",

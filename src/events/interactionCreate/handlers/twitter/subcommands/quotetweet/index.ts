@@ -4,31 +4,31 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { messageActions } from "../../../../../database/database";
-import { Button } from "../../../../../database/models";
-import config from "../../../../../utils/config";
+import { messageActions } from "../../../../../../database/database.js";
+import { Button } from "../../../../../../database/models.js";
+import config from "../../../../../../utils/config.js";
 import {
   buildEmbed,
   buildMessageActionRow,
   generateId,
-} from "../../../../../utils/general";
-import { buildTweetEmbed } from "../../twitter";
+} from "../../../../../../utils/general.js";
+import { buildTweetEmbed } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
-  name: "reply",
-  description: "Reply to a tweet",
+  name: "quotetweet",
+  description: "Quote tweet something",
   options: [
     {
       type: ApplicationCommandOptionType.String,
       name: "tweet",
-      description: "The URL of the tweet to reply to",
+      description: "The URL of the tweet to quote tweet",
       required: true,
     },
     {
       type: ApplicationCommandOptionType.String,
       name: "content",
-      description: "The content of the reply",
+      description: "The content of the quote tweet",
       required: false,
     },
     {
@@ -74,11 +74,7 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
   ];
 
   const messageActionRow = buildMessageActionRow(buttons);
-  const embed = buildEmbed({
-    title: "Reply",
-    content,
-    image,
-  });
+  const embed = buildEmbed({ title: "Quote Tweet", content, image });
   const tweetEmbed = await buildTweetEmbed(tweetId);
   await interaction.reply({
     content: `0 / ${config.approvals.twitter} approvals to trigger`,
@@ -88,9 +84,9 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
 
   await messageActions.create({
     interactionId: interaction.id,
+    command: "twitter",
+    subcommand: "quotetweet",
     data: {
-      command: "twitter",
-      subcommand: "reply",
       callerUserId: interaction.member.user.id,
       approvals: [],
       required: config.approvals.twitter,

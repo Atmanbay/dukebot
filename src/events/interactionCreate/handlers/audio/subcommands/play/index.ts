@@ -6,8 +6,8 @@ import {
   VoiceChannel,
 } from "discord.js";
 import { existsSync } from "fs";
-import { play } from "../../../../../../utils/audio";
-import config from "../../../../../../utils/config";
+import { play } from "../../../../../../utils/audio.js";
+import config from "../../../../../../utils/config.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

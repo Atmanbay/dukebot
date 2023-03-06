@@ -1,5 +1,138 @@
 import { ButtonStyle, EmojiIdentifierResolvable } from "discord.js";
-import { MessageActionData } from "./messageActionData";
+
+export type Button = {
+  type: string;
+  id?: string;
+  buttonId: string;
+  label?: string;
+  emoji?: EmojiIdentifierResolvable;
+  disabled?: boolean;
+  style?: ButtonStyle;
+};
+
+type BaseMessageAction = {
+  id: string;
+  created?: number;
+
+  interactionId?: string;
+  messageId?: string; // We need this to handle ButtonInteractions that are tied to a reply to a ButtonInteraction
+  buttons: Button[];
+};
+
+export type EmojiKitchenMessageAction = BaseMessageAction & {
+  command: "emoji";
+  subcommand: "combine";
+
+  data: {
+    path: string;
+    emojiName: string;
+  };
+};
+
+export type AudioUploadMessageAction = BaseMessageAction & {
+  command: "audio";
+  subcommand: "upload";
+
+  data: {
+    clipName: string;
+  };
+};
+
+export type AudioListMessageAction = BaseMessageAction & {
+  command: "audio";
+  subcommand: "list";
+
+  data: {
+    currentPage: number;
+  };
+};
+
+export type TwitterTweetMessageAction = BaseMessageAction & {
+  command: "twitter";
+  subcommand: "tweet";
+
+  data: {
+    callerUserId: string;
+    approvals: string[];
+    required: number;
+    content?: string;
+    imageUrl?: string;
+  };
+};
+
+export type TwitterReplyMessageAction = BaseMessageAction & {
+  command: "twitter";
+  subcommand: "reply";
+
+  data: {
+    callerUserId: string;
+    approvals: string[];
+    required: number;
+    content?: string;
+    targetTweetId: string;
+    imageUrl?: string;
+  };
+};
+
+export type TwitterRetweetMessageAction = BaseMessageAction & {
+  command: "twitter";
+  subcommand: "retweet";
+
+  data: {
+    callerUserId: string;
+    approvals: string[];
+    required: number;
+    targetTweetId: string;
+    imageUrl?: string;
+  };
+};
+
+export type TwitterQuoteTweetMessageAction = BaseMessageAction & {
+  command: "twitter";
+  subcommand: "quotetweet";
+
+  data: {
+    callerUserId: string;
+    approvals: string[];
+    required: number;
+    content?: string;
+    targetTweetId: string;
+    imageUrl?: string;
+  };
+};
+
+export type TriviaAdvanceMessageAction = BaseMessageAction & {
+  command: "trivia";
+  subcommand: "advance";
+
+  data: {
+    triviaSessionId: string;
+    questionIndex: number;
+  };
+};
+
+export type TriviaQuestionMessageAction = BaseMessageAction & {
+  command: "trivia";
+  subcommand: "question";
+
+  data: {
+    triviaSessionId: string;
+    questionIndex: number;
+    answerIndex: number;
+    expireTimestamp: number;
+  };
+};
+
+export type MessageAction =
+  | EmojiKitchenMessageAction
+  | AudioUploadMessageAction
+  | AudioListMessageAction
+  | TwitterTweetMessageAction
+  | TwitterReplyMessageAction
+  | TwitterRetweetMessageAction
+  | TwitterQuoteTweetMessageAction
+  | TriviaAdvanceMessageAction
+  | TriviaQuestionMessageAction;
 
 export type Blaze = {
   id: string;
@@ -24,26 +157,6 @@ export type Message = {
 
   userId: string;
   content: string;
-};
-
-export type Button = {
-  type: string;
-  id?: string;
-  buttonId: string;
-  label?: string;
-  emoji?: EmojiIdentifierResolvable;
-  disabled?: boolean;
-  style?: ButtonStyle;
-};
-
-export type MessageAction<D extends MessageActionData> = {
-  id: string;
-  created?: number;
-
-  interactionId?: string;
-  messageId?: string; // We need this to handle ButtonInteractions that are tied to a reply to a ButtonInteraction
-  data: D;
-  buttons: Button[];
 };
 
 export type Response = {
@@ -96,31 +209,6 @@ export type TriviaSession = {
   questions: TriviaQuestion[];
 };
 
-export type Balance = {
-  id: string;
-  created?: number;
-
-  userId: string;
-  balance: number;
-};
-
-export type Line = {
-  id: string;
-  created?: number;
-
-  description: string;
-  creatorUserId: string;
-  choices: {
-    description: string;
-    odds: number;
-  }[];
-  locked: boolean;
-  bets: {
-    userId: string;
-    amount: number;
-  }[];
-};
-
 export type BaseDatabaseObject =
   | Blaze
   | Job
@@ -129,6 +217,4 @@ export type BaseDatabaseObject =
   | Walkup
   | MessageAction
   | BotConfig
-  | TriviaSession
-  | Balance
-  | Line;
+  | TriviaSession;

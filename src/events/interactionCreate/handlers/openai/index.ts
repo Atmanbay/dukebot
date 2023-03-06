@@ -1,6 +1,6 @@
 import { ChatInputApplicationCommandData } from "discord.js";
 import { Configuration, OpenAIApi } from "openai";
-import config from "../../../../utils/config";
+import config from "../../../../utils/config.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "openai",

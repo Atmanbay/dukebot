@@ -4,7 +4,7 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 import { CreateCompletionRequest } from "openai";
-import { logError } from "../../../../../../utils/logger";
+import { logError } from "../../../../../../utils/logger.js";
 import { openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {

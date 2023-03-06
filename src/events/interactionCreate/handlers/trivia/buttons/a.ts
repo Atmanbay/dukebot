@@ -1,9 +1,8 @@
 import { ButtonInteraction } from "discord.js";
-import { TriviaQuestionMessageActionData } from "../../../../../database/messageActionData";
-import { MessageAction } from "../../../../../database/models";
+import { TriviaQuestionMessageAction } from "../../../../../database/models.js";
 import { handleAnswer } from "../index.js";
 
 export const handler = (
   interaction: ButtonInteraction,
-  messageAction: MessageAction<TriviaQuestionMessageActionData>
+  messageAction: TriviaQuestionMessageAction
 ) => handleAnswer({ interaction, messageAction, answerIndex: 0 });

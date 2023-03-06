@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
+  ButtonStyle,
   ChatInputCommandInteraction,
 } from "discord.js";
 import { readdirSync } from "fs";
@@ -71,25 +72,25 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
       type: "firstPage",
       label: "<<",
       buttonId: generateId(),
-      style: "SECONDARY",
+      style: ButtonStyle.Secondary,
     },
     {
       type: "previousPage",
       label: "<",
       buttonId: generateId(),
-      style: "SECONDARY",
+      style: ButtonStyle.Secondary,
     },
     {
       type: "nextPage",
       label: ">",
       buttonId: generateId(),
-      style: "SECONDARY",
+      style: ButtonStyle.Secondary,
     },
     {
       type: "lastPage",
       label: ">>",
       buttonId: generateId(),
-      style: "SECONDARY",
+      style: ButtonStyle.Secondary,
     },
   ];
 
@@ -103,9 +104,9 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
 
   await messageActions.create({
     interactionId: interaction.id,
+    command: "audio",
+    subcommand: "list",
     data: {
-      command: "audio",
-      subcommand: "list",
       currentPage: 0,
     },
     buttons,

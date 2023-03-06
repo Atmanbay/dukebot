@@ -9,12 +9,12 @@ import {
 import {
   messageActions,
   triviaSessions,
-} from "../../../../../database/database";
-import { Button } from "../../../../../database/models";
+} from "../../../../../../database/database.js";
+import { Button } from "../../../../../../database/models.js";
 import {
   buildMessageActionRow,
   generateId,
-} from "../../../../../utils/general";
+} from "../../../../../../utils/general.js";
 
 const CATEGORIES = [
   { name: "Any", value: "any" },
@@ -169,9 +169,9 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
 
   await messageActions.create({
     interactionId: interaction.id,
+    command: "trivia",
+    subcommand: "advance",
     data: {
-      command: "trivia",
-      subcommand: "advance",
       triviaSessionId: triviaSession.id,
       questionIndex: 0,
     },

@@ -5,9 +5,9 @@ import {
   GuildMember,
   Role,
 } from "discord.js";
-import { jobs } from "../../../../database/database";
-import { buildTable } from "../../../../utils/general";
-import { logInfo } from "../../../../utils/logger";
+import { jobs } from "../../../../database/database.js";
+import { buildTable } from "../../../../utils/general.js";
+import { logInfo } from "../../../../utils/logger.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "jobs",

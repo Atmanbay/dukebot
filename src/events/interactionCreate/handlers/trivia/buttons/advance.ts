@@ -4,18 +4,20 @@ import moment from "moment-timezone";
 import {
   messageActions,
   triviaSessions,
-} from "../../../../../database/database";
-import { TriviaAdvanceMessageActionData } from "../../../../../database/messageActionData";
-import { Button, MessageAction } from "../../../../../database/models";
+} from "../../../../../database/database.js";
+import {
+  Button,
+  TriviaAdvanceMessageAction,
+} from "../../../../../database/models.js";
 import {
   buildMessageActionRow,
   buildTable,
   generateId,
-} from "../../../../../utils/general";
+} from "../../../../../utils/general.js";
 
 export const handler = async (
   interaction: ButtonInteraction,
-  messageAction: MessageAction<TriviaAdvanceMessageActionData>
+  messageAction: TriviaAdvanceMessageAction
 ) => {
   await (interaction.message as Message).edit({ components: [] });
 
@@ -67,15 +69,15 @@ export const handler = async (
   let message = await interaction.fetchReply();
   await messageActions.create({
     messageId: message.id,
+    command: "trivia",
+    subcommand: "question",
+    buttons: buttons,
     data: {
-      command: "trivia",
-      subcommand: "question",
       triviaSessionId: session.id,
       questionIndex: data.questionIndex, // index of question in triviaSession.questions
       answerIndex: answerIndex, // index of choice that is the answer
       expireTimestamp: expireTime.valueOf(),
     },
-    buttons: buttons,
   });
 
   setTimeout(async () => {
@@ -191,9 +193,9 @@ export const handler = async (
 
     await messageActions.create({
       messageId: message.id,
+      command: "trivia",
+      subcommand: "advance",
       data: {
-        command: "trivia",
-        subcommand: "advance",
         triviaSessionId: session.id,
         questionIndex: data.questionIndex + 1, // index of question in triviaSession.questions
       },

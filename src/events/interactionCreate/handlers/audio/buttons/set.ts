@@ -1,11 +1,10 @@
 import { ButtonInteraction, GuildMember } from "discord.js";
-import { walkups } from "../../../../../database/database";
-import { AudioUploadMessageActionData } from "../../../../../database/messageActionData";
-import { MessageAction } from "../../../../../database/models";
+import { walkups } from "../../../../../database/database.js";
+import { AudioUploadMessageAction } from "../../../../../database/models.js";
 
 export const handler = async (
   interaction: ButtonInteraction,
-  messageAction: MessageAction<AudioUploadMessageActionData>
+  messageAction: AudioUploadMessageAction
 ) => {
   const author = interaction.member as GuildMember;
   let walkup = walkups.get((w) => w.userId === author.id);

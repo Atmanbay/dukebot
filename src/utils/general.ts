@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
-import glob from "glob";
+import { ActionRowBuilder, ButtonBuilder, Embed } from "discord.js";
+import { globSync } from "glob";
 import moment from "moment-timezone";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -11,7 +11,7 @@ export const __dirname = (path: string) => {
 };
 
 export const buildMessageActionRow = (buttons: Button[]) => {
-  const messageButtons: MessageButton[] = [];
+  const messageButtons: ButtonBuilder[] = [];
   buttons.forEach((button) => {
     let label = "";
     if (button.label && button.label.length > 0) {
@@ -20,7 +20,7 @@ export const buildMessageActionRow = (buttons: Button[]) => {
       label = `${button.type[0].toUpperCase()}${button.type.substring(1)}`;
     }
 
-    const messageButton = new MessageButton()
+    const messageButton = new ButtonBuilder()
       .setCustomId(button.buttonId)
       .setLabel(label)
       .setStyle(button.style);
@@ -36,11 +36,13 @@ export const buildMessageActionRow = (buttons: Button[]) => {
     messageButtons.push(messageButton);
   });
 
-  return new MessageActionRow().addComponents(messageButtons);
+  return new ActionRowBuilder().addComponents(
+    messageButtons
+  ) as ActionRowBuilder<ButtonBuilder>;
 };
 
 export const getFiles = (path: string) => {
-  return glob.sync(path);
+  return globSync(path);
 };
 
 export const getTimestamp = () => {
@@ -95,17 +97,9 @@ export const buildEmbed = ({
   content?: string;
   image?: string;
 }) => {
-  const embed = {
+  return {
     title: title,
-  } as MessageEmbed;
-
-  if (content) {
-    embed.description = content;
-  }
-
-  if (image) {
-    embed.image = { url: image, height: 0, width: 0 };
-  }
-
-  return embed;
+    description: content,
+    image: { url: image, height: 0, width: 0 },
+  } as Embed;
 };
