@@ -6,7 +6,7 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 import { sample } from "lodash-es";
-import parse from "node-html-parser";
+import { parse } from "node-html-parser";
 
 export const data: ChatInputApplicationCommandData = {
   name: "define",
