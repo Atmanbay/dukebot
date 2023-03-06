@@ -7,6 +7,7 @@ const getEnvVar = (name: string) => {
 
 const config = {
   isProduction: getEnvVar("NODE_ENV") === "production",
+  fileExtension: getEnvVar("NODE_ENV") === "production" ? ".js" : ".ts",
   token: getEnvVar("DISCORD_TOKEN"),
   clientId: getEnvVar("DISCORD_CLIENT_ID"),
   serverId: getEnvVar("DISCORD_GUILD_ID"),

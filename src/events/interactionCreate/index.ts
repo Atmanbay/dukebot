@@ -20,8 +20,9 @@ import { EventListener } from "../index.js";
 const handlersFolder = `${__dirname(import.meta.url)}/handlers`;
 export const commandData = await Promise.all(
   fs.readdirSync(handlersFolder).map(async (folder) => {
-    const data = (await import(`${handlersFolder}/${folder}/index.ts`))
-      .data as ChatInputApplicationCommandData;
+    const data = (
+      await import(`${handlersFolder}/${folder}/index${config.fileExtension}`)
+    ).data as ChatInputApplicationCommandData;
 
     if (fs.existsSync(`${handlersFolder}/${folder}/subcommands`)) {
       const subcommandDataPromises = fs
@@ -29,7 +30,7 @@ export const commandData = await Promise.all(
         .map(async (subfolder) => {
           const subcommandData = (
             await import(
-              `${handlersFolder}/${folder}/subcommands/${subfolder}/index.ts`
+              `${handlersFolder}/${folder}/subcommands/${subfolder}/index${config.fileExtension}`
             )
           ).data as ApplicationCommandOptionData;
 
@@ -40,7 +41,10 @@ export const commandData = await Promise.all(
               .readdirSync(
                 `${handlersFolder}/${folder}/subcommands/${subfolder}`
               )
-              .filter((subcommandOption) => subcommandOption !== "index.ts")
+              .filter(
+                (subcommandOption) =>
+                  subcommandOption !== `index${config.fileExtension}`
+              )
               .map(async (subcommandOption) => {
                 return (
                   await import(
@@ -77,10 +81,14 @@ export const commandData = await Promise.all(
   })
 );
 
-const handlerFiles = await glob(`${handlersFolder}/**/*.ts`);
+const handlerFiles = await glob(
+  `${handlersFolder}/**/*${config.fileExtension}`
+);
 const handlers = {};
 const handlerPromises = handlerFiles.map(async (thf) => {
-  let path = thf.replace(".ts", "").replace(`${handlersFolder}/`, "");
+  let path = thf
+    .replace(config.fileExtension, "")
+    .replace(`${handlersFolder}/`, "");
   let nodes = path.split("/");
 
   let commandName = nodes[0];
