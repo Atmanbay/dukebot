@@ -12,3 +12,18 @@ export const openai = new OpenAIApi(
     apiKey: config.openAI.apiKey,
   })
 );
+
+export const moderate = async (input: string) => {
+  const moderationResponse = await openai.createModeration({ input: input });
+
+  let categories = moderationResponse.data.results[0].categories;
+  let failedCategories = [];
+  Object.keys(categories).forEach((key) => {
+    let value: boolean = categories[key];
+    if (value) {
+      failedCategories.push(key);
+    }
+  });
+
+  return failedCategories;
+};

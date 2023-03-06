@@ -29,6 +29,7 @@ export const data: ApplicationCommandOptionData = {
       type: ApplicationCommandOptionType.String,
       name: "content",
       description: "The content of the reply",
+      maxLength: 280,
       required: false,
     },
     {

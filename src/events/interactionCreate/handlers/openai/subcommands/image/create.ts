@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import { CreateImageRequestSizeEnum } from "openai";
 import { logError } from "../../../../../../utils/logger.js";
-import { openai } from "../../index.js";
+import { moderate, openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
@@ -65,6 +65,17 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
     const prompt = interaction.options.getString("prompt");
     const count = interaction.options.getNumber("count") ?? 1;
     const size = interaction.options.getString("size") ?? "_256x256";
+
+    const failedCategories = await moderate(prompt);
+    if (failedCategories.length > 0) {
+      await interaction.editReply({
+        content: `${prompt}\n\nViolated the following categories:\n${failedCategories.join(
+          "\n"
+        )}`,
+      });
+
+      return;
+    }
 
     const response = await openai.createImage({
       prompt: prompt,
