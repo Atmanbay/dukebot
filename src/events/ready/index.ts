@@ -4,20 +4,12 @@ import { botConfigs } from "../../database/database.js";
 import config from "../../utils/config.js";
 import { logError, logInfo } from "../../utils/logger.js";
 import { EventListener } from "../index.js";
-import { handlers } from "../interactionCreate/index.js";
+import { commandData } from "../interactionCreate/index.js";
 
 const ReadyEventHandler: EventListener<"ready"> = async (client: Client) => {
   try {
-    let commands = Object.values(handlers).map((command) => {
-      return {
-        type: command.type,
-        name: command.name,
-        description: command.description,
-        options: command.options,
-      };
-    });
     let oldCommandHashObject = botConfigs.get((bc) => bc.key === "commandHash");
-    let newCommandHash = hash(commands);
+    let newCommandHash = hash(commandData);
 
     if (!oldCommandHashObject) {
       await botConfigs.create({
@@ -25,17 +17,10 @@ const ReadyEventHandler: EventListener<"ready"> = async (client: Client) => {
         value: newCommandHash,
       });
 
-      await client.application.commands.set(
-        Object.values(commands),
-        config.serverId
-      );
-
+      await client.application.commands.set(commandData, config.serverId);
       logInfo("Bot started with new commands");
     } else if (oldCommandHashObject.value !== newCommandHash) {
-      await client.application.commands.set(
-        Object.values(commands),
-        config.serverId
-      );
+      await client.application.commands.set(commandData, config.serverId);
 
       oldCommandHashObject.value = newCommandHash;
       await botConfigs.update(oldCommandHashObject);
