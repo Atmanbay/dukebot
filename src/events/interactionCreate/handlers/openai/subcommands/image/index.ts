@@ -7,4 +7,5 @@ export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.SubcommandGroup,
   name: "image",
   description: "Interact with OpenAI's DALL-E model",
+  options: [],
 };
