@@ -1,3 +1,4 @@
+import { logError } from "@/helpers/logger.js";
 import axios from "axios";
 import {
   ApplicationCommandOptionData,
@@ -5,7 +6,6 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 import { CreateImageRequestSizeEnum } from "openai";
-import { logError } from "../../../../../../utils/logger.js";
 import { moderate, openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {

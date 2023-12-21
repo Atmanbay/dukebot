@@ -1,10 +1,10 @@
+import { responses } from "@/@/helpers/database/index.js";
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
 import emojiRegex from "emoji-regex";
-import { responses } from "../../../../../../database/database.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

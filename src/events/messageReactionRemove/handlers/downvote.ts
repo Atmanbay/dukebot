@@ -1,4 +1,4 @@
-import { jobs } from "../../../database/database.js";
+import { jobs } from "@/helpers/database/index.js";
 import { MessageReactionRemoveHandler } from "../index.js";
 
 const DownvoteMessageReactionRemoveHandler: MessageReactionRemoveHandler = {

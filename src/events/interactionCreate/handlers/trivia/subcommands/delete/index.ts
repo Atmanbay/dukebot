@@ -1,9 +1,9 @@
+import { triviaSessions } from "@/@/helpers/database/index.js";
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { triviaSessions } from "../../../../../../database/database.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

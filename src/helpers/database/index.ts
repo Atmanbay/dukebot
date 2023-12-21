@@ -1,7 +1,7 @@
 import fs from "fs";
 import { JSONFile, Low } from "lowdb";
-import config from "../utils/config.js";
-import { generateId } from "../utils/general.js";
+import config from "../config.js";
+import { generateId } from "../general.js";
 import {
   BaseDatabaseObject,
   Blaze,

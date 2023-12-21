@@ -15,6 +15,11 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "types": [],
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

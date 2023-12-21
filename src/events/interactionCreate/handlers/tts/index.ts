@@ -1,3 +1,4 @@
+import { play } from "@/helpers/audio.js";
 import {
   ApplicationCommandOptionType,
   ChatInputApplicationCommandData,
@@ -6,7 +7,6 @@ import {
   VoiceChannel,
 } from "discord.js";
 import googleTTS from "google-tts-api";
-import { play } from "../../../../utils/audio.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "tts",

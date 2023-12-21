@@ -1,5 +1,5 @@
+import { TriviaQuestionMessageAction } from "@/helpers/database/models.js";
 import { ButtonInteraction } from "discord.js";
-import { TriviaQuestionMessageAction } from "../../../../../database/models.js";
 import { handleAnswer } from "../index.js";
 
 export const handler = (

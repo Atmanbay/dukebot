@@ -1,3 +1,6 @@
+import { messageActions, triviaSessions } from "@/@/helpers/database/index.js";
+import { Button } from "@/@/helpers/database/models.js";
+import { buildMessageActionRow, generateId } from "@/helpers/general.js";
 import axios from "axios";
 import decode from "decode-html";
 import {
@@ -6,15 +9,6 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
 } from "discord.js";
-import {
-  messageActions,
-  triviaSessions,
-} from "../../../../../../database/database.js";
-import { Button } from "../../../../../../database/models.js";
-import {
-  buildMessageActionRow,
-  generateId,
-} from "../../../../../../utils/general.js";
 
 const CATEGORIES = [
   { name: "Any", value: "any" },

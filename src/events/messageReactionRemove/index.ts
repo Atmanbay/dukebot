@@ -5,7 +5,7 @@ import {
   PartialUser,
   User,
 } from "discord.js";
-import { logError } from "../../utils/logger.js";
+import { logError } from "../../helpers/logger.js";
 import { EventListener } from "../index.js";
 import DownvoteMessageReactionRemoveHandler from "./handlers/downvote.js";
 import UpvoteMessageReactionRemoveHandler from "./handlers/upvote.js";

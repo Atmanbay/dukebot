@@ -1,7 +1,7 @@
+import config from "@/helpers/config.js";
+import { buildTable } from "@/helpers/general.js";
 import { ChatInputApplicationCommandData } from "discord.js";
 import { readdirSync } from "fs";
-import config from "../../../../utils/config.js";
-import { buildTable } from "../../../../utils/general.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "audio",

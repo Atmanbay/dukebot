@@ -1,5 +1,5 @@
+import { responses } from "@/helpers/database/index.js";
 import moment from "moment-timezone";
-import { responses } from "../../../database/database.js";
 import { MessageCreateHandler } from "../index.js";
 
 const ResponseMessageCreateHandler: MessageCreateHandler = {

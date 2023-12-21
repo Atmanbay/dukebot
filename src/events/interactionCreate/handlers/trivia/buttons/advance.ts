@@ -1,19 +1,16 @@
-import { ButtonInteraction, ButtonStyle, Message } from "discord.js";
-import { shuffle } from "lodash-es";
-import moment from "moment-timezone";
-import {
-  messageActions,
-  triviaSessions,
-} from "../../../../../database/database.js";
+import { messageActions, triviaSessions } from "@/helpers/database/index.js";
 import {
   Button,
   TriviaAdvanceMessageAction,
-} from "../../../../../database/models.js";
+} from "@/helpers/database/models.js";
 import {
   buildMessageActionRow,
   buildTable,
   generateId,
-} from "../../../../../utils/general.js";
+} from "@/helpers/general.js";
+import { ButtonInteraction, ButtonStyle, Message } from "discord.js";
+import { shuffle } from "lodash-es";
+import moment from "moment-timezone";
 
 export const handler = async (
   interaction: ButtonInteraction,

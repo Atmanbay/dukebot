@@ -1,6 +1,5 @@
-// import { isValidBlazeIt } from "../../../services/blaze.js";
+import { blazes } from "@/helpers/database/index.js";
 import moment from "moment-timezone";
-import { blazes } from "../../../database/database.js";
 import { MessageCreateHandler } from "../index.js";
 
 export const isValidBlazeIt = (messageContent: string, time: moment.Moment) => {

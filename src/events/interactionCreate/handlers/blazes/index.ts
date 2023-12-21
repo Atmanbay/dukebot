@@ -1,3 +1,5 @@
+import { blazes } from "@/helpers/database/index.js";
+import { buildTable } from "@/helpers/general.js";
 import {
   ApplicationCommandOptionType,
   ChatInputApplicationCommandData,
@@ -5,8 +7,6 @@ import {
   GuildMember,
   Role,
 } from "discord.js";
-import { blazes } from "../../../../database/database.js";
-import { buildTable } from "../../../../utils/general.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "blazes",

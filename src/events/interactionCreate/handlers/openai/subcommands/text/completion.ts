@@ -1,10 +1,10 @@
+import { logError } from "@/helpers/logger.js";
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
 import { CreateCompletionRequest } from "openai";
-import { logError } from "../../../../../../utils/logger.js";
 import { openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {

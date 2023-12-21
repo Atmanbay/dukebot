@@ -1,8 +1,8 @@
+import config from "@/helpers/config.js";
+import { botConfigs } from "@/helpers/database/index.js";
 import { Client } from "discord.js";
 import hash from "object-hash";
-import { botConfigs } from "../../database/database.js";
-import config from "../../utils/config.js";
-import { logError, logInfo } from "../../utils/logger.js";
+import { logError, logInfo } from "../../helpers/logger.js";
 import { EventListener } from "../index.js";
 import { commandData } from "../interactionCreate/index.js";
 

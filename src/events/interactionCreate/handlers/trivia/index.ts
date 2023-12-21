@@ -1,7 +1,7 @@
+import config from "@/helpers/config.js";
+import { triviaSessions } from "@/helpers/database/index.js";
+import { TriviaQuestionMessageAction } from "@/helpers/database/models.js";
 import { ButtonInteraction, ChatInputApplicationCommandData } from "discord.js";
-import { triviaSessions } from "../../../../database/database.js";
-import { TriviaQuestionMessageAction } from "../../../../database/models.js";
-import config from "../../../../utils/config.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "trivia",

@@ -1,3 +1,7 @@
+import config from "@/helpers/config.js";
+import { messageActions } from "@/helpers/database/index.js";
+import { MessageAction } from "@/helpers/database/models.js";
+import { __dirname } from "@/helpers/general.js";
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
@@ -10,11 +14,7 @@ import {
 } from "discord.js";
 import fs from "fs";
 import { glob } from "glob";
-import { messageActions } from "../../database/database.js";
-import { MessageAction } from "../../database/models.js";
-import config from "../../utils/config.js";
-import { __dirname } from "../../utils/general.js";
-import { logError } from "../../utils/logger.js";
+import { logError } from "../../helpers/logger.js";
 import { EventListener } from "../index.js";
 
 const handlersFolder = `${__dirname(import.meta.url)}/handlers`;

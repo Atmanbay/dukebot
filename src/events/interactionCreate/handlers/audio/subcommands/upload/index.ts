@@ -1,3 +1,7 @@
+import { messageActions } from "@/@/helpers/database/index.js";
+import { Button } from "@/@/helpers/database/models.js";
+import config from "@/helpers/config.js";
+import { buildMessageActionRow, generateId } from "@/helpers/general.js";
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
@@ -6,13 +10,6 @@ import {
 } from "discord.js";
 import download from "download";
 import sanitize from "sanitize-filename";
-import { messageActions } from "../../../../../../database/database.js";
-import { Button } from "../../../../../../database/models.js";
-import config from "../../../../../../utils/config.js";
-import {
-  buildMessageActionRow,
-  generateId,
-} from "../../../../../../utils/general.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

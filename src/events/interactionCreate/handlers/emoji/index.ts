@@ -7,18 +7,15 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 /// <reference path="../types/emoji-unicode.d.ts" />
+import config from "@/helpers/config.js";
+import { messageActions } from "@/helpers/database/index.js";
+import { Button } from "@/helpers/database/models.js";
+import { buildMessageActionRow, generateId } from "@/helpers/general.js";
+import { logError } from "@/helpers/logger.js";
 import emojiUnicode from "emoji-unicode";
 import fs from "fs";
 import im from "imagemagick";
 import { createRequire } from "module";
-import { messageActions } from "../../../../database/database.js";
-import { Button } from "../../../../database/models.js";
-import config from "../../../../utils/config.js";
-import {
-  buildMessageActionRow,
-  generateId,
-} from "../../../../utils/general.js";
-import { logError } from "../../../../utils/logger.js";
 
 const require = createRequire(import.meta.url);
 const emojidata = require("unicode-emoji-json");

@@ -1,9 +1,9 @@
+import config from "@/helpers/config.js";
+import { walkups } from "@/helpers/database/index.js";
 import { VoiceChannel, VoiceState } from "discord.js";
 import fs from "fs";
-import { walkups } from "../../database/database.js";
-import { play } from "../../utils/audio.js";
-import config from "../../utils/config.js";
-import { logError, logInfo } from "../../utils/logger.js";
+import { play } from "../../helpers/audio.js";
+import { logError, logInfo } from "../../helpers/logger.js";
 import { EventListener } from "../index.js";
 
 const VoiceStateUpdateEventHandler: EventListener<"voiceStateUpdate"> = async (

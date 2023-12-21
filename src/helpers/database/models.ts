@@ -47,60 +47,6 @@ export type AudioListMessageAction = BaseMessageAction & {
   };
 };
 
-export type TwitterTweetMessageAction = BaseMessageAction & {
-  command: "twitter";
-  subcommand: "tweet";
-
-  data: {
-    callerUserId: string;
-    approvals: string[];
-    required: number;
-    content?: string;
-    imageUrl?: string;
-  };
-};
-
-export type TwitterReplyMessageAction = BaseMessageAction & {
-  command: "twitter";
-  subcommand: "reply";
-
-  data: {
-    callerUserId: string;
-    approvals: string[];
-    required: number;
-    content?: string;
-    targetTweetId: string;
-    imageUrl?: string;
-  };
-};
-
-export type TwitterRetweetMessageAction = BaseMessageAction & {
-  command: "twitter";
-  subcommand: "retweet";
-
-  data: {
-    callerUserId: string;
-    approvals: string[];
-    required: number;
-    targetTweetId: string;
-    imageUrl?: string;
-  };
-};
-
-export type TwitterQuoteTweetMessageAction = BaseMessageAction & {
-  command: "twitter";
-  subcommand: "quotetweet";
-
-  data: {
-    callerUserId: string;
-    approvals: string[];
-    required: number;
-    content?: string;
-    targetTweetId: string;
-    imageUrl?: string;
-  };
-};
-
 export type TriviaAdvanceMessageAction = BaseMessageAction & {
   command: "trivia";
   subcommand: "advance";
@@ -127,10 +73,6 @@ export type MessageAction =
   | EmojiKitchenMessageAction
   | AudioUploadMessageAction
   | AudioListMessageAction
-  | TwitterTweetMessageAction
-  | TwitterReplyMessageAction
-  | TwitterRetweetMessageAction
-  | TwitterQuoteTweetMessageAction
   | TriviaAdvanceMessageAction
   | TriviaQuestionMessageAction;
 

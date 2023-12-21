@@ -1,4 +1,4 @@
-import { messages } from "../../../database/database.js";
+import { messages } from "@/helpers/database/index.js";
 import { MessageCreateHandler } from "../index.js";
 
 const MessageSavingMessageCreateHandler: MessageCreateHandler = {

@@ -1,5 +1,5 @@
+import { EmojiKitchenMessageAction } from "@/helpers/database/models.js";
 import { ButtonInteraction } from "discord.js";
-import { EmojiKitchenMessageAction } from "../../../../../database/models.js";
 
 export const handler = async (
   interaction: ButtonInteraction,

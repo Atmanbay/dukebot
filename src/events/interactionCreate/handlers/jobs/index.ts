@@ -1,3 +1,6 @@
+import { jobs } from "@/helpers/database/index.js";
+import { buildTable } from "@/helpers/general.js";
+import { logInfo } from "@/helpers/logger.js";
 import {
   ApplicationCommandOptionType,
   ChatInputApplicationCommandData,
@@ -5,9 +8,6 @@ import {
   GuildMember,
   Role,
 } from "discord.js";
-import { jobs } from "../../../../database/database.js";
-import { buildTable } from "../../../../utils/general.js";
-import { logInfo } from "../../../../utils/logger.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "jobs",

@@ -1,10 +1,10 @@
+import { Button } from "@/helpers/database/models.js";
 import crypto from "crypto";
 import { ActionRowBuilder, ButtonBuilder, Embed } from "discord.js";
 import { globSync } from "glob";
 import moment from "moment-timezone";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { Button } from "../database/models.js";
 
 export const __dirname = (path: string) => {
   return dirname(fileURLToPath(path));

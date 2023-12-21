@@ -1,6 +1,6 @@
+import { walkups } from "@/helpers/database/index.js";
+import { AudioUploadMessageAction } from "@/helpers/database/models.js";
 import { ButtonInteraction, GuildMember } from "discord.js";
-import { walkups } from "../../../../../database/database.js";
-import { AudioUploadMessageAction } from "../../../../../database/models.js";
 
 export const handler = async (
   interaction: ButtonInteraction,

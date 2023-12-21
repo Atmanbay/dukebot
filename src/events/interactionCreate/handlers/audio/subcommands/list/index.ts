@@ -1,3 +1,11 @@
+import config from "@/helpers/config.js";
+import { messageActions } from "@/helpers/database/index.js";
+import { Button } from "@/helpers/database/models.js";
+import {
+  buildMessageActionRow,
+  buildTable,
+  generateId,
+} from "@/helpers/general.js";
 import {
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
@@ -5,14 +13,6 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 import { readdirSync } from "fs";
-import { messageActions } from "../../../../../../database/database.js";
-import { Button } from "../../../../../../database/models.js";
-import config from "../../../../../../utils/config.js";
-import {
-  buildMessageActionRow,
-  buildTable,
-  generateId,
-} from "../../../../../../utils/general.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,

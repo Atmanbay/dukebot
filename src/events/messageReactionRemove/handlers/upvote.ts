@@ -1,5 +1,5 @@
-import { jobs } from "../../../database/database.js";
-import { logInfo } from "../../../utils/logger.js";
+import { jobs } from "@/helpers/database/index.js";
+import { logInfo } from "@/helpers/logger.js";
 import { MessageReactionRemoveHandler } from "../index.js";
 
 const UpvoteMessageReactionRemoveHandler: MessageReactionRemoveHandler = {

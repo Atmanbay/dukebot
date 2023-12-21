@@ -1,3 +1,5 @@
+import { messages } from "@/helpers/database/index.js";
+import { logError } from "@/helpers/logger.js";
 import {
   ApplicationCommandOptionType,
   ChatInputApplicationCommandData,
@@ -6,8 +8,6 @@ import {
   Role,
 } from "discord.js";
 import Markov, { MarkovGenerateOptions } from "markov-strings";
-import { messages } from "../../../../database/database.js";
-import { logError } from "../../../../utils/logger.js";
 
 export const buildMarkov = ({
   messages,

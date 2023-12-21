@@ -1,6 +1,6 @@
+import { messageActions } from "@/helpers/database/index.js";
+import { AudioListMessageAction } from "@/helpers/database/models.js";
 import { ButtonInteraction } from "discord.js";
-import { messageActions } from "../../../../../database/database.js";
-import { AudioListMessageAction } from "../../../../../database/models.js";
 import { getPageOfClips, getPages } from "../index.js";
 
 export const handler = async (

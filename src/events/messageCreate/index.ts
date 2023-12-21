@@ -1,6 +1,6 @@
+import config from "@/helpers/config.js";
 import { Message } from "discord.js";
-import config from "../../utils/config.js";
-import { logError } from "../../utils/logger.js";
+import { logError } from "../../helpers/logger.js";
 import { EventListener } from "../index.js";
 import BlazeMessageCreateHandler from "./handlers/blaze.js";
 import MessageSavingMessageCreateHandler from "./handlers/messageSaving.js";
