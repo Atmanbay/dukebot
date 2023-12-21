@@ -4,7 +4,7 @@ import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { CreateImageRequestSizeEnum } from "openai";
+import { ImageGenerateParams } from "openai/resources/images.js";
 import { logError } from "../../../../../../utils/logger.js";
 import { moderate, openai } from "../../index.js";
 
@@ -16,17 +16,9 @@ export const data: ApplicationCommandOptionData = {
     {
       type: ApplicationCommandOptionType.String,
       name: "prompt",
-      description: "What you want the image to be",
+      description: "A text description of the desired image",
+      maxLength: 1000,
       required: true,
-    },
-    {
-      type: ApplicationCommandOptionType.Number,
-      name: "count",
-      description:
-        "How many images to generate (1-10 inclusive, defaults to 1)",
-      minValue: 1,
-      maxValue: 10,
-      required: false,
     },
     {
       type: ApplicationCommandOptionType.String,
@@ -35,15 +27,15 @@ export const data: ApplicationCommandOptionData = {
       choices: [
         {
           name: "256x256",
-          value: "_256x256",
+          value: "256x256",
         },
         {
           name: "512x512",
-          value: "_512x512",
+          value: "512x512",
         },
         {
           name: "1024x1024",
-          value: "_1024x1024",
+          value: "1024x1024",
         },
       ],
       required: false,
@@ -61,34 +53,43 @@ const getBufferFromUrl = async (url: string) => {
 export const handler = async (interaction: ChatInputCommandInteraction) => {
   try {
     await interaction.deferReply();
-
     const prompt = interaction.options.getString("prompt");
-    const count = interaction.options.getNumber("count") ?? 1;
-    const size = interaction.options.getString("size") ?? "_256x256";
 
-    const failedCategories = await moderate(prompt);
-    if (failedCategories.length > 0) {
+    let flaggedCategories = await moderate(prompt);
+    if (flaggedCategories.length > 0) {
       await interaction.editReply({
-        content: `${prompt}\n\nViolated the following categories:\n${failedCategories.join(
+        content: `\`\`\`Blocked for the following reasons:\n\n${flaggedCategories.join(
           "\n"
-        )}`,
+        )}\`\`\``,
       });
-
       return;
     }
 
-    const response = await openai.createImage({
-      prompt: prompt,
-      n: count,
-      size: CreateImageRequestSizeEnum[size],
-    });
+    const size = interaction.options.getString("size") ?? "1024x1024";
 
-    let attachmentPromises = response.data.data.map((i) =>
-      getBufferFromUrl(i.url)
-    );
+    let params: ImageGenerateParams = {
+      model: "dall-e-2",
+      prompt: prompt,
+    };
+
+    switch (size) {
+      case "1024x1024":
+        params.size = "1024x1024";
+        break;
+      case "1792x1024":
+        params.size = "1792x1024";
+        break;
+      case "1024x1792":
+        params.size = "1024x1792";
+        break;
+    }
+
+    const response = await openai.images.generate(params);
+    const buffer = await getBufferFromUrl(response.data[0].url);
+
     await interaction.editReply({
       content: prompt,
-      files: await Promise.all(attachmentPromises),
+      files: [buffer],
     });
   } catch (error) {
     logError(error);

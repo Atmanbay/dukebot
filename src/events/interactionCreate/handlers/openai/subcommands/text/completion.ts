@@ -3,38 +3,47 @@ import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { CreateCompletionRequest } from "openai";
+import {
+  ChatCompletionCreateParamsNonStreaming,
+  ChatCompletionMessageParam,
+} from "openai/resources/index.js";
 import { logError } from "../../../../../../utils/logger.js";
-import { openai } from "../../index.js";
+import { moderate, openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
   name: "completion",
-  description: "Create an image with OpenAI's DALL-E model",
+  description: "Interact with OpenAI's GPT model",
   options: [
     {
       type: ApplicationCommandOptionType.String,
-      name: "input",
-      description: "The input to send to OpenAI",
+      name: "prompt",
+      description: "The prompt to send to the model",
       required: true,
     },
     {
       type: ApplicationCommandOptionType.String,
-      name: "model",
-      description: "The model to use (defaults to text-curie-001)",
-      choices: [
-        { name: "text-curie-001", value: "text-curie-001" },
-        { name: "text-davinci-003", value: "text-davinci-003" },
-      ],
+      name: "instruction",
+      description:
+        "The instructions given to the model before it responds to your prompt",
       required: false,
     },
     {
       type: ApplicationCommandOptionType.Number,
-      name: "temperature",
+      name: "frequency_penalty",
       description:
-        "The randomness of the response, from 0.00 to 1.00 (default is 0.75)",
-      minValue: 0.0,
-      maxValue: 1.0,
+        "(-2.0 to 2.0). Positive values decrease the likelihood of repeating the same line verbatim",
+      minValue: -2.0,
+      maxValue: 2.0,
+      required: false,
+    },
+    {
+      type: ApplicationCommandOptionType.Number,
+      name: "presence_penalty",
+      description:
+        "(-2.0 to 2.0). Positive values increase the likelihood to talk about new topics",
+      minValue: -2.0,
+      maxValue: 2.0,
       required: false,
     },
   ],
@@ -43,27 +52,68 @@ export const data: ApplicationCommandOptionData = {
 export const handler = async (interaction: ChatInputCommandInteraction) => {
   try {
     await interaction.deferReply();
-    const input = interaction.options.getString("input");
-    const temperature = interaction.options.getNumber("temperature") ?? 0.75;
-    const maxTokens = interaction.options.getNumber("maxTokens") ?? 300;
-    const model = interaction.options.getString("model") ?? "text-curie-001";
+    const prompt = interaction.options.getString("prompt");
 
-    let request: CreateCompletionRequest = {
-      model: model,
-      prompt: input,
-      temperature: temperature,
-      max_tokens: maxTokens,
-      top_p: 1,
-      n: 1,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
+    let flaggedCategories = await moderate(prompt);
+    if (flaggedCategories.length > 0) {
+      await interaction.editReply({
+        content: `\`\`\`Blocked for the following reasons:\n\n${flaggedCategories.join(
+          "\n"
+        )}\`\`\``,
+      });
+      return;
+    }
+
+    const instruction = interaction.options.getString("instruction");
+    const frequency_penalty =
+      interaction.options.getNumber("frequency_penalty");
+    const presence_penalty = interaction.options.getNumber("presence_penalty");
+
+    let messages: ChatCompletionMessageParam[] = [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
+
+    if (instruction) {
+      messages.unshift({
+        role: "system",
+        content: instruction,
+      });
+    }
+
+    let params: ChatCompletionCreateParamsNonStreaming = {
+      model: "gpt-3.5-turbo",
+      messages: messages,
     };
 
-    const response = await openai.createCompletion(request);
+    if (frequency_penalty) {
+      params.frequency_penalty = frequency_penalty;
+    }
 
-    await interaction.editReply({
-      content: `${input}\`${response.data.choices[0].text}\``,
-    });
+    if (presence_penalty) {
+      params.presence_penalty = presence_penalty;
+    }
+
+    let response = await openai.chat.completions.create(params);
+    let replyContent = response.choices[0].message.content;
+    if (replyContent.length > 1900) {
+      await interaction.editReply({
+        content: `\`\`\`Instruction: ${instruction}\nPrompt: ${prompt}\`\`\``,
+        files: [
+          {
+            attachment: Buffer.from(replyContent),
+            name: "reply.txt",
+            description: "The full reply to the prompt",
+          },
+        ],
+      });
+    } else {
+      await interaction.editReply({
+        content: `\`\`\`Instruction: ${instruction}\nPrompt: ${prompt}\n\n\n${replyContent}\`\`\``,
+      });
+    }
   } catch (error) {
     logError(error);
     await interaction.reply({
