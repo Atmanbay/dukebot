@@ -6,6 +6,7 @@ import {
   Role,
 } from "discord.js";
 import { paywallBalances } from "../../../../../../database/database.js";
+import config from "../../../../../../utils/config.js";
 import { logError } from "../../../../../../utils/logger.js";
 
 export const data: ApplicationCommandOptionData = {
@@ -31,6 +32,17 @@ export const data: ApplicationCommandOptionData = {
 export const handler = async (interaction: ChatInputCommandInteraction) => {
   try {
     await interaction.deferReply({ ephemeral: true });
+
+    if (
+      !(interaction.member as GuildMember).roles.cache.has(
+        config.roles.botOwner
+      )
+    ) {
+      await interaction.editReply({
+        content: "You must be the bot owner",
+      });
+      return;
+    }
 
     const amount = interaction.options.getNumber("amount");
     let user = interaction.options.getMentionable("user");

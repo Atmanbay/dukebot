@@ -23,19 +23,10 @@ const config = {
   },
   roles: {
     admin: getEnvVar("ROLES_ADMIN"),
-    twitter: getEnvVar("ROLES_TWITTER"),
-  },
-  approvals: {
-    twitter: Number(getEnvVar("APPROVALS_REQUIRED_TWITTER")),
+    botOwner: getEnvVar("ROLES_BOTOWNER"),
   },
   trivia: {
     maxPoints: Number(getEnvVar("TRIVIA_MAX_POINTS_PER_QUESTION")),
-  },
-  twitter: {
-    consumerKey: getEnvVar("TWITTER_CONSUMER_KEY"),
-    consumerSecret: getEnvVar("TWITTER_CONSUMER_SECRET"),
-    accessTokenKey: getEnvVar("TWITTER_ACCESS_TOKEN_KEY"),
-    accessTokenSecret: getEnvVar("TWITTER_ACCESS_TOKEN_SECRET"),
   },
   openAI: {
     apiKey: getEnvVar("OPENAI_API_KEY"),
