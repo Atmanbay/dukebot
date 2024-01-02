@@ -22,7 +22,6 @@ const config = {
     badJob: getEnvVar("EMOJIS_BAD_JOB"),
   },
   roles: {
-    admin: getEnvVar("ROLES_ADMIN"),
     botOwner: getEnvVar("ROLES_BOTOWNER"),
   },
   trivia: {
