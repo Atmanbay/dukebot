@@ -9,6 +9,7 @@ import {
   Job,
   Message,
   MessageAction,
+  PaywallBalance,
   Response,
   TriviaSession,
   Walkup,
@@ -94,4 +95,7 @@ export const responses = await buildDatabaseTable<Response>("responses");
 export const walkups = await buildDatabaseTable<Walkup>("walkups");
 export const triviaSessions = await buildDatabaseTable<TriviaSession>(
   "triviaSessions"
+);
+export const paywallBalances = await buildDatabaseTable<PaywallBalance>(
+  "paywallBalances"
 );

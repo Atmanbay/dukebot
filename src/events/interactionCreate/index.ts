@@ -121,6 +121,7 @@ const handlerPromises = handlerFiles.map(async (thf) => {
     } else if (subfolder === "subcommands") {
       let subcommandName = nodes[2];
       let subcommand = await import(thf);
+
       if (!subcommand.handler) {
         return;
       }
@@ -136,9 +137,11 @@ const handlerPromises = handlerFiles.map(async (thf) => {
       if (nodes[3] === "index") {
         handlers[commandName].subcommands[subcommandName] = handler;
       } else {
-        handlers[commandName].subcommands[subcommandName] = {
-          [nodes[3]]: handler,
-        };
+        if (!(subcommandName in handlers[commandName].subcommands)) {
+          handlers[commandName].subcommands[subcommandName] = {};
+        }
+
+        handlers[commandName].subcommands[subcommandName][nodes[3]] = handler;
       }
     }
   }

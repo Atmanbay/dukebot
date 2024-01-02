@@ -10,8 +10,8 @@ import { moderate, openai } from "../../index.js";
 
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
-  name: "create",
-  description: "Create an image with OpenAI's DALL-E model",
+  name: "dall-e-2",
+  description: "Create an image with OpenAI's DALL-E 2 model",
   options: [
     {
       type: ApplicationCommandOptionType.String,
@@ -53,6 +53,7 @@ const getBufferFromUrl = async (url: string) => {
 export const handler = async (interaction: ChatInputCommandInteraction) => {
   try {
     await interaction.deferReply();
+
     const prompt = interaction.options.getString("prompt");
 
     let flaggedCategories = await moderate(prompt);
@@ -73,14 +74,14 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
     };
 
     switch (size) {
+      case "256x256":
+        params.size = "256x256";
+        break;
+      case "512x512":
+        params.size = "512x512";
+        break;
       case "1024x1024":
         params.size = "1024x1024";
-        break;
-      case "1792x1024":
-        params.size = "1792x1024";
-        break;
-      case "1024x1792":
-        params.size = "1024x1792";
         break;
     }
 
@@ -93,6 +94,13 @@ export const handler = async (interaction: ChatInputCommandInteraction) => {
     });
   } catch (error) {
     logError(error);
+    if (error["code"] === "content_policy_violation") {
+      await interaction.editReply({
+        content: "Your prompt violated OpenAI's content policy",
+      });
+      return;
+    }
+
     await interaction.editReply({
       content: "An error occurred when running this command",
     });

@@ -209,6 +209,14 @@ export type TriviaSession = {
   questions: TriviaQuestion[];
 };
 
+export type PaywallBalance = {
+  id: string;
+  created?: number;
+
+  userId: string;
+  balance: number; // balance in cents
+};
+
 export type BaseDatabaseObject =
   | Blaze
   | Job
@@ -217,4 +225,5 @@ export type BaseDatabaseObject =
   | Walkup
   | MessageAction
   | BotConfig
-  | TriviaSession;
+  | TriviaSession
+  | PaywallBalance;

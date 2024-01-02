@@ -9,6 +9,14 @@ export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
   name: "delete",
   description: "Delete a trigger/response relationship based on the trigger",
+  options: [
+    {
+      type: ApplicationCommandOptionType.String,
+      name: "trigger",
+      description: "The word/phrase that will trigger the responses",
+      required: true,
+    },
+  ],
 };
 
 export const handler = async (interaction: ChatInputCommandInteraction) => {

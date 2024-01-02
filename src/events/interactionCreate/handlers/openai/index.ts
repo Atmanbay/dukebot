@@ -1,5 +1,6 @@
 import { ChatInputApplicationCommandData } from "discord.js";
 import OpenAI from "openai";
+import { paywallBalances } from "../../../../database/database.js";
 
 export const data: ChatInputApplicationCommandData = {
   name: "openai",
@@ -23,4 +24,19 @@ export const moderate = async (input: string): Promise<string[]> => {
   });
 
   return failedCategories;
+};
+
+export const getBalance = (userId: string) => {
+  let balance = paywallBalances.get((pb) => pb.userId === userId);
+  if (balance) {
+    return balance.balance;
+  }
+
+  return 0;
+};
+
+export const addBalance = async (userId: string, amount: number) => {
+  let balance = paywallBalances.get((pb) => pb.userId === userId);
+  balance.balance = balance.balance + amount;
+  await paywallBalances.update(balance);
 };
