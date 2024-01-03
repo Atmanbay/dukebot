@@ -8,7 +8,15 @@ import { walkups } from "../../../../../../database/database.js";
 export const data: ApplicationCommandOptionData = {
   type: ApplicationCommandOptionType.Subcommand,
   name: "set",
-  description: "Clear your walkup",
+  description: "Set your walkup",
+  options: [
+    {
+      type: ApplicationCommandOptionType.String,
+      name: "name",
+      description: "The name of the clip to set as your walkup",
+      required: true,
+    },
+  ],
 };
 
 export const handler = async (interaction: ChatInputCommandInteraction) => {
