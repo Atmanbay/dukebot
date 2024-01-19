@@ -18,7 +18,10 @@ import { existsSync, readdirSync } from "fs";
 import sanitize from "sanitize-filename";
 import { Feature } from "..";
 import { getSingletonTable } from "../../database/database.js";
-import { BaseDatabaseObject } from "../../database/models.js";
+import {
+  BaseDatabaseObject,
+  InteractionContext,
+} from "../../database/models.js";
 import { play } from "../../utils/audio.js";
 import config from "../../utils/config.js";
 import { toTable } from "../../utils/format.js";
@@ -29,15 +32,16 @@ type Walkup = BaseDatabaseObject & {
   clipName: string;
 };
 
-type InteractionContext = BaseDatabaseObject & {
-  interactionId: string;
-  context: any;
+type StarredClips = BaseDatabaseObject & {
+  usedId: string;
+  clipName: string;
 };
 
 const walkups = await getSingletonTable<Walkup>("walkups");
 const interactionContexts = await getSingletonTable<InteractionContext>(
   "interactionContexts"
 );
+const starredClips = await getSingletonTable<StarredClips>("starredClips");
 
 // storing this in memory since it doesn't really matter
 const selectedClipByUser: { [userId: string]: string } = {};
@@ -52,32 +56,29 @@ const getClips = () => {
   return files;
 };
 
-const getPages = () => {
-  const clipNames = getClips();
+const getPages = async (userId: string) => {
+  let clips = getClips();
+  let starred = starredClips
+    .list((sc) => sc.usedId === userId)
+    .map((sc) => sc.clipName);
+
+  starred.sort().reverse();
+  starred.forEach((starredClip) => {
+    let index = clips.indexOf(starredClip);
+    if (index > -1) {
+      clips.splice(index, 1);
+      clips.unshift(starredClip);
+    }
+  });
+
   let perChunk = 20;
-  let chunkedClips = clipNames.reduce((all, one, i) => {
+  let pages: string[][] = clips.reduce((all, one, i) => {
     const ch = Math.floor(i / perChunk);
     all[ch] = [].concat(all[ch] || [], one);
     return all;
   }, []);
 
-  return chunkedClips;
-};
-
-const getPage = (pageNumber: number) => {
-  let pages = getPages();
-  let page = [...pages[pageNumber]];
-  let buffer = 5;
-  let halfway = Math.ceil(page.length / 2);
-  let leftColumn = page.splice(0, halfway);
-
-  let rows: [string, string][] = [];
-  for (let i = 0; i < halfway; i++) {
-    let row: [string, string] = [leftColumn.shift(), page.shift()];
-    rows.push(row);
-  }
-
-  return toTable(rows, buffer);
+  return pages;
 };
 
 const goToPage = async (
@@ -93,9 +94,10 @@ const goToPage = async (
 
   context.context.position = pageNumber;
 
-  let payload = getListMessagePayload(pageNumber);
+  let payload = getListMessagePayload([...context.context.pages[pageNumber]]);
 
   await interaction.update(payload);
+
   await interactionContexts.update(context);
 };
 
@@ -104,10 +106,8 @@ const audioClipSelect = async (interaction: AnySelectMenuInteraction) => {
   let clipName = interaction.values[0];
   selectedClipByUser[guildMember.user.id] = clipName;
 
-  await interaction.reply({
-    content: `Selected ${clipName}, now click Play or Set As Walkup`,
-    ephemeral: true,
-  });
+  await interaction.deferReply();
+  await interaction.deleteReply();
 };
 
 const playHandler = async (interaction: ChatInputCommandInteraction) => {
@@ -135,7 +135,7 @@ const playHandler = async (interaction: ChatInputCommandInteraction) => {
   await play(channel, path);
 };
 
-const getListMessagePayload = (pageNumber: number) => {
+const getListMessagePayload = (page: string[]) => {
   let buttonData = [
     {
       id: "firstPage",
@@ -166,9 +166,6 @@ const getListMessagePayload = (pageNumber: number) => {
     buttons
   );
 
-  let pages = getPages();
-  let page = [...pages[pageNumber]];
-
   const selector = new StringSelectMenuBuilder()
     .setCustomId("audioClipSelect")
     .setPlaceholder("Select a clip")
@@ -191,28 +188,54 @@ const getListMessagePayload = (pageNumber: number) => {
     .setLabel("Set As Walkup")
     .setStyle(ButtonStyle.Secondary);
 
+  const starClipButton = new ButtonBuilder()
+    .setCustomId("starClip")
+    .setLabel("Star")
+    .setStyle(ButtonStyle.Secondary);
+
+  const unstarClipButton = new ButtonBuilder()
+    .setCustomId("unstarClip")
+    .setLabel("Unstar")
+    .setStyle(ButtonStyle.Secondary);
+
   const selectorButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([
     playButton,
     setAsWalkupButton,
+    starClipButton,
+    unstarClipButton,
   ]);
 
+  let halfway = Math.ceil(page.length / 2);
+  let leftColumn = page.splice(0, halfway);
+
+  let rows: [string, string][] = [];
+  for (let i = 0; i < halfway; i++) {
+    let row: [string, string] = [leftColumn.shift(), page.shift()];
+    rows.push(row);
+  }
+
+  const buffer = 5;
+  const pageTable = toTable(rows, buffer);
+
   return {
-    content: getPage(pageNumber),
+    content: pageTable,
     components: [buttonRow, selectorRow, selectorButtons],
     ephemeral: true,
   };
 };
 
 const listHandler = async (interaction: ChatInputCommandInteraction) => {
+  const guildMember = interaction.member as GuildMember;
+  const pages = await getPages(guildMember.user.id);
   await interactionContexts.create({
     interactionId: interaction.id,
     context: {
       position: 0,
-      pages: getPages(),
+      pages: pages,
     },
   });
 
-  const payload = getListMessagePayload(0);
+  const payload = getListMessagePayload([...pages[0]]);
   await interaction.reply(payload);
 };
 
@@ -389,6 +412,52 @@ const walkupHandler = async (oldState: VoiceState, newState: VoiceState) => {
   }
 };
 
+const starClipHandler = async (interaction: ButtonInteraction) => {
+  const guildMember = interaction.member as GuildMember;
+  const clipName = selectedClipByUser[guildMember.user.id];
+  const guildMemberStarredClip = starredClips.get(
+    (sc) => sc.usedId === guildMember.user.id && sc.clipName === clipName
+  );
+  if (guildMemberStarredClip) {
+    await interaction.reply({
+      content: `You have already starred the clip ${clipName}`,
+      ephemeral: true,
+    });
+    return;
+  } else {
+    starredClips.create({
+      usedId: guildMember.user.id,
+      clipName: clipName,
+    });
+    await interaction.reply({
+      content: `Starred ${clipName}`,
+      ephemeral: true,
+    });
+  }
+};
+
+const unstarClipHandler = async (interaction: ButtonInteraction) => {
+  const guildMember = interaction.member as GuildMember;
+  const clipName = selectedClipByUser[guildMember.user.id];
+  const guildMemberStarredClip = starredClips.get(
+    (sc) => sc.usedId === guildMember.user.id && sc.clipName === clipName
+  );
+  if (guildMemberStarredClip) {
+    await starredClips.delete(guildMemberStarredClip.id);
+    await interaction.reply({
+      content: `Unstarred ${clipName}`,
+      ephemeral: true,
+    });
+    return;
+  } else {
+    await interaction.reply({
+      content: `You have not saved the clip ${clipName}`,
+      ephemeral: true,
+    });
+    return;
+  }
+};
+
 const audio: Feature = {
   load: async (loaders) => {
     loaders.commands.load({
@@ -510,6 +579,14 @@ const audio: Feature = {
       id: "previousPage",
       handler: async (interaction, context) =>
         goToPage(interaction, context, context.context.position - 1),
+    });
+    loaders.buttons.load({
+      id: "starClip",
+      handler: starClipHandler,
+    });
+    loaders.buttons.load({
+      id: "unstarClip",
+      handler: unstarClipHandler,
     });
 
     loaders.selectMenus.load({

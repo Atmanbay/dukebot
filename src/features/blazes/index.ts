@@ -34,7 +34,7 @@ const checkBlazes = async (interaction: ChatInputCommandInteraction) => {
 
   let guildMemberPromises = guildMembers.map(async (guildMember) => {
     let guildMemberBlazes = blazes.list(
-      (blaze) => blaze.userId === guildMember.id
+      (blaze) => blaze.userId === guildMember.user.id
     );
 
     if (guildMemberBlazes.length === 0) {
