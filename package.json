@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon -r dotenv/config src/app.ts"
+    "dev": "nodemon -r dotenv/config src/index.ts"
   },
   "author": "",
   "license": "MIT",
