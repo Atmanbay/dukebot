@@ -25,6 +25,15 @@ const handler = async (interaction: ChatInputCommandInteraction) => {
   const min = interaction.options.getNumber("min") ?? 1;
   const max = interaction.options.getNumber("max") ?? 1;
 
+  if (min > max || max > choices.length) {
+    await interaction.reply({
+      content:
+        "Max cannot be greater than the amount of choices or lesser than the min",
+      ephemeral: true,
+    });
+    return;
+  }
+
   const selector = new StringSelectMenuBuilder()
     .setCustomId("vote")
     .setPlaceholder("Select")
@@ -42,7 +51,12 @@ const handler = async (interaction: ChatInputCommandInteraction) => {
     .setLabel("Clear")
     .setStyle(ButtonStyle.Danger);
 
-  let content = `**${description}**`;
+  let choiceText = "";
+  if (max > 1) {
+    choiceText = ` *(${min} - ${max} choices)*`;
+  }
+  let completeDescription = `**${description}**${choiceText}`;
+  let content = completeDescription;
   content += "\n```\n";
   content += choices.map((c) => `${c} (0):  `).join("\n");
   content += "```";
@@ -63,7 +77,7 @@ const handler = async (interaction: ChatInputCommandInteraction) => {
   await interactionContexts.create({
     interactionId: interaction.id,
     context: {
-      description: description,
+      description: completeDescription,
       selections: selections,
     },
   });
@@ -93,7 +107,7 @@ const voteSelectHandler = async (
 
   await interactionContexts.update(context);
 
-  let content = `**${context.context.description}**`;
+  let content = context.context.description;
   content += "\n```\n";
   Object.entries(tempSelections).forEach(([choice, users]) => {
     content += `${choice} (${users.length}): ${users.join(", ")}\n`;
@@ -124,7 +138,7 @@ const voteClearHandler = async (
 
   await interactionContexts.update(context);
 
-  let content = `**${context.context.description}**`;
+  let content = context.context.description;
   content += "\n```\n";
   Object.entries(tempSelections).forEach(([choice, users]) => {
     content += `${choice} (${users.length}): ${users.join(", ")}\n`;
