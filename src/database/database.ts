@@ -1,19 +1,12 @@
+import crypto from "crypto";
 import fs from "fs";
 import { JSONFile, Low } from "lowdb";
 import config from "../utils/config.js";
-import { generateId } from "../utils/general.js";
-import {
-  BaseDatabaseObject,
-  Blaze,
-  BotConfig,
-  Job,
-  Message,
-  MessageAction,
-  PaywallBalance,
-  Response,
-  TriviaSession,
-  Walkup,
-} from "./models.js";
+import { BaseDatabaseObject } from "./models.js";
+
+const generateId = () => {
+  return crypto.randomBytes(16).toString("hex");
+};
 
 class DatabaseTable<DBType extends BaseDatabaseObject> {
   tableName: string;
@@ -76,26 +69,16 @@ class DatabaseTable<DBType extends BaseDatabaseObject> {
   };
 }
 
-const buildDatabaseTable = async <DBType extends BaseDatabaseObject>(
+const TABLES = {};
+export const getSingletonTable = async <DBType extends BaseDatabaseObject>(
   tableName: string
-) => {
-  const dbTable = new DatabaseTable<DBType>(tableName);
-  await dbTable.build();
-  return dbTable;
+): Promise<DatabaseTable<DBType>> => {
+  if (tableName in TABLES) {
+    return TABLES[tableName];
+  } else {
+    const dbTable = new DatabaseTable<DBType>(tableName);
+    await dbTable.build();
+    TABLES[tableName] = dbTable;
+    return dbTable;
+  }
 };
-
-export const blazes = await buildDatabaseTable<Blaze>("blazes");
-export const botConfigs = await buildDatabaseTable<BotConfig>("botConfigs");
-export const jobs = await buildDatabaseTable<Job>("jobs");
-export const messages = await buildDatabaseTable<Message>("messages");
-export const messageActions = await buildDatabaseTable<MessageAction>(
-  "messageActions"
-);
-export const responses = await buildDatabaseTable<Response>("responses");
-export const walkups = await buildDatabaseTable<Walkup>("walkups");
-export const triviaSessions = await buildDatabaseTable<TriviaSession>(
-  "triviaSessions"
-);
-export const paywallBalances = await buildDatabaseTable<PaywallBalance>(
-  "paywallBalances"
-);

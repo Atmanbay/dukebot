@@ -17,18 +17,15 @@ const config = {
     emojiKitchen: getEnvVar("PATHS_EMOJI_KITCHEN"),
     logging: getEnvVar("PATHS_LOGGING"),
   },
-  emojis: {
-    goodJob: getEnvVar("EMOJIS_GOOD_JOB"),
-    badJob: getEnvVar("EMOJIS_BAD_JOB"),
-  },
   roles: {
     botOwner: getEnvVar("ROLES_BOTOWNER"),
   },
-  trivia: {
-    maxPoints: Number(getEnvVar("TRIVIA_MAX_POINTS_PER_QUESTION")),
-  },
   openAI: {
     apiKey: getEnvVar("OPENAI_API_KEY"),
+  },
+  emojiKitchen: {
+    apiKey: getEnvVar("EMOJI_KITCHEN_API_KEY"),
+    clientData: getEnvVar("EMOJI_KITCHEN_X_CLIENT_DATA"),
   },
 } as const;
 
