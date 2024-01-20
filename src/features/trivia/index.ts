@@ -308,7 +308,7 @@ const advanceHandler = async (interaction: ButtonInteraction) => {
   );
 
   const expireTime = moment.tz("America/New_York").add(msPerQuestion, "ms");
-  const unixTime = expireTime.clone().add(4500, "ms").unix(); // TODO: why do I have to add time?? This used to work fine, maybe a Discord issue
+  const unixTime = expireTime.clone().add(1, "second").unix();
 
   const reply = [
     `**Question #${triviaSession.currentQuestionIndex + 1}**  *${
