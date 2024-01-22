@@ -27,6 +27,9 @@ const config = {
     apiKey: getEnvVar("EMOJI_KITCHEN_API_KEY"),
     clientData: getEnvVar("EMOJI_KITCHEN_X_CLIENT_DATA"),
   },
+  disabled: {
+    features: getEnvVar("DISABLED_FEATURES").split(","),
+  },
 } as const;
 
 export default config;

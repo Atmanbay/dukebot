@@ -223,6 +223,10 @@ export const loadFeatures = async (client: Client) => {
   const featurePromises = folders
     .filter((folder) => !folder.startsWith("index"))
     .map(async (folder) => {
+      if (config.disabled.features.includes(folder)) {
+        return;
+      }
+
       let feature = (await import(`./${folder}/index${config.fileExtension}`))
         .default as Feature;
 
