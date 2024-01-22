@@ -21,7 +21,10 @@ const interactionContexts = await getSingletonTable<InteractionContext>(
 
 const handler = async (interaction: ChatInputCommandInteraction) => {
   const description = interaction.options.getString("description");
-  const choices = interaction.options.getString("choices").split("|");
+  const choices = interaction.options
+    .getString("choices")
+    .split("|")
+    .map((c) => c.trim());
   const min = interaction.options.getNumber("min") ?? 1;
   const max = interaction.options.getNumber("max") ?? 1;
 

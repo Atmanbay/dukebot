@@ -1,6 +1,6 @@
-const getEnvVar = (name: string) => {
+const getEnvVar = (name: string, required?: boolean) => {
   let value = process.env[name];
-  if (!value) throw `Environment variable ${name} is not set`;
+  if (!value && required) throw `Environment variable ${name} is not set`;
 
   return value;
 };
@@ -28,7 +28,7 @@ const config = {
     clientData: getEnvVar("EMOJI_KITCHEN_X_CLIENT_DATA"),
   },
   disabled: {
-    features: getEnvVar("DISABLED_FEATURES").split(","),
+    features: getEnvVar("DISABLED_FEATURES", false).split(","),
   },
 } as const;
 
