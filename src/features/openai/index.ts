@@ -291,9 +291,11 @@ const balanceCheckHandler = async (
   interaction: ChatInputCommandInteraction
 ) => {
   let balance = getBalance(interaction.user.id);
+  let callsRemaining = Math.floor(balance / 6);
 
   await interaction.reply({
-    content: `\`${balance}\``,
+    content: `Balance: \`${balance}\`\nCalls Remaining: ${callsRemaining}`,
+    ephemeral: true,
   });
 };
 
