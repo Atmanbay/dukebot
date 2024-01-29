@@ -7,6 +7,7 @@ import {
   Role,
 } from "discord.js";
 import OpenAI from "openai";
+import { BadRequestError } from "openai/error";
 import {
   ChatCompletionCreateParamsNonStreaming,
   ChatCompletionMessageParam,
@@ -155,7 +156,20 @@ const dalle3Handler = async (interaction: ChatInputCommandInteraction) => {
       break;
   }
 
-  const response = await client.images.generate(params);
+  let response: OpenAI.Images.ImagesResponse;
+  try {
+    response = await client.images.generate(params);
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      await interaction.editReply({
+        content:
+          "The prompt was blocked, please modify your prompt or try again with `revise=True`",
+      });
+      return;
+    } else {
+      throw error;
+    }
+  }
   let finalPrompt = response.data[0].revised_prompt;
   if (!finalPrompt) {
     finalPrompt = prompt;
